@@ -1,0 +1,12 @@
+[package]
+name = "iup-rust"
+version = "0.0.1"
+authors = ["David Campbell <dcampbell24@gmail.com>"]
+
+[lib]
+name = "iup"
+path = "src/iup/lib.rs"
+
+[dependencies.iup-sys]
+path = "iup-sys"
+version = "*"
