@@ -1,4 +1,4 @@
-//! Rust low level bindings for (IUP)[1] -- A Portable User Interface Toolkit
+//! Rust low level bindings for [IUP][1] -- A Portable User Interface Toolkit
 //!
 //! [1]: http://www.tecgraf.puc-rio.br/iup/
 //!
