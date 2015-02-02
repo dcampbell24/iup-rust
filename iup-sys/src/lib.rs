@@ -6,7 +6,7 @@
 //! the following exceptions:
 //!
 //! 1. C function-like macros have been converted into functions.
-//! 2. Old and deprecated items have been removed.
+//! 2. Items that were marked as old or deprecated have been removed.
  
 // This file is based on iup.h. If you update this file, please follow the same
 // formatting and ordering as found in iup.h to make comparison easy.
