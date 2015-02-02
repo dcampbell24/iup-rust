@@ -1,8 +1,15 @@
 //! Rust low level bindings for (IUP)[1] -- A Portable User Interface Toolkit
 //!
 //! [1]: http://www.tecgraf.puc-rio.br/iup/
+//!
+//! These bindings follow what is found in iup.h as closely as possibly with
+//! the following exceptions:
+//!
+//! 1. C function-like macros have been converted into functions.
+//! 2. Old and deprecated items have been removed.
  
-// iup.h
+// This file is based on iup.h. If you update this file, please follow the same
+// formatting and ordering as found in iup.h to make comparison easy.
 
 // #include "iupkey.h"
 // #include "iupdef.h"
