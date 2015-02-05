@@ -78,7 +78,7 @@ pub fn set_attribute(ih: &mut Ihandle, name: &str, value: &str) {
     unsafe { sys::IupSetAttribute(ih.ptr, name_c.as_ptr(), value_c.as_ptr()); }
 }
 
-pub fn hbox(elements: Vec<Ihandle>) -> Ihandle {
+pub fn hboxv(elements: Vec<Ihandle>) -> Ihandle {
     unsafe { Ihandle::from_ptr(sys::IupHboxv(vec_to_c_array(elements))) }
 }
 
