@@ -10,9 +10,35 @@ extern crate libc;
 extern crate "iup-sys" as sys;
 
 use std::ffi::CString;
+use std::mem;
 use std::ptr;
-use sys::Ihandle;
+use std::slice::SliceExt;
 use libc::{c_char, c_int};
+
+unsafe fn vec_to_c_array(v: Vec<Ihandle>) -> *mut *mut sys::Ihandle {
+    let mut raw_v = Vec::with_capacity(v.len());
+    for ih in v {
+        raw_v.push(ih.ptr);
+    }
+    let null : *const sys::Ihandle = ptr::null();
+    raw_v.push(mem::transmute(null));
+    raw_v.as_mut_ptr()
+}
+
+#[allow(missing_copy_implementations)]
+pub struct Ihandle {
+    ptr: *mut sys::Ihandle,
+}
+
+impl Ihandle {
+    fn from_ptr(ih: *mut sys::Ihandle) -> Ihandle {
+        if ih.is_null() {
+            panic!("Failed to create Ihandle.")
+        } else {
+            Ihandle { ptr: ih }
+        }
+    }
+}
 
 pub type IupResult = Result<(), String>;
 
@@ -33,24 +59,41 @@ pub fn close() {
     unsafe { sys::IupClose(); }
 }
 
-pub fn label(s: &str) -> &mut Ihandle {
-    let c_string = CString::from_slice(s.as_bytes());
-    unsafe { &mut *(sys::IupLabel(c_string.as_ptr())) } 
-}
-
 pub fn main_loop() {
     let ok = unsafe { sys::IupMainLoop() };
     assert_eq!(ok, sys::IUP_NOERROR);
 }
 
-pub fn dialog(ih: &mut Ihandle) -> &mut Ihandle {
-    unsafe { &mut *(sys::IupDialog(ih)) }
-}
-
 pub fn show(ih: &mut Ihandle) -> IupResult {
-    match unsafe { sys::IupShow(ih) } {
+    match unsafe { sys::IupShow(ih.ptr) } {
         sys::IUP_NOERROR => Ok(()),
         sys::IUP_ERROR => Err("IUP_ERROR: unknown error".to_string()),
         _ => unreachable!(),
     }
+}
+
+pub fn hbox(elements: Vec<Ihandle>) -> Ihandle {
+    unsafe { Ihandle::from_ptr(sys::IupHboxv(vec_to_c_array(elements))) }
+}
+
+// Elements
+
+pub fn label(text: &str) -> Ihandle {
+    let text_c = CString::from_slice(text.as_bytes());
+    unsafe { Ihandle::from_ptr(sys::IupLabel(text_c.as_ptr())) }
+}
+
+pub fn dialog(ih: Ihandle) -> Ihandle {
+    unsafe { Ihandle::from_ptr(sys::IupDialog(ih.ptr)) }
+}
+
+pub fn button(text: &str) -> Ihandle {
+    let text_c = CString::from_slice(text.as_bytes());
+    let action: *const c_char = ptr::null();
+    unsafe { Ihandle::from_ptr(sys::IupButton(text_c.as_ptr(), action)) }
+}
+
+pub fn text() -> Ihandle {
+    let action: *const c_char = ptr::null();
+    unsafe { Ihandle::from_ptr(sys::IupText(action)) }
 }
