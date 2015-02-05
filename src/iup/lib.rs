@@ -72,10 +72,10 @@ pub fn show(ih: &mut Ihandle) -> IupResult {
     }
 }
 
-pub fn set_attribute(ih: &mut Ihandle, name: &str, value: &str) {
+pub fn set_str_attribute(ih: &mut Ihandle, name: &str, value: &str) {
     let name_c = CString::from_slice(name.as_bytes());
     let value_c = CString::from_slice(value.as_bytes());
-    unsafe { sys::IupSetAttribute(ih.ptr, name_c.as_ptr(), value_c.as_ptr()); }
+    unsafe { sys::IupSetStrAttribute(ih.ptr, name_c.as_ptr(), value_c.as_ptr()); }
 }
 
 pub fn hboxv(elements: Vec<Ihandle>) -> Ihandle {
