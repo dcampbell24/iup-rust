@@ -78,8 +78,16 @@ pub fn set_str_attribute(ih: &mut Ihandle, name: &str, value: &str) {
     unsafe { sys::IupSetStrAttribute(ih.ptr, name_c.as_ptr(), value_c.as_ptr()); }
 }
 
+pub fn destroy(ih: Ihandle) {
+    unsafe { sys::IupDestroy(ih.ptr); }
+}
+
 pub fn hboxv(elements: Vec<Ihandle>) -> Ihandle {
     unsafe { Ihandle::from_ptr(sys::IupHboxv(vec_to_c_array(elements))) }
+}
+
+pub fn vboxv(elements: Vec<Ihandle>) -> Ihandle {
+    unsafe { Ihandle::from_ptr(sys::IupVboxv(vec_to_c_array(elements))) }
 }
 
 // Elements
