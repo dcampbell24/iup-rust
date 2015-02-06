@@ -27,8 +27,8 @@ pub const IUP_VERSION_NUMBER: c_int      = 312000;
 pub const IUP_VERSION_DATE: &'static str = "2014/11/19"; /* does not include bug fix releases */
 
 pub enum Ihandle {}
-pub type Icallback = Option<extern fn(ih: *mut Ihandle) -> c_int>;
-pub type Iparamcb = Option<extern fn (dialog: *mut Ihandle, param_index: c_int, user_data: *mut c_void) -> c_int>;
+pub type Icallback = extern fn(ih: *mut Ihandle) -> CallbackReturn;
+pub type Iparamcb = extern fn (dialog: *mut Ihandle, param_index: c_int, user_data: *mut c_void) -> c_int;
 
 extern {
     /************************************************************************/
@@ -288,10 +288,13 @@ pub const IUP_INVALID_ID: c_int = -10;
 /************************************************************************/
 /*                   Callback Return Values                             */
 /************************************************************************/
-pub const IUP_IGNORE: c_int   = -1;
-pub const IUP_DEFAULT: c_int  = -2;
-pub const IUP_CLOSE: c_int    = -3;
-pub const IUP_CONTINUE: c_int = -4;
+#[repr(C)]
+pub enum CallbackReturn {
+    Ignore   = -1,
+    Default  = -2,
+    Close    = -3,
+    Continue = -4,
+}
 
 /************************************************************************/
 /*           IupPopup and IupShowXY Parameter Values                    */

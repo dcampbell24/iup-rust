@@ -15,6 +15,11 @@ use std::ptr;
 use std::slice::SliceExt;
 use libc::{c_char, c_int};
 
+pub use sys::CallbackReturn;
+pub use sys::Ihandle as IhandleRaw;
+
+pub type IupResult = Result<(), String>;
+
 unsafe fn vec_to_c_array(v: Vec<Ihandle>) -> *mut *mut sys::Ihandle {
     let mut raw_v = Vec::with_capacity(v.len());
     for ih in v {
@@ -31,7 +36,7 @@ pub struct Ihandle {
 }
 
 impl Ihandle {
-    fn from_ptr(ih: *mut sys::Ihandle) -> Ihandle {
+    pub fn from_ptr(ih: *mut sys::Ihandle) -> Ihandle {
         if ih.is_null() {
             panic!("Failed to create Ihandle.")
         } else {
@@ -39,8 +44,6 @@ impl Ihandle {
         }
     }
 }
-
-pub type IupResult = Result<(), String>;
 
 /// Initializes the IUP toolkit. Must be called before any other IUP function.
 pub fn open() -> IupResult {
@@ -76,6 +79,11 @@ pub fn set_str_attribute(ih: &mut Ihandle, name: &str, value: &str) {
     let name_c = CString::from_slice(name.as_bytes());
     let value_c = CString::from_slice(value.as_bytes());
     unsafe { sys::IupSetStrAttribute(ih.ptr, name_c.as_ptr(), value_c.as_ptr()); }
+}
+
+pub fn set_callback(ih: &mut Ihandle, name: &str, callback: sys::Icallback) -> sys::Icallback {
+    let name_c = CString::from_slice(name.as_bytes());
+    unsafe { sys::IupSetCallback(ih.ptr, name_c.as_ptr(), callback) }
 }
 
 pub fn destroy(ih: Ihandle) {
