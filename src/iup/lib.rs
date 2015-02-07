@@ -9,7 +9,7 @@
 extern crate libc;
 extern crate "iup-sys" as sys;
 
-use std::ffi::CString;
+use std::ffi::{self, CString};
 use std::mem;
 use std::ptr;
 use std::slice::SliceExt;
@@ -154,7 +154,20 @@ pub fn set_str_attribute(ih: &mut Ihandle, name: &str, value: &str) {
 // pub fn IupSetDouble(ih: *mut Ihandle, name: *const c_char, value: c_double);
 // pub fn IupSetRGB(ih: *mut Ihandle, name: *const c_char, r: c_uchar, g: c_uchar, b: c_uchar);
 
-// pub fn IupGetAttribute(ih: *mut Ihandle, name: *const c_char) -> *mut c_char;
+pub fn get_attribute(ih: &mut Ihandle, name: &str) -> Option<String> {
+    let name_c = CString::from_slice(name.as_bytes());
+    let value_c = unsafe { sys::IupGetAttribute(ih.ptr, name_c.as_ptr()) };
+    if value_c.is_null() {
+        None
+    } else {
+        let buf = unsafe { ffi::c_str_to_bytes(mem::transmute(&value_c)) };
+        match String::from_utf8(buf.to_vec()) {
+            Ok(s) => Some(s),
+            Err(_) => None
+        }
+    }
+}
+
 // pub fn IupGetInt(ih: *mut Ihandle, name: *const c_char) -> c_int;
 // pub fn IupGetInt2(ih: *mut Ihandle, name: *const c_char) -> c_int;
 // pub fn IupGetIntInt(ih: *mut Ihandle, name: *const c_char, i1: *mut c_int, i2: *mut c_int) -> c_int;
@@ -210,8 +223,26 @@ pub fn set_callback(ih: &mut Ihandle, name: &str, callback: sys::Icallback) -> s
 // pub fn IupGetFunction(name: *const c_char) -> Icallback;
 // pub fn IupSetFunction(name: *const c_char, func: Icallback) -> Icallback;
 
-// pub fn IupGetHandle(name: *const c_char) -> *mut Ihandle;
-// pub fn IupSetHandle(name: *const c_char, ih: *mut Ihandle) -> *mut Ihandle;
+pub fn get_handle(name: &str) -> Option<Ihandle> {
+    let name_c = CString::from_slice(name.as_bytes());
+    let ih = unsafe { sys::IupGetHandle(name_c.as_ptr()) };
+    if ih.is_null() {
+        None
+    } else {
+        Some(Ihandle { ptr: ih })
+    }
+}
+
+pub fn set_handle(name: &str, ih: &mut Ihandle) -> Option<Ihandle> {
+    let name_c = CString::from_slice(name.as_bytes());
+    let ih_old = unsafe { sys::IupSetHandle(name_c.as_ptr(), ih.ptr) };
+    if ih_old.is_null() {
+        None
+    } else {
+        Some(Ihandle { ptr: ih_old })
+    }
+}
+
 // pub fn IupGetAllNames(names: *mut *mut c_char, n: c_int) -> c_int;
 // pub fn IupGetAllDialogs(names: *mut *mut c_char, n: c_int) -> c_int;
 // pub fn IupGetName(ih: *mut Ihandle) -> *mut c_char;

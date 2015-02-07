@@ -1,5 +1,4 @@
 //! Example based on hello1 from http://wiki.call-cc.org/iup-tutor
-
 extern crate iup;
 
 use iup::CallbackReturn;
