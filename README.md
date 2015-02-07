@@ -26,6 +26,8 @@ To use this library you must install IUP. See [download tips][2] for more
 information. Note that the iup-sys crate is currently only configured to link
 with IUP and not IM or CD.
 
+[2]: http://www.tecgraf.puc-rio.br/iup/en/download_tips.html
+
 After installing IUP, add this crate as a dependecny in your Cargo.toml file:
 ```
 [dependencies.iup]
@@ -37,7 +39,7 @@ Contribute
 
 Contributions are welcome both in the form of ideas for how to best wrap IUP in
 Rust and high level wrappers for more of IUP. If you want to work on something,
-please open a ticket to let others know what you are working on.
+please open a issue to let others know what you are working on.
 
 Support
 -------
