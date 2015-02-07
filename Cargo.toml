@@ -1,5 +1,5 @@
 [package]
-name = "iup-rust"
+name = "iup"
 version = "0.0.1"
 authors = ["David Campbell <dcampbell24@gmail.com>"]
 
