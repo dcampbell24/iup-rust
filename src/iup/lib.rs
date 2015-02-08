@@ -267,7 +267,10 @@ pub fn set_handle(name: &str, ih: &mut Ihandle) -> Option<Ihandle> {
 /************************************************************************/
 /*                        Elements                                      */
 /************************************************************************/
-// pub fn IupFill() -> *mut Ihandle;
+pub fn fill() -> Ihandle {
+    unsafe { Ihandle::from_ptr(sys::IupFill()) }
+}
+
 // pub fn IupRadio(child: *mut Ihandle) -> *mut Ihandle;
 // pub fn IupVbox(child: *mut Ihandle, ...) -> *mut Ihandle;
 
