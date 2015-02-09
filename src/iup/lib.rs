@@ -45,6 +45,31 @@ impl Ihandle {
     }
 }
 
+/// Associate a rust value with a string for later use in an IUP callback by
+/// calling `get_rust_handle` with the same string.
+pub unsafe fn set_rust_handle<T>(name: &str, rh: &mut T) -> Option<*mut IhandleRaw> {
+    let ptr: *mut IhandleRaw = mem::transmute(rh);
+    let name_c = CString::from_slice(name.as_bytes());
+    let ih_old = sys::IupSetHandle(name_c.as_ptr(), ptr);
+    if ih_old.is_null() {
+        None
+    } else {
+        Some(ih_old)
+    }
+}
+
+/// Retrieve a rust value that was associated with a string using
+/// `set_rust_handle`. This function is only intended for use in IUP callbacks.
+pub unsafe fn get_rust_handle(name: &str) -> Option<*mut IhandleRaw> {
+    let name_c = CString::from_slice(name.as_bytes());
+    let ih = sys::IupGetHandle(name_c.as_ptr());
+    if ih.is_null() {
+        None
+    } else {
+        Some(ih)
+    }
+}
+
 /************************************************************************/
 /*                        Main API                                      */
 /************************************************************************/
