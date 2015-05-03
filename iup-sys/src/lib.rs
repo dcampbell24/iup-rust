@@ -7,17 +7,18 @@
 //!
 //! 1. C function-like macros have been converted into functions.
 //! 2. Items that were marked as old or deprecated have been removed.
- 
+
 // This file is based on iup.h. If you update this file, please follow the same
 // formatting and ordering as found in iup.h to make comparison easy.
 
 // #include "iupkey.h"
 // #include "iupdef.h"
 
+#![feature(libc)]
+
 extern crate libc;
 
-use libc::{c_char, c_uchar, c_int, c_float, c_double, c_void};
-use std::ffi::CString;
+use libc::{ c_char, c_uchar, c_int, c_float, c_double, c_void };
 
 pub const IUP_NAME: &'static str         = "IUP - Portable User Interface";
 pub const IUP_COPYRIGHT: &'static str    = "Copyright (C) 1994-2014 Tecgraf, PUC-Rio.";
@@ -342,16 +343,16 @@ pub const IUP_BUTTON3: c_char = '3' as c_char;
 pub const IUP_BUTTON4: c_char = '4' as c_char;
 pub const IUP_BUTTON5: c_char = '5' as c_char;
 
-pub fn iup_isshift(s: CString) -> bool   { s[0] == 'S' as c_char }
-pub fn iup_iscontrol(s: CString) -> bool { s[1] == 'C' as c_char }
-pub fn iup_isbutton1(s: CString) -> bool { s[2] == '1' as c_char }
-pub fn iup_isbutton2(s: CString) -> bool { s[3] == '2' as c_char }
-pub fn iup_isbutton3(s: CString) -> bool { s[4] == '3' as c_char }
-pub fn iup_isdouble(s: CString) -> bool  { s[5] == 'D' as c_char }
-pub fn iup_isalt(s: CString) -> bool     { s[6] == 'A' as c_char }
-pub fn iup_issys(s: CString) -> bool     { s[7] == 'Y' as c_char }
-pub fn iup_isbutton4(s: CString) -> bool { s[8] == '4' as c_char }
-pub fn iup_isbutton5(s: CString) -> bool { s[9] == '5' as c_char }
+pub fn iup_isshift(s: &[c_char]) -> bool   { s[0] == 'S' as c_char }
+pub fn iup_iscontrol(s: &[c_char]) -> bool { s[1] == 'C' as c_char }
+pub fn iup_isbutton1(s: &[c_char]) -> bool { s[2] == '1' as c_char }
+pub fn iup_isbutton2(s: &[c_char]) -> bool { s[3] == '2' as c_char }
+pub fn iup_isbutton3(s: &[c_char]) -> bool { s[4] == '3' as c_char }
+pub fn iup_isdouble(s: &[c_char]) -> bool  { s[5] == 'D' as c_char }
+pub fn iup_isalt(s: &[c_char]) -> bool     { s[6] == 'A' as c_char }
+pub fn iup_issys(s: &[c_char]) -> bool     { s[7] == 'Y' as c_char }
+pub fn iup_isbutton4(s: &[c_char]) -> bool { s[8] == '4' as c_char }
+pub fn iup_isbutton5(s: &[c_char]) -> bool { s[9] == '5' as c_char }
 
 /************************************************************************/
 /*                      Pre-Defined Masks                               */

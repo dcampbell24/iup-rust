@@ -5,14 +5,14 @@ use iup::CallbackReturn;
 extern fn button_1_cb(_ih: *mut iup::IhandleRaw) -> CallbackReturn {
     let mut text = iup::get_handle("text").unwrap();
     let count = iup::get_attribute(&mut text, "VALUE").unwrap().parse::<i32>().unwrap();
-    iup::set_str_attribute(&mut text, "VALUE", format!("{}", count + 1).as_slice());
+    iup::set_str_attribute(&mut text, "VALUE", &(count + 1).to_string());
     CallbackReturn::Default
 }
 
 extern fn button_2_cb(_ih: *mut iup::IhandleRaw) -> CallbackReturn {
     let mut text = iup::get_handle("text").unwrap();
     let count = iup::get_attribute(&mut text, "VALUE").unwrap().parse::<i32>().unwrap();
-    iup::set_str_attribute(&mut text, "VALUE", format!("{}", count - 1).as_slice());
+    iup::set_str_attribute(&mut text, "VALUE", &(count - 1).to_string());
     CallbackReturn::Default
 }
 

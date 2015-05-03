@@ -31,7 +31,7 @@ with IUP and not IM or CD.
 After installing IUP, add this crate as a dependecny in your Cargo.toml file:
 ```
 [dependencies.iup]
-git = "https://github.com/davekong/iup-rust" 
+git = "https://github.com/dcampbell24/iup-rust" 
 ```
 
 Contribute

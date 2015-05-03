@@ -7,8 +7,5 @@ build = "build.rs"
 links = "IUP"
 
 [lib]
-name = "iup-sys"
+name = "iup_sys"
 path = "src/lib.rs"
-
-[build-dependencies]
-pkg-config = "0.1.7"

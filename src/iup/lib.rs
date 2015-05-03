@@ -6,37 +6,38 @@
 //! otherwise. Refer to the IUP website for their full documentation.
 //!
 
-extern crate libc;
-extern crate "iup-sys" as sys;
+#![feature(libc)]
 
-use std::ffi::{self, CString};
+extern crate libc;
+extern crate iup_sys;
+
+use std::ffi::{CStr, CString};
 use std::mem;
 use std::ptr;
-use std::slice::SliceExt;
 use libc::{c_char, c_int};
 
-pub use sys::CallbackReturn;
-pub use sys::Ihandle as IhandleRaw;
+pub use iup_sys::CallbackReturn;
+pub use iup_sys::Ihandle as IhandleRaw;
 
 pub type IupResult = Result<(), String>;
 
-unsafe fn vec_to_c_array(v: Vec<Ihandle>) -> *mut *mut sys::Ihandle {
+unsafe fn vec_to_c_array(v: Vec<Ihandle>) -> *mut *mut iup_sys::Ihandle {
     let mut raw_v = Vec::with_capacity(v.len());
     for ih in v {
         raw_v.push(ih.ptr);
     }
-    let null : *const sys::Ihandle = ptr::null();
+    let null : *const iup_sys::Ihandle = ptr::null();
     raw_v.push(mem::transmute(null));
     raw_v.as_mut_ptr()
 }
 
 #[allow(missing_copy_implementations)]
 pub struct Ihandle {
-    ptr: *mut sys::Ihandle,
+    ptr: *mut iup_sys::Ihandle,
 }
 
 impl Ihandle {
-    pub fn from_ptr(ih: *mut sys::Ihandle) -> Ihandle {
+    pub fn from_ptr(ih: *mut iup_sys::Ihandle) -> Ihandle {
         if ih.is_null() {
             panic!("Failed to create Ihandle.")
         } else {
@@ -49,8 +50,8 @@ impl Ihandle {
 /// calling `get_rust_handle` with the same string.
 pub unsafe fn set_rust_handle<T>(name: &str, rh: &mut T) -> Option<*mut IhandleRaw> {
     let ptr: *mut IhandleRaw = mem::transmute(rh);
-    let name_c = CString::from_slice(name.as_bytes());
-    let ih_old = sys::IupSetHandle(name_c.as_ptr(), ptr);
+    let name_c = CString::new(name).unwrap();
+    let ih_old = iup_sys::IupSetHandle(name_c.as_ptr(), ptr);
     if ih_old.is_null() {
         None
     } else {
@@ -61,8 +62,8 @@ pub unsafe fn set_rust_handle<T>(name: &str, rh: &mut T) -> Option<*mut IhandleR
 /// Retrieve a rust value that was associated with a string using
 /// `set_rust_handle`. This function is only intended for use in IUP callbacks.
 pub unsafe fn get_rust_handle(name: &str) -> Option<*mut IhandleRaw> {
-    let name_c = CString::from_slice(name.as_bytes());
-    let ih = sys::IupGetHandle(name_c.as_ptr());
+    let name_c = CString::new(name).unwrap();
+    let ih = iup_sys::IupGetHandle(name_c.as_ptr());
     if ih.is_null() {
         None
     } else {
@@ -78,23 +79,23 @@ pub fn open() -> IupResult {
     let p1 : *const c_int = ptr::null();
     let p2 : *const *const *const c_char = ptr::null();
 
-    match unsafe { sys::IupOpen(p1, p2) } {
-        sys::IUP_NOERROR => Ok(()),
-        sys::IUP_OPENED => Err("IUP_OPENED: iup::open called while already open.".to_string()),
-        sys::IUP_ERROR => Err("IUP_ERROR: X-Windows is not initialized".to_string()),
+    match unsafe { iup_sys::IupOpen(p1, p2) } {
+        iup_sys::IUP_NOERROR => Ok(()),
+        iup_sys::IUP_OPENED => Err("IUP_OPENED: iup::open called while already open.".to_string()),
+        iup_sys::IUP_ERROR => Err("IUP_ERROR: X-Windows is not initialized".to_string()),
         _ => unreachable!(),
     }
 }
 
 pub fn close() {
-    unsafe { sys::IupClose(); }
+    unsafe { iup_sys::IupClose(); }
 }
 
 // pub fn IupImageLibOpen();
 
 pub fn main_loop() {
-    let ok = unsafe { sys::IupMainLoop() };
-    assert_eq!(ok, sys::IUP_NOERROR);
+    let ok = unsafe { iup_sys::IupMainLoop() };
+    assert_eq!(ok, iup_sys::IUP_NOERROR);
 }
 
 // pub fn IupLoopStep() -> c_int;
@@ -128,7 +129,7 @@ pub fn main_loop() {
 // pub fn IupSetLanguagePack(ih: *mut Ihandle);
 
 pub fn destroy(ih: Ihandle) {
-    unsafe { sys::IupDestroy(ih.ptr); }
+    unsafe { iup_sys::IupDestroy(ih.ptr); }
 }
 
 // pub fn IupDetach(child: *mut Ihandle);
@@ -147,9 +148,9 @@ pub fn destroy(ih: Ihandle) {
 // pub fn IupPopup(ih: *mut Ihandle, x: c_int, y: c_int) -> c_int;
 
 pub fn show(ih: &mut Ihandle) -> IupResult {
-    match unsafe { sys::IupShow(ih.ptr) } {
-        sys::IUP_NOERROR => Ok(()),
-        sys::IUP_ERROR => Err("IUP_ERROR: unknown error".to_string()),
+    match unsafe { iup_sys::IupShow(ih.ptr) } {
+        iup_sys::IUP_NOERROR => Ok(()),
+        iup_sys::IUP_ERROR => Err("IUP_ERROR: unknown error".to_string()),
         _ => unreachable!(),
     }
 }
@@ -168,9 +169,9 @@ pub fn show(ih: &mut Ihandle) -> IupResult {
 // pub fn IupSetAttribute(ih: *mut Ihandle, name: *const c_char, value: *const c_char);
 
 pub fn set_str_attribute(ih: &mut Ihandle, name: &str, value: &str) {
-    let name_c = CString::from_slice(name.as_bytes());
-    let value_c = CString::from_slice(value.as_bytes());
-    unsafe { sys::IupSetStrAttribute(ih.ptr, name_c.as_ptr(), value_c.as_ptr()); }
+    let name_c = CString::new(name).unwrap();
+    let value_c = CString::new(value).unwrap();
+    unsafe { iup_sys::IupSetStrAttribute(ih.ptr, name_c.as_ptr(), value_c.as_ptr()); }
 }
 
 // pub fn IupSetStrf(ih: *mut Ihandle, name: *const c_char, format: *const c_char, ...);
@@ -180,12 +181,12 @@ pub fn set_str_attribute(ih: &mut Ihandle, name: &str, value: &str) {
 // pub fn IupSetRGB(ih: *mut Ihandle, name: *const c_char, r: c_uchar, g: c_uchar, b: c_uchar);
 
 pub fn get_attribute(ih: &mut Ihandle, name: &str) -> Option<String> {
-    let name_c = CString::from_slice(name.as_bytes());
-    let value_c = unsafe { sys::IupGetAttribute(ih.ptr, name_c.as_ptr()) };
+    let name_c = CString::new(name).unwrap();
+    let value_c = unsafe { iup_sys::IupGetAttribute(ih.ptr, name_c.as_ptr()) };
     if value_c.is_null() {
         None
     } else {
-        let buf = unsafe { ffi::c_str_to_bytes(mem::transmute(&value_c)) };
+        let buf = unsafe { CStr::from_ptr(value_c).to_bytes() };
         match String::from_utf8(buf.to_vec()) {
             Ok(s) => Some(s),
             Err(_) => None
@@ -238,9 +239,9 @@ pub fn get_attribute(ih: &mut Ihandle, name: &str) -> Option<String> {
 
 // pub fn IupGetCallback(ih: *mut Ihandle, name: *const c_char) -> Icallback;
 
-pub fn set_callback(ih: &mut Ihandle, name: &str, callback: sys::Icallback) -> sys::Icallback {
-    let name_c = CString::from_slice(name.as_bytes());
-    unsafe { sys::IupSetCallback(ih.ptr, name_c.as_ptr(), callback) }
+pub fn set_callback(ih: &mut Ihandle, name: &str, callback: iup_sys::Icallback) -> iup_sys::Icallback {
+    let name_c = CString::new(name).unwrap();
+    unsafe { iup_sys::IupSetCallback(ih.ptr, name_c.as_ptr(), callback) }
 }
 
 // pub fn IupSetCallbacks(ih: *mut Ihandle, name: *const c_char, func: Icallback, ...) -> *mut Ihandle;
@@ -249,8 +250,8 @@ pub fn set_callback(ih: &mut Ihandle, name: &str, callback: sys::Icallback) -> s
 // pub fn IupSetFunction(name: *const c_char, func: Icallback) -> Icallback;
 
 pub fn get_handle(name: &str) -> Option<Ihandle> {
-    let name_c = CString::from_slice(name.as_bytes());
-    let ih = unsafe { sys::IupGetHandle(name_c.as_ptr()) };
+    let name_c = CString::new(name).unwrap();
+    let ih = unsafe { iup_sys::IupGetHandle(name_c.as_ptr()) };
     if ih.is_null() {
         None
     } else {
@@ -259,8 +260,8 @@ pub fn get_handle(name: &str) -> Option<Ihandle> {
 }
 
 pub fn set_handle(name: &str, ih: &mut Ihandle) -> Option<Ihandle> {
-    let name_c = CString::from_slice(name.as_bytes());
-    let ih_old = unsafe { sys::IupSetHandle(name_c.as_ptr(), ih.ptr) };
+    let name_c = CString::new(name).unwrap();
+    let ih_old = unsafe { iup_sys::IupSetHandle(name_c.as_ptr(), ih.ptr) };
     if ih_old.is_null() {
         None
     } else {
@@ -293,14 +294,14 @@ pub fn set_handle(name: &str, ih: &mut Ihandle) -> Option<Ihandle> {
 /*                        Elements                                      */
 /************************************************************************/
 pub fn fill() -> Ihandle {
-    unsafe { Ihandle::from_ptr(sys::IupFill()) }
+    unsafe { Ihandle::from_ptr(iup_sys::IupFill()) }
 }
 
 // pub fn IupRadio(child: *mut Ihandle) -> *mut Ihandle;
 // pub fn IupVbox(child: *mut Ihandle, ...) -> *mut Ihandle;
 
 pub fn vboxv(elements: Vec<Ihandle>) -> Ihandle {
-    unsafe { Ihandle::from_ptr(sys::IupVboxv(vec_to_c_array(elements))) }
+    unsafe { Ihandle::from_ptr(iup_sys::IupVboxv(vec_to_c_array(elements))) }
 }
 
 // pub fn IupZbox(child: *mut Ihandle, ...) -> *mut Ihandle;
@@ -308,7 +309,7 @@ pub fn vboxv(elements: Vec<Ihandle>) -> Ihandle {
 // pub fn IupHbox(child: *mut Ihandle, ...) -> *mut Ihandle;
 
 pub fn hboxv(elements: Vec<Ihandle>) -> Ihandle {
-    unsafe { Ihandle::from_ptr(sys::IupHboxv(vec_to_c_array(elements))) }
+    unsafe { Ihandle::from_ptr(iup_sys::IupHboxv(vec_to_c_array(elements))) }
 }
 
 // pub fn IupNormalizer(ih_first: *mut Ihandle, ...) -> *mut Ihandle;
@@ -338,29 +339,29 @@ pub fn hboxv(elements: Vec<Ihandle>) -> Ihandle {
 // pub fn IupMenuv(children: *mut *mut Ihandle) -> *mut Ihandle;
 
 pub fn button(text: &str) -> Ihandle {
-    let text_c = CString::from_slice(text.as_bytes());
+    let text_c = CString::new(text).unwrap();
     let action: *const c_char = ptr::null();
-    unsafe { Ihandle::from_ptr(sys::IupButton(text_c.as_ptr(), action)) }
+    unsafe { Ihandle::from_ptr(iup_sys::IupButton(text_c.as_ptr(), action)) }
 }
 
 // pub fn IupCanvas(action: *const c_char) -> *mut Ihandle;
 
 pub fn dialog(ih: Ihandle) -> Ihandle {
-    unsafe { Ihandle::from_ptr(sys::IupDialog(ih.ptr)) }
+    unsafe { Ihandle::from_ptr(iup_sys::IupDialog(ih.ptr)) }
 }
 
 // pub fn IupUser() -> *mut Ihandle;
 
 pub fn label(text: &str) -> Ihandle {
-    let text_c = CString::from_slice(text.as_bytes());
-    unsafe { Ihandle::from_ptr(sys::IupLabel(text_c.as_ptr())) }
+    let text_c = CString::new(text).unwrap();
+    unsafe { Ihandle::from_ptr(iup_sys::IupLabel(text_c.as_ptr())) }
 }
 
 // pub fn IupList(action: *const c_char) -> *mut Ihandle;
 
 pub fn text() -> Ihandle {
     let action: *const c_char = ptr::null();
-    unsafe { Ihandle::from_ptr(sys::IupText(action)) }
+    unsafe { Ihandle::from_ptr(iup_sys::IupText(action)) }
 }
 
 // pub fn IupMultiLine(action: *const c_char) -> *mut Ihandle;
