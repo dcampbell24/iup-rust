@@ -6,8 +6,6 @@
 //! otherwise. Refer to the IUP website for their full documentation.
 //!
 
-#![feature(libc)]
-
 extern crate libc;
 extern crate iup_sys;
 
