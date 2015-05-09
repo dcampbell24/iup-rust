@@ -9,6 +9,9 @@
 extern crate libc;
 extern crate iup_sys;
 
+mod macros;
+pub mod callback;
+
 use std::ffi::{CStr, CString};
 use std::mem;
 use std::ptr;
@@ -29,6 +32,11 @@ unsafe fn vec_to_c_array(v: Vec<Ihandle>) -> *mut *mut iup_sys::Ihandle {
     raw_v.as_mut_ptr()
 }
 
+unsafe fn string_from_c_str(c_str: *const c_char) -> String {
+    String::from_utf8_lossy(CStr::from_ptr(c_str).to_bytes()).to_string()
+}
+
+
 #[allow(missing_copy_implementations)]
 pub struct Ihandle {
     ptr: *mut iup_sys::Ihandle,
@@ -39,8 +47,14 @@ impl Ihandle {
         if ih.is_null() {
             panic!("Failed to create Ihandle.")
         } else {
+            unsafe { iup_sys::IupSetCallback(ih, str_to_c_str!("LDESTROY_CB"), Ihandle::on_destroy) };
             Ihandle { ptr: ih }
         }
+    }
+
+    extern fn on_destroy(ih: *mut iup_sys::Ihandle) -> CallbackReturn {
+        callback::on_destroy(ih);
+        CallbackReturn::Default
     }
 }
 
