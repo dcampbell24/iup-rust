@@ -39,7 +39,7 @@ macro_rules! fbox_c_str {
 /// impl_callback! {
 ///     let name = "ACTION";
 /// 
-///     pub fn set_action<F: Fn(Ihandle) -> CallbackReturn>(ih: &mut Ihandle, callback: Option<F>) -> Option<Box<_>>;
+///     pub fn set_action<F: 'static + Fn(Ihandle) -> CallbackReturn>(ih: &mut Ihandle, callback: Option<F>) -> Option<Box<_>>;
 ///     fn drop_action(ih: *mut iup_sys::Ihandle) -> Option<Box<_>>;
 ///     
 ///     extern fn listener_action(f: &Box<_>, ih: *mut iup_sys::Ihandle) -> CallbackReturn {
@@ -57,7 +57,7 @@ macro_rules! impl_callback {
     (
         let name = $cb_name:expr;
 
-        pub fn $set_func:ident<F: Fn($($fn_arg_ty:ty),*) -> $fn_ret_ty:ty>(ih: &mut Ihandle, 
+        pub fn $set_func:ident<F: 'static + Fn($($fn_arg_ty:ty),*) -> $fn_ret_ty:ty>(ih: &mut Ihandle, 
             callback: Option<F>) -> Option<Box<_>>;
 
         fn $drop_func:ident(ih: *mut iup_sys::Ihandle) -> Option<Box<_>>;
@@ -67,7 +67,7 @@ macro_rules! impl_callback {
     ) => {
         impl_callback! {
             let name = $cb_name;
-            pub fn $set_func<F: Fn($($fn_arg_ty),*) -> $fn_ret_ty>(ih: &mut Ihandle,
+            pub fn $set_func<F: 'static + Fn($($fn_arg_ty),*) -> $fn_ret_ty>(ih: &mut Ihandle,
                 callback: Option<F>) -> Option<Box<_>>;
             fn $drop_func(ih: *mut iup_sys::Ihandle) -> Option<Box<_>>;
             extern fn $listener($ls_fbox_arg: &Box<_>, $ls_ih_arg: *mut iup_sys::Ihandle, )
@@ -80,7 +80,7 @@ macro_rules! impl_callback {
     (
         let name = $cb_name:expr;
 
-        pub fn $set_func:ident<F: Fn($($fn_arg_ty:ty),*) -> $fn_ret_ty:ty>(ih: &mut Ihandle,
+        pub fn $set_func:ident<F: 'static + Fn($($fn_arg_ty:ty),*) -> $fn_ret_ty:ty>(ih: &mut Ihandle,
             callback: Option<F>) -> Option<Box<_>>;
 
         fn $drop_func:ident(ih: *mut iup_sys::Ihandle) -> Option<Box<_>>;
@@ -94,7 +94,7 @@ macro_rules! impl_callback {
         extern fn $listener($ls_ih_arg: *mut iup_sys::Ihandle, $($ls_arg: $ls_arg_ty),*)
                 -> CallbackReturn {
             let fbox_ptr__ = unsafe { iup_sys::IupGetAttribute($ls_ih_arg, fbox_c_str!($cb_name))
-                                             as *mut Box<Fn($($fn_arg_ty),*) -> $fn_ret_ty> };
+                                             as *mut Box<Fn($($fn_arg_ty),*) -> $fn_ret_ty + 'static> };
             assert!(fbox_ptr__.is_null() == false);
             let $ls_fbox_arg: &Box<_> = unsafe { &(*(fbox_ptr__)) };
             { $call }
@@ -105,8 +105,8 @@ macro_rules! impl_callback {
         /// Sets the listener if `cb` is `Some` or removes it when `None`.
         ///
         /// The function returns the previous Rust callback listener.
-        pub fn $set_func<F: Fn($($fn_arg_ty),*) -> $fn_ret_ty>(ih: &mut Ihandle, cb: Option<F>)
-             -> Option<Box<Fn($($fn_arg_ty),*) -> $fn_ret_ty>> {
+        pub fn $set_func<F: 'static + Fn($($fn_arg_ty),*) -> $fn_ret_ty>(ih: &mut Ihandle, cb: Option<F>)
+             -> Option<Box<Fn($($fn_arg_ty),*) -> $fn_ret_ty + 'static>> {
 
             use std::mem::transmute;
 
@@ -119,7 +119,7 @@ macro_rules! impl_callback {
 
             if cb.is_some() {
                 unsafe {
-                    let fb: Box<Box<Fn($($fn_arg_ty),*) -> $fn_ret_ty>> = Box::new(Box::new(cb.unwrap()));
+                    let fb: Box<Box<Fn($($fn_arg_ty),*) -> $fn_ret_ty + 'static>> = Box::new(Box::new(cb.unwrap()));
                     iup_sys::IupSetAttribute(ih.ptr, fbox_c_str!($cb_name), box_into_raw(fb) as *const _);
                     iup_sys::IupSetCallback(ih.ptr, str_to_c_str!($cb_name), transmute($listener));
                 }
@@ -132,19 +132,19 @@ macro_rules! impl_callback {
         ///
         /// The function returns the previous Rust callback listener.
         fn $drop_func(ih: *mut iup_sys::Ihandle)
-                            -> Option<Box<Fn($($fn_arg_ty),*) -> $fn_ret_ty>> {
+                            -> Option<Box<Fn($($fn_arg_ty),*) -> $fn_ret_ty + 'static>> {
             unsafe {
                 use std::mem::transmute;
                 use std::ptr;
 
                 let capsule_box = iup_sys::IupGetAttribute(ih, fbox_c_str!($cb_name))
-                                            as *mut Box<Fn($($fn_arg_ty),*) -> $fn_ret_ty>;
+                                            as *mut Box<Fn($($fn_arg_ty),*) -> $fn_ret_ty + 'static>;
                 if capsule_box.is_null() {
                     None 
                 } else {
 
                     // TODO when Box::from_raw gets stable use it instead of transmute here.
-                    let inner_box: Box<Box<Fn($($fn_arg_ty),*) -> $fn_ret_ty>> = transmute(capsule_box);
+                    let inner_box: Box<Box<Fn($($fn_arg_ty),*) -> $fn_ret_ty + 'static>> = transmute(capsule_box);
 
                     iup_sys::IupSetAttribute(ih, fbox_c_str!($cb_name), ptr::null());
                     iup_sys::IupSetCallback(ih, str_to_c_str!($cb_name), transmute(ptr::null::<u8>()));
@@ -161,7 +161,7 @@ macro_rules! impl_callback {
 impl_callback! {
     let name = "ACTION";
 
-    pub fn set_action<F: Fn(Ihandle) -> CallbackReturn>(ih: &mut Ihandle, callback: Option<F>) -> Option<Box<_>>;
+    pub fn set_action<F: 'static + Fn(Ihandle) -> CallbackReturn>(ih: &mut Ihandle, callback: Option<F>) -> Option<Box<_>>;
     fn drop_action(ih: *mut iup_sys::Ihandle) -> Option<Box<_>>;
 
     extern fn listener_action(f: &Box<_>, ih: *mut iup_sys::Ihandle) -> CallbackReturn {
@@ -172,7 +172,7 @@ impl_callback! {
 impl_callback! {
     let name = "DESTROY_CB";
 
-    pub fn set_destroy_cb<F: Fn(Ihandle) -> ()>(ih: &mut Ihandle, callback: Option<F>) -> Option<Box<_>>;
+    pub fn set_destroy_cb<F: 'static + Fn(Ihandle) -> ()>(ih: &mut Ihandle, callback: Option<F>) -> Option<Box<_>>;
     fn drop_destroy_cb(ih: *mut iup_sys::Ihandle) -> Option<Box<_>>;
 
     extern fn listener_destroy_cb(f: &Box<_>, ih: *mut iup_sys::Ihandle) -> CallbackReturn {

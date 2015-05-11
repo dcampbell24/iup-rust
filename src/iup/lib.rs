@@ -32,11 +32,6 @@ unsafe fn vec_to_c_array(v: Vec<Ihandle>) -> *mut *mut iup_sys::Ihandle {
     raw_v.as_mut_ptr()
 }
 
-unsafe fn string_from_c_str(c_str: *const c_char) -> String {
-    String::from_utf8_lossy(CStr::from_ptr(c_str).to_bytes()).to_string()
-}
-
-
 #[allow(missing_copy_implementations)]
 pub struct Ihandle {
     ptr: *mut iup_sys::Ihandle,
@@ -57,6 +52,13 @@ impl Ihandle {
         CallbackReturn::Default
     }
 }
+
+impl Clone for Ihandle {
+    fn clone(&self) -> Ihandle {
+        Ihandle { ptr: self.ptr }
+    }
+}
+
 
 /// Associate a rust value with a string for later use in an IUP callback by
 /// calling `get_rust_handle` with the same string.
