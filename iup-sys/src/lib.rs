@@ -14,8 +14,6 @@
 // #include "iupkey.h"
 // #include "iupdef.h"
 
-#![feature(libc)]
-
 extern crate libc;
 
 use libc::{ c_char, c_uchar, c_int, c_float, c_double, c_void };

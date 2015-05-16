@@ -9,3 +9,6 @@ links = "IUP"
 [lib]
 name = "iup_sys"
 path = "src/lib.rs"
+
+[dependencies]
+libc = "0.1"

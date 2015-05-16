@@ -7,6 +7,9 @@ authors = ["David Campbell <dcampbell24@gmail.com>"]
 name = "iup"
 path = "src/iup/lib.rs"
 
+[dependencies]
+libc = "0.1"
+
 [dependencies.iup-sys]
 path = "iup-sys"
 version = "*"
