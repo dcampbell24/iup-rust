@@ -9,6 +9,9 @@
 extern crate libc;
 extern crate iup_sys;
 
+mod macros;
+pub mod callback;
+
 use std::ffi::{CStr, CString};
 use std::mem;
 use std::ptr;
@@ -39,10 +42,23 @@ impl Ihandle {
         if ih.is_null() {
             panic!("Failed to create Ihandle.")
         } else {
+            unsafe { iup_sys::IupSetCallback(ih, str_to_c_str!("LDESTROY_CB"), Ihandle::on_destroy) };
             Ihandle { ptr: ih }
         }
     }
+
+    extern fn on_destroy(ih: *mut iup_sys::Ihandle) -> CallbackReturn {
+        callback::on_destroy(ih);
+        CallbackReturn::Default
+    }
 }
+
+impl Clone for Ihandle {
+    fn clone(&self) -> Ihandle {
+        Ihandle { ptr: self.ptr }
+    }
+}
+
 
 /// Associate a rust value with a string for later use in an IUP callback by
 /// calling `get_rust_handle` with the same string.
