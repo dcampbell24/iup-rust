@@ -15,12 +15,14 @@ pub mod callback;
 use std::ffi::{CStr, CString};
 use std::mem;
 use std::ptr;
-use libc::{c_char, c_int};
+use libc::{c_char};
+use std::result;
+use std::path::Path;
 
 pub use iup_sys::CallbackReturn;
 pub use iup_sys::Ihandle as IhandleRaw;
 
-pub type IupResult = Result<(), String>;
+pub type Result<T> = result::Result<T, String>; // TODO make the error a enum instead of a string!
 
 unsafe fn vec_to_c_array(v: Vec<Ihandle>) -> *mut *mut iup_sys::Ihandle {
     let mut raw_v = Vec::with_capacity(v.len());
@@ -36,6 +38,8 @@ unsafe fn vec_to_c_array(v: Vec<Ihandle>) -> *mut *mut iup_sys::Ihandle {
 pub struct Ihandle {
     ptr: *mut iup_sys::Ihandle,
 }
+
+pub struct Iup;
 
 impl Ihandle {
     pub fn from_ptr(ih: *mut iup_sys::Ihandle) -> Ihandle {
@@ -89,20 +93,28 @@ pub unsafe fn get_rust_handle(name: &str) -> Option<*mut IhandleRaw> {
 /*                        Main API                                      */
 /************************************************************************/
 
-pub fn open() -> IupResult {
-    let p1 : *const c_int = ptr::null();
-    let p2 : *const *const *const c_char = ptr::null();
+pub static mut IS_IUP_ALIVE: bool = false;
 
-    match unsafe { iup_sys::IupOpen(p1, p2) } {
-        iup_sys::IUP_NOERROR => Ok(()),
+pub fn open() -> Result<Iup> {
+    match unsafe { iup_sys::IupOpen(ptr::null(), ptr::null()) } {
+        iup_sys::IUP_NOERROR => {
+            unsafe { assert!(IS_IUP_ALIVE == false); }
+            unsafe { IS_IUP_ALIVE = true; }
+            Ok(Iup)
+        },
         iup_sys::IUP_OPENED => Err("IUP_OPENED: iup::open called while already open.".to_string()),
         iup_sys::IUP_ERROR => Err("IUP_ERROR: X-Windows is not initialized".to_string()),
         _ => unreachable!(),
     }
 }
 
-pub fn close() {
-    unsafe { iup_sys::IupClose(); }
+impl Drop for Iup
+{
+    fn drop(&mut self) {
+        unsafe { assert!(IS_IUP_ALIVE == true); }
+        unsafe { IS_IUP_ALIVE = false; }
+        unsafe { iup_sys::IupClose(); }
+    }
 }
 
 // pub fn IupImageLibOpen();
@@ -161,7 +173,7 @@ pub fn destroy(ih: Ihandle) {
 
 // pub fn IupPopup(ih: *mut Ihandle, x: c_int, y: c_int) -> c_int;
 
-pub fn show(ih: &mut Ihandle) -> IupResult {
+pub fn show(ih: &mut Ihandle) -> Result<()> {
     match unsafe { iup_sys::IupShow(ih.ptr) } {
         iup_sys::IUP_NOERROR => Ok(()),
         iup_sys::IUP_ERROR => Err("IUP_ERROR: unknown error".to_string()),
@@ -429,3 +441,33 @@ pub fn text() -> Ihandle {
 
 // pub fn IupLayoutDialog(dialog: *mut Ihandle) -> *mut Ihandle;
 // pub fn IupElementPropertiesDialog(elem: *mut Ihandle) -> *mut Ihandle;
+
+
+pub fn load<P: AsRef<Path>>(path: P) -> Result<()> {
+    let path = path.as_ref();
+
+    // The following line uses ok_or_else instead of ok_or to lazyly make a string
+    // instead of making it straight away.
+    let str = try!(path.to_str().ok_or_else(|| "Failed to convert Path to string".to_string()));
+    let str_c = CString::new(str).unwrap();
+
+    match unsafe { iup_sys::IupLoad(str_c.as_ptr()) } {
+        err if err.is_null() => Ok(()),
+        err => unsafe {
+            Err(String::from_utf8_lossy(CStr::from_ptr(err).to_bytes()).to_string())
+        },
+    }
+}
+
+pub fn load_buffer(buf: &str) -> Result<()> {
+
+    let str_c = CString::new(buf).unwrap();
+
+    match unsafe { iup_sys::IupLoadBuffer(str_c.as_ptr()) } {
+        err if err.is_null() => Ok(()),
+        err => unsafe {
+            Err(String::from_utf8_lossy(CStr::from_ptr(err).to_bytes()).to_string())
+        },
+    }
+}
+
