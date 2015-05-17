@@ -25,7 +25,7 @@ fn main() {
             CallbackReturn::Default
         }));
         iup::callback::set_destroy_cb(&mut button, Some(|_ih|{
-            println!("One of the buttons is getting destroyed!!");
+            println!("The button is getting destroyed!!");
         }));
     }
 
