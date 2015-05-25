@@ -5,7 +5,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 fn main() {
-    iup::open().unwrap();
+    let _iup = iup::open().unwrap();
 
     let text = Rc::new(RefCell::new(iup::text()));
     {
@@ -37,5 +37,4 @@ fn main() {
     iup::show(&mut iup::dialog(hbox)).unwrap();
 
     iup::main_loop();
-    iup::close();
 }

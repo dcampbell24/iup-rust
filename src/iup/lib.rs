@@ -107,9 +107,11 @@ pub fn open() -> Result<Iup> {
 impl Drop for Iup
 {
     fn drop(&mut self) {
-        unsafe { assert!(IS_IUP_ALIVE == true); }
-        unsafe { IS_IUP_ALIVE = false; }
-        unsafe { iup_sys::IupClose(); }
+        unsafe {
+            assert!(IS_IUP_ALIVE == true);
+            IS_IUP_ALIVE = false;
+            iup_sys::IupClose();
+        }
     }
 }
 
@@ -322,8 +324,8 @@ pub fn fill() -> Ihandle {
 // pub fn IupRadio(child: *mut Ihandle) -> *mut Ihandle;
 // pub fn IupVbox(child: *mut Ihandle, ...) -> *mut Ihandle;
 
-pub fn vboxv(elements: &[Ihandle]) -> Ihandle {
-    let mut v = slice_to_vvec(elements);
+pub fn vboxv(child: &[Ihandle]) -> Ihandle {
+    let mut v = slice_to_vvec(child);
     unsafe { Ihandle::from_ptr(iup_sys::IupVboxv(v.as_mut_ptr())) }
 }
 
@@ -331,8 +333,8 @@ pub fn vboxv(elements: &[Ihandle]) -> Ihandle {
 // pub fn IupZboxv(children: *mut *mut Ihandle) -> *mut Ihandle;
 // pub fn IupHbox(child: *mut Ihandle, ...) -> *mut Ihandle;
 
-pub fn hboxv(elements: &[Ihandle]) -> Ihandle {
-    let mut v = slice_to_vvec(elements);
+pub fn hboxv(child: &[Ihandle]) -> Ihandle {
+    let mut v = slice_to_vvec(child);
     unsafe { Ihandle::from_ptr(iup_sys::IupHboxv(v.as_mut_ptr())) }
 }
 
@@ -364,14 +366,13 @@ pub fn hboxv(elements: &[Ihandle]) -> Ihandle {
 
 pub fn button(text: &str) -> Ihandle {
     let text_c = CString::new(text).unwrap();
-    let action: *const c_char = ptr::null();
-    unsafe { Ihandle::from_ptr(iup_sys::IupButton(text_c.as_ptr(), action)) }
+    unsafe { Ihandle::from_ptr(iup_sys::IupButton(text_c.as_ptr(), ptr::null())) }
 }
 
 // pub fn IupCanvas(action: *const c_char) -> *mut Ihandle;
 
-pub fn dialog(ih: Ihandle) -> Ihandle {
-    unsafe { Ihandle::from_ptr(iup_sys::IupDialog(ih.ptr)) }
+pub fn dialog(child: Ihandle) -> Ihandle {
+    unsafe { Ihandle::from_ptr(iup_sys::IupDialog(child.ptr)) }
 }
 
 // pub fn IupUser() -> *mut Ihandle;
