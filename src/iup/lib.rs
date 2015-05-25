@@ -15,21 +15,19 @@ pub mod callback;
 use std::ffi::{CStr, CString};
 use std::mem;
 use std::ptr;
-use libc::{c_char, c_int};
+use libc::{c_char};
+use std::result;
+use std::path::Path;
 
 pub use iup_sys::CallbackReturn;
 pub use iup_sys::Ihandle as IhandleRaw;
 
-pub type IupResult = Result<(), String>;
+pub type Result<T> = result::Result<T, String>; // TODO make the error a enum instead of a string!
 
-unsafe fn vec_to_c_array(v: Vec<Ihandle>) -> *mut *mut iup_sys::Ihandle {
-    let mut raw_v = Vec::with_capacity(v.len());
-    for ih in v {
-        raw_v.push(ih.ptr);
-    }
-    let null : *const iup_sys::Ihandle = ptr::null();
-    raw_v.push(mem::transmute(null));
-    raw_v.as_mut_ptr()
+fn slice_to_vvec(slice: &[Ihandle]) -> Vec<*mut iup_sys::Ihandle> {
+    let mut raw_v: Vec<_> = slice.iter().map(|ih| ih.ptr).collect();
+    raw_v.push(ptr::null_mut());
+    raw_v
 }
 
 #[allow(missing_copy_implementations)]
@@ -89,28 +87,25 @@ pub unsafe fn get_rust_handle(name: &str) -> Option<*mut IhandleRaw> {
 /*                        Main API                                      */
 /************************************************************************/
 
-pub fn open() -> IupResult {
-    let p1 : *const c_int = ptr::null();
-    let p2 : *const *const *const c_char = ptr::null();
-
-    match unsafe { iup_sys::IupOpen(p1, p2) } {
-        iup_sys::IUP_NOERROR => Ok(()),
-        iup_sys::IUP_OPENED => Err("IUP_OPENED: iup::open called while already open.".to_string()),
-        iup_sys::IUP_ERROR => Err("IUP_ERROR: X-Windows is not initialized".to_string()),
-        _ => unreachable!(),
+pub fn with_iup<F: FnOnce() -> Result<()>>(f: F) -> Result<()> {
+    unsafe {
+        match iup_sys::IupOpen(ptr::null(), ptr::null()) {
+            iup_sys::IUP_NOERROR => {},
+            iup_sys::IUP_OPENED => return Err("IUP_OPENED: iup::open called while already open.".to_string()),
+            iup_sys::IUP_ERROR => return Err("IUP_ERROR: X-Windows is not initialized".to_string()),
+            _ => unreachable!(),
+        };
+        let result = f();
+        if result.is_ok() {
+            // IupMainLoop always returns IUP_NOERROR
+            assert_eq!(iup_sys::IupMainLoop(), iup_sys::IUP_NOERROR);
+        }
+        iup_sys::IupClose();
+        result
     }
 }
 
-pub fn close() {
-    unsafe { iup_sys::IupClose(); }
-}
-
 // pub fn IupImageLibOpen();
-
-pub fn main_loop() {
-    let ok = unsafe { iup_sys::IupMainLoop() };
-    assert_eq!(ok, iup_sys::IUP_NOERROR);
-}
 
 // pub fn IupLoopStep() -> c_int;
 // pub fn IupLoopStepWait() -> c_int;
@@ -161,7 +156,7 @@ pub fn destroy(ih: Ihandle) {
 
 // pub fn IupPopup(ih: *mut Ihandle, x: c_int, y: c_int) -> c_int;
 
-pub fn show(ih: &mut Ihandle) -> IupResult {
+pub fn show(ih: &mut Ihandle) -> Result<()> {
     match unsafe { iup_sys::IupShow(ih.ptr) } {
         iup_sys::IUP_NOERROR => Ok(()),
         iup_sys::IUP_ERROR => Err("IUP_ERROR: unknown error".to_string()),
@@ -314,16 +309,18 @@ pub fn fill() -> Ihandle {
 // pub fn IupRadio(child: *mut Ihandle) -> *mut Ihandle;
 // pub fn IupVbox(child: *mut Ihandle, ...) -> *mut Ihandle;
 
-pub fn vboxv(elements: Vec<Ihandle>) -> Ihandle {
-    unsafe { Ihandle::from_ptr(iup_sys::IupVboxv(vec_to_c_array(elements))) }
+pub fn vboxv(child: &[Ihandle]) -> Ihandle {
+    let mut v = slice_to_vvec(child);
+    unsafe { Ihandle::from_ptr(iup_sys::IupVboxv(v.as_mut_ptr())) }
 }
 
 // pub fn IupZbox(child: *mut Ihandle, ...) -> *mut Ihandle;
 // pub fn IupZboxv(children: *mut *mut Ihandle) -> *mut Ihandle;
 // pub fn IupHbox(child: *mut Ihandle, ...) -> *mut Ihandle;
 
-pub fn hboxv(elements: Vec<Ihandle>) -> Ihandle {
-    unsafe { Ihandle::from_ptr(iup_sys::IupHboxv(vec_to_c_array(elements))) }
+pub fn hboxv(child: &[Ihandle]) -> Ihandle {
+    let mut v = slice_to_vvec(child);
+    unsafe { Ihandle::from_ptr(iup_sys::IupHboxv(v.as_mut_ptr())) }
 }
 
 // pub fn IupNormalizer(ih_first: *mut Ihandle, ...) -> *mut Ihandle;
@@ -354,14 +351,13 @@ pub fn hboxv(elements: Vec<Ihandle>) -> Ihandle {
 
 pub fn button(text: &str) -> Ihandle {
     let text_c = CString::new(text).unwrap();
-    let action: *const c_char = ptr::null();
-    unsafe { Ihandle::from_ptr(iup_sys::IupButton(text_c.as_ptr(), action)) }
+    unsafe { Ihandle::from_ptr(iup_sys::IupButton(text_c.as_ptr(), ptr::null())) }
 }
 
 // pub fn IupCanvas(action: *const c_char) -> *mut Ihandle;
 
-pub fn dialog(ih: Ihandle) -> Ihandle {
-    unsafe { Ihandle::from_ptr(iup_sys::IupDialog(ih.ptr)) }
+pub fn dialog(child: Ihandle) -> Ihandle {
+    unsafe { Ihandle::from_ptr(iup_sys::IupDialog(child.ptr)) }
 }
 
 // pub fn IupUser() -> *mut Ihandle;
@@ -429,3 +425,33 @@ pub fn text() -> Ihandle {
 
 // pub fn IupLayoutDialog(dialog: *mut Ihandle) -> *mut Ihandle;
 // pub fn IupElementPropertiesDialog(elem: *mut Ihandle) -> *mut Ihandle;
+
+
+pub fn load<P: AsRef<Path>>(path: P) -> Result<()> {
+    let path = path.as_ref();
+
+    // The following line uses ok_or_else instead of ok_or to lazyly make a string
+    // instead of making it straight away.
+    let str = try!(path.to_str().ok_or_else(|| "Failed to convert Path to string".to_string()));
+    let str_c = CString::new(str).unwrap();
+
+    match unsafe { iup_sys::IupLoad(str_c.as_ptr()) } {
+        err if err.is_null() => Ok(()),
+        err => unsafe {
+            Err(String::from_utf8_lossy(CStr::from_ptr(err).to_bytes()).to_string())
+        },
+    }
+}
+
+pub fn load_buffer(buf: &str) -> Result<()> {
+
+    let str_c = CString::new(buf).unwrap();
+
+    match unsafe { iup_sys::IupLoadBuffer(str_c.as_ptr()) } {
+        err if err.is_null() => Ok(()),
+        err => unsafe {
+            Err(String::from_utf8_lossy(CStr::from_ptr(err).to_bytes()).to_string())
+        },
+    }
+}
+
