@@ -35,8 +35,6 @@ pub struct Ihandle {
     ptr: *mut iup_sys::Ihandle,
 }
 
-pub struct Iup;
-
 impl Ihandle {
     pub fn from_ptr(ih: *mut iup_sys::Ihandle) -> Ihandle {
         if ih.is_null() {
@@ -89,38 +87,25 @@ pub unsafe fn get_rust_handle(name: &str) -> Option<*mut IhandleRaw> {
 /*                        Main API                                      */
 /************************************************************************/
 
-pub static mut IS_IUP_ALIVE: bool = false;
-
-pub fn open() -> Result<Iup> {
-    match unsafe { iup_sys::IupOpen(ptr::null(), ptr::null()) } {
-        iup_sys::IUP_NOERROR => {
-            unsafe { assert!(IS_IUP_ALIVE == false); }
-            unsafe { IS_IUP_ALIVE = true; }
-            Ok(Iup)
-        },
-        iup_sys::IUP_OPENED => Err("IUP_OPENED: iup::open called while already open.".to_string()),
-        iup_sys::IUP_ERROR => Err("IUP_ERROR: X-Windows is not initialized".to_string()),
-        _ => unreachable!(),
-    }
-}
-
-impl Drop for Iup
-{
-    fn drop(&mut self) {
-        unsafe {
-            assert!(IS_IUP_ALIVE == true);
-            IS_IUP_ALIVE = false;
-            iup_sys::IupClose();
+pub fn with_iup<F: FnOnce() -> Result<()>>(f: F) -> Result<()> {
+    unsafe {
+        match iup_sys::IupOpen(ptr::null(), ptr::null()) {
+            iup_sys::IUP_NOERROR => {},
+            iup_sys::IUP_OPENED => return Err("IUP_OPENED: iup::open called while already open.".to_string()),
+            iup_sys::IUP_ERROR => return Err("IUP_ERROR: X-Windows is not initialized".to_string()),
+            _ => unreachable!(),
+        };
+        let result = f();
+        if result.is_ok() {
+            // IupMainLoop always returns IUP_NOERROR
+            assert_eq!(iup_sys::IupMainLoop(), iup_sys::IUP_NOERROR);
         }
+        iup_sys::IupClose();
+        result
     }
 }
 
 // pub fn IupImageLibOpen();
-
-pub fn main_loop() {
-    let ok = unsafe { iup_sys::IupMainLoop() };
-    assert_eq!(ok, iup_sys::IUP_NOERROR);
-}
 
 // pub fn IupLoopStep() -> c_int;
 // pub fn IupLoopStepWait() -> c_int;
