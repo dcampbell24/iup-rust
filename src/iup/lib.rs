@@ -24,14 +24,10 @@ pub use iup_sys::Ihandle as IhandleRaw;
 
 pub type Result<T> = result::Result<T, String>; // TODO make the error a enum instead of a string!
 
-unsafe fn vec_to_c_array(v: Vec<Ihandle>) -> *mut *mut iup_sys::Ihandle {
-    let mut raw_v = Vec::with_capacity(v.len());
-    for ih in v {
-        raw_v.push(ih.ptr);
-    }
-    let null : *const iup_sys::Ihandle = ptr::null();
-    raw_v.push(mem::transmute(null));
-    raw_v.as_mut_ptr()
+fn slice_to_vvec(slice: &[Ihandle]) -> Vec<*mut iup_sys::Ihandle> {
+    let mut raw_v: Vec<_> = slice.iter().map(|ih| ih.ptr).collect();
+    raw_v.push(ptr::null_mut());
+    raw_v
 }
 
 #[allow(missing_copy_implementations)]
@@ -326,16 +322,18 @@ pub fn fill() -> Ihandle {
 // pub fn IupRadio(child: *mut Ihandle) -> *mut Ihandle;
 // pub fn IupVbox(child: *mut Ihandle, ...) -> *mut Ihandle;
 
-pub fn vboxv(elements: Vec<Ihandle>) -> Ihandle {
-    unsafe { Ihandle::from_ptr(iup_sys::IupVboxv(vec_to_c_array(elements))) }
+pub fn vboxv(elements: &[Ihandle]) -> Ihandle {
+    let mut v = slice_to_vvec(elements);
+    unsafe { Ihandle::from_ptr(iup_sys::IupVboxv(v.as_mut_ptr())) }
 }
 
 // pub fn IupZbox(child: *mut Ihandle, ...) -> *mut Ihandle;
 // pub fn IupZboxv(children: *mut *mut Ihandle) -> *mut Ihandle;
 // pub fn IupHbox(child: *mut Ihandle, ...) -> *mut Ihandle;
 
-pub fn hboxv(elements: Vec<Ihandle>) -> Ihandle {
-    unsafe { Ihandle::from_ptr(iup_sys::IupHboxv(vec_to_c_array(elements))) }
+pub fn hboxv(elements: &[Ihandle]) -> Ihandle {
+    let mut v = slice_to_vvec(elements);
+    unsafe { Ihandle::from_ptr(iup_sys::IupHboxv(v.as_mut_ptr())) }
 }
 
 // pub fn IupNormalizer(ih_first: *mut Ihandle, ...) -> *mut Ihandle;
