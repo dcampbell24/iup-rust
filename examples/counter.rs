@@ -29,7 +29,7 @@ fn main() {
         }));
     }
 
-    let mut hbox = iup::hboxv(vec!(text.borrow().clone(), button));
+    let mut hbox = iup::hboxv(&[text.borrow().clone(), button]);
     iup::set_str_attribute(&mut hbox, "ALIGNMENT", "ACENTER");
     iup::set_str_attribute(&mut hbox, "MARGIN", "10x10");
     iup::set_str_attribute(&mut hbox, "GAP", "10");
