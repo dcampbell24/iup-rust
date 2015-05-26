@@ -15,7 +15,7 @@ pub mod callback;
 use std::ffi::{CStr, CString};
 use std::mem;
 use std::ptr;
-use libc::{c_char};
+use libc::{c_char, c_int};
 use std::result;
 use std::path::Path;
 
@@ -156,6 +156,43 @@ pub fn destroy(ih: Ihandle) {
 
 // pub fn IupPopup(ih: *mut Ihandle, x: c_int, y: c_int) -> c_int;
 
+pub enum DlgPos {
+    At(i32),
+    Current,
+    Center,
+    CenterParent,
+    Left,
+    Right,
+    Top,
+    Bottom,
+    MousePos,
+}
+
+impl DlgPos {
+    fn to_raw(&self) -> c_int {
+        match *self {
+            DlgPos::At(i) => i,
+            DlgPos::Center => iup_sys::IUP_CENTER,
+            DlgPos::Left => iup_sys::IUP_LEFT,
+            DlgPos::Right => iup_sys::IUP_RIGHT,
+            DlgPos::MousePos => iup_sys::IUP_MOUSEPOS,
+            DlgPos::Current => iup_sys::IUP_CURRENT,
+            DlgPos::CenterParent => iup_sys::IUP_CENTERPARENT,
+            DlgPos::Top => iup_sys::IUP_TOP,
+            DlgPos::Bottom => iup_sys::IUP_BOTTOM,
+        }
+    }
+}
+
+pub fn popup(ih: &mut Ihandle, x: DlgPos, y: DlgPos) -> Result<()> {
+    match unsafe { iup_sys::IupPopup(ih.ptr, x.to_raw(), y.to_raw()) } {
+        iup_sys::IUP_NOERROR => Ok(()),
+        iup_sys::IUP_INVALID => Err("IUP_INVALID: not a dialog or menu".to_string()),
+        iup_sys::IUP_ERROR => Err("IUP_ERROR: unknown error".to_string()),
+        _ => unreachable!(),
+    }
+}
+
 pub fn show(ih: &mut Ihandle) -> Result<()> {
     match unsafe { iup_sys::IupShow(ih.ptr) } {
         iup_sys::IUP_NOERROR => Ok(()),
@@ -189,7 +226,7 @@ pub fn set_str_attribute(ih: &mut Ihandle, name: &str, value: &str) {
 // pub fn IupSetDouble(ih: *mut Ihandle, name: *const c_char, value: c_double);
 // pub fn IupSetRGB(ih: *mut Ihandle, name: *const c_char, r: c_uchar, g: c_uchar, b: c_uchar);
 
-pub fn get_attribute(ih: &mut Ihandle, name: &str) -> Option<String> {
+pub fn get_str_attribute(ih: &mut Ihandle, name: &str) -> Option<String> {
     let name_c = CString::new(name).unwrap();
     let value_c = unsafe { iup_sys::IupGetAttribute(ih.ptr, name_c.as_ptr()) };
     if value_c.is_null() {
@@ -410,6 +447,10 @@ pub fn text() -> Ihandle {
 // pub fn IupColorDlg() -> *mut Ihandle;
 // pub fn IupFontDlg() -> *mut Ihandle;
 // pub fn IupProgressDlg() -> *mut Ihandle;
+
+pub fn file_dlg() -> Ihandle {
+    unsafe { Ihandle::from_ptr(iup_sys::IupFileDlg()) }
+}
 
 // pub fn IupGetFile(arq: *mut c_char) -> c_int;
 // pub fn IupMessage(title: *const c_char, msg: *const c_char);
