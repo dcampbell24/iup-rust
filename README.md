@@ -1,4 +1,4 @@
-IUP Rust
+IUP Rust [![Build Status](https://travis-ci.org/dcampbell24/iup-rust.svg)](https://travis-ci.org/dcampbell24/iup-rust)
 ========
 
 [![Join the chat at https://gitter.im/dcampbell24/iup-rust](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/dcampbell24/iup-rust?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
@@ -33,7 +33,7 @@ with IUP and not IM or CD.
 After installing IUP, add this crate as a dependecny in your Cargo.toml file:
 ```
 [dependencies.iup]
-git = "https://github.com/dcampbell24/iup-rust" 
+git = "https://github.com/dcampbell24/iup-rust"
 ```
 
 Contribute
