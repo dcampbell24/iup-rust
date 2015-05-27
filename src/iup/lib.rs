@@ -19,19 +19,13 @@ pub use element::Handle;
 pub use element::Element;
 
 pub mod callback;
-pub mod dialog;
-pub mod label;
-pub mod text;
-pub mod button;
-pub mod vbox;
-pub mod hbox;
 
-pub use dialog::Dialog;
-pub use text::Text;
-pub use label::Label;
-pub use button::Button;
-pub use vbox::VBox;
-pub use hbox::HBox;
+pub mod dialogs;
+pub use dialogs::*;
+pub mod layout;
+pub use layout::*;
+pub mod control;
+pub use control::*;
 
 pub type Result<T> = result::Result<T, String>;
 pub use iup_sys::CallbackReturn;
