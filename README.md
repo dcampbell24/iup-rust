@@ -1,6 +1,7 @@
-IUP Rust [![Build Status](https://travis-ci.org/dcampbell24/iup-rust.svg)](https://travis-ci.org/dcampbell24/iup-rust)
+IUP Rust
 ========
 
+[![Build Status](https://travis-ci.org/dcampbell24/iup-rust.svg)](https://travis-ci.org/dcampbell24/iup-rust)
 [![Join the chat at https://gitter.im/dcampbell24/iup-rust](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/dcampbell24/iup-rust?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 This library provides a thin wrapper around [IUP][1], which is a multi-platform
