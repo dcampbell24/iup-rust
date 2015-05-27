@@ -1,40 +1,43 @@
+#[macro_use]
 extern crate iup;
 
 use iup::CallbackReturn;
+
+use iup::{Element, HBox, Dialog, Text, Button};
+use iup::callback::*;
+
 use std::cell::RefCell;
 use std::rc::Rc;
 
 fn main() {
     iup::with_iup(|| {
 
-        let text = Rc::new(RefCell::new(iup::text()));
-        {
-            let mut text = text.borrow_mut();
-            iup::set_handle("text", &mut text);
-            iup::set_str_attribute(&mut text, "READONLY", "YES");
-            iup::set_str_attribute(&mut text, "VALUE", "0");
-        }
+        // Text will be wrapped in a reference counted reference cell since it'll be 'shared'
+        // between a closure and a dialog.
+        let text = Rc::new(RefCell::new(
+                Text::new()
+                     .set_attrib("VALUE", "0")
+                     .set_attrib("READONLY", "YES")
+        ));
+        let textv = text.clone();
 
-        let mut button = iup::button("Count");
-        {
-            let text = text.clone();
-            iup::callback::set_action(&mut button, Some(move |_ih| {
-                let mut text = text.borrow_mut();
-                let count = iup::get_str_attribute(&mut text, "VALUE").unwrap().parse::<i32>().unwrap();
-                iup::set_str_attribute(&mut text, "VALUE", &(count + 1).to_string());
-                CallbackReturn::Default
-            }));
-            iup::callback::set_destroy_cb(&mut button, Some(|_ih|{
-                println!("The button is getting destroyed!!");
-            }));
-        }
+        let button = Button::with_title("Count")
+                            .set_destroy_cb(|_| println!("The button is getting destroyed!!"))
+                            .set_action(move |_| {
+                                let mut text = textv.borrow_mut();
+                                let count = text.attrib("VALUE").unwrap().parse::<i32>().unwrap();
+                                text.set_attrib("VALUE", (count + 1).to_string());
+                                CallbackReturn::Default
+                            });
 
-        let mut hbox = iup::hboxv(&[text.borrow().clone(), button]);
-        iup::set_str_attribute(&mut hbox, "ALIGNMENT", "ACENTER");
-        iup::set_str_attribute(&mut hbox, "MARGIN", "10x10");
-        iup::set_str_attribute(&mut hbox, "GAP", "10");
+        let mut dialog = Dialog::new(
+            HBox::new(elements![text.borrow_mut().dup(), button])
+                 .set_attrib("ALIGNMENT", "ACENTER")
+                 .set_attrib("MARGIN", "10x10")
+                 .set_attrib("GAP", "10")
+        );
 
-        iup::show(&mut iup::dialog(hbox))
+        dialog.show()
 
     }).unwrap();
 }
