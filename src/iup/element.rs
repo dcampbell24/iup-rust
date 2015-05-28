@@ -3,8 +3,7 @@ use iup_sys;
 use std::ptr;
 use std::ffi::{CStr, CString};
 use callback::CallbackReturn;
-use Result;
-use std::result;
+use std::result::Result;
 
 /// Makes a Vec of `Element` trait objects.
 ///
@@ -91,7 +90,7 @@ impl Handle {
     }
 
     /// Converts this handle object into a element object if they are compatible.
-    pub fn try_downcast<E: Element>(self) -> result::Result<E, Handle> {
+    pub fn try_downcast<E: Element>(self) -> Result<E, Handle> {
         if self.can_downcast::<E>() {
             // Since a Handle must be obtained also by using `from_raw` we can assume the handle
             // has reached the Rust binding thought it and thus using `from_raw_unchecked` here.
@@ -121,7 +120,7 @@ impl_element_nofrom!(Handle, "__iuprusthandle");
 pub trait Element where Self: Sized {
 
     /// Constructs a specialized Element object from a general Handle if they are compatible.
-    fn from_handle(handle: Handle) -> result::Result<Self, Handle> {
+    fn from_handle(handle: Handle) -> Result<Self, Handle> {
         handle.try_downcast::<Self>()
     }
 
@@ -181,8 +180,7 @@ pub trait Element where Self: Sized {
     /// See also the [IUP Attributes Guide][1].
     ///
     /// [1]: http://webserver2.tecgraf.puc-rio.br/iup/en/attrib_guide.html
-    fn attrib<S>(&self, name: S) -> Option<String>
-                                  where S: Into<String> {
+    fn attrib<S: Into<String>>(&self, name: S) -> Option<String> {
         // Notice IupGetAttribute does not really give strings but pointers (that may be anything)
         // most (if not all) the default IUP attributes are string values, so we are safe by
         // defaulting to IupGetAttribute. A method should be defined to deal with raw attributes.
@@ -194,7 +192,7 @@ pub trait Element where Self: Sized {
     }
 
     /// Clears the value associated with an attribute and use the default value.
-    fn clear_attrib<S>(&mut self, name: S) where S: Into<String> {
+    fn clear_attrib<S: Into<String>>(&mut self, name: S) {
         let cname = CString::new(name.into()).unwrap();
         unsafe { iup_sys::IupSetAttribute(self.raw(), cname.as_ptr(), ptr::null()) };
     }
@@ -202,7 +200,7 @@ pub trait Element where Self: Sized {
     /// Removes an attribute from element and its children if the attrib is inheritable.
     ///
     /// It is useful to reset the state of inheritable attributes in a tree of elements.
-    fn reset_attrib<S>(&mut self, name: S) where S: Into<String> {
+    fn reset_attrib<S: Into<String>>(&mut self, name: S) {
         let cname = CString::new(name.into()).unwrap();
         unsafe { iup_sys::IupResetAttribute(self.raw(), cname.as_ptr()) };
     }
@@ -219,7 +217,7 @@ pub trait Element where Self: Sized {
     fn destroy(self) {
         unsafe { iup_sys::IupDestroy(self.raw()) };
     }
-    
+
     /// Creates (maps) the native interface objects corresponding to the given IUP interface elements. 
     ///
     /// It will also called recursively to create the native element of all the children in the
@@ -233,7 +231,7 @@ pub trait Element where Self: Sized {
     ///
     /// The function returns success if the element is already mapped and if the native creation
     /// was successful.
-    fn map(&mut self) -> Result<()> {
+    fn map(&mut self) -> Result<(), String> {
         errchk!(unsafe { iup_sys::IupMap(self.raw()) })
     }
 
@@ -252,7 +250,7 @@ pub trait Element where Self: Sized {
     /// This function can be executed more than once for the same dialog. This will make the dialog
     /// be placed above all other dialogs in the application, changing its Z-order, and update
     /// its position and/or size on screen. 
-    fn show(&mut self) -> Result<()> {
+    fn show(&mut self) -> Result<(), String> {
         errchk!(unsafe { iup_sys::IupShow(self.raw()) })
     }
 
@@ -274,19 +272,167 @@ pub trait Element where Self: Sized {
     /// [1]: http://webserver2.tecgraf.puc-rio.br/iup/en/func/iupgetclassname.html
     unsafe fn target_classname() -> &'static str;
 
+    // TODO the follwoing hierarchy operations, they could prehaps be in another trait.
+    // For instance allowing append to work only on 'tree able' elements (dialog ,frame, hbox, etc).
 
+    /// Inserts an interface element at the end of the container, after the last element on it.
+    ///
+    /// This function can be used when elements that will compose a container are not known a *priori*
+    /// and should be *dynamically* constructed.
+    ///
+    /// Valid for any element that contains other elements like dialog, frame, hbox, vbox,
+    /// zbox or menu.
+    ///
+    /// The `new_child` can **not** be mapped. It will **not** map the `new_child` into the native
+    /// system. If the parent is already mapped you must explicitly call `Element::map` for the new child.
+    ///
+    /// The elements are **not** immediately repositioned. Call `Element::refresh` for the container
+    /// (or any other element in the dialog) to update the dialog layout.
+    ///
+    /// If the actual parent is a layout box (`VBox`, `HBox` or `ZBox`) and you try to append a
+    /// child that it is already at the parent child list, then the child is moved to the last
+    /// child position.
+    ///
+    /// Returns the actual parent if the interface element was successfully inserted. Otherwise
+    /// returns the desired `new_child`. Failed can happen for instance if this element is not
+    /// a container for other elements or the `new_child` is already a child (except on layout boxes).
+    /// Notice that the desired parent can contains a set of elements and containers where the
+    /// child will be actually attached so the function returns the actual parent of the element.
+    fn append<E: Element>(&mut self, new_child: E) -> Result<Handle, E>  {
+        match unsafe { iup_sys::IupAppend(self.raw(), new_child.raw()) } {
+            ptr if ptr.is_null() => Err(new_child),
+            ptr => Ok(Handle::from_raw(ptr)),
+        }
+    }
+
+    /// Detaches an interface element from its parent.
+    ///
+    /// It will automatically call `Element::unmap` to unmap the element if necessary,
+    /// and then detach the element.
+    ///
+    /// If left detached it is still **necessary to call `Element::destroy`** to destroy the
+    /// detached element.
+    ///
+    /// The elements are **not** immediately repositioned. Call `Element::refresh` for the
+    /// container (or any other element in the dialog) to update the dialog layout.
+    fn detach(&mut self) {
+        unsafe { iup_sys::IupDetach(self.raw()) };
+    }
+
+    /// Inserts an interface element before another child of the container.
+    ///
+    /// TODO ref_child NULL doc.
+    ///
+    /// See `Element::append` for more details on the semantics of this method.
+    fn insert<E1, E2>(&mut self, ref_child: &E1, new_child: E2) -> Result<Handle, E2>
+                where E1: Element, E2: Element {
+
+        // TODO as of IUP docs:
+        // * ref_child: [...] Can be NULL to insert as the first element.
+        // how to deal with this? Option<E1> mayn't be a good option as the compiler would complain
+        // when using None that we need to specify what E1 is...?!?!?
+
+        match unsafe { iup_sys::IupInsert(self.raw(), ref_child.raw(), new_child.raw()) } {
+            ptr if ptr.is_null() => Err(new_child),
+            ptr => Ok(Handle::from_raw(ptr)),
+        }
+    }
+
+    /// Moves an interface element from one position in the hierarchy tree to another.
+    ///
+    /// TODO ref_child NULL doc.
+    ///
+    /// See `Element::append` for more details on the semantics of this method.
+    fn reparent<E1, E2>(&mut self, new_parent: E1, ref_child: E2) -> Result<(), String>
+                where E1: Element, E2: Element {
+        // TODO same issue as in `Element::insert`, ref_child can be null, what to do about it?
+        errchk!(unsafe { iup_sys::IupReparent(self.raw(), new_parent.raw(), ref_child.raw()) })
+    }
+
+    /// Returns the parent of a element.
+    fn parent(&self) -> Option<Handle> {
+        match unsafe { iup_sys::IupGetParent(self.raw()) } {
+            ptr if ptr.is_null() => None,
+            ptr => Some(Handle::from_raw(ptr)),
+        }
+    }
+
+    /// Returns the a child of the element given its position.
+    ///
+    /// The position `pos` starts from 0.
+    ///
+    /// This function will return the children of the element in the exact same order in
+    /// which they were assigned.
+    fn child(&self, pos: usize) -> Option<Handle> {
+        match unsafe { iup_sys::IupGetChild(self.raw(), pos as i32) } {
+            ptr if ptr.is_null() => None,
+            ptr => Some(Handle::from_raw(ptr)),
+        }
+    }
+
+    /// Returns the position of a child of the given control. 
+    ///
+    /// See `Element::child` for additional details on the semantics of child positions.
+    fn child_pos<E: Element>(&self, child: &E) -> Option<usize> {
+        match unsafe { iup_sys::IupGetChildPos(self.raw(), child.raw()) } {
+            -1 => None,
+            id => Some(id as usize),
+        }
+    }
+
+    /// Returns the number of children of the given element.
+    fn child_count(&self) -> usize {
+        unsafe { iup_sys::IupGetChildCount(self.raw()) as usize }
+    }
+
+    /// Returns the brother of an element.
+    fn brother(&self) -> Option<Handle> {
+         match unsafe { iup_sys::IupGetBrother(self.raw()) } {
+            ptr if ptr.is_null() => None,
+            ptr => Some(Handle::from_raw(ptr)),
+        }
+    }
+
+    /// Returns the handle of the dialog that contains that interface element.
+    ///
+    /// Works also for children of a menu that is associated with a dialog.
+    fn dialog(&self) -> Option<Handle> {
+         match unsafe { iup_sys::IupGetDialog(self.raw()) } {
+            ptr if ptr.is_null() => None,
+            ptr => Some(Handle::from_raw(ptr)),
+        }
+    }
+
+    /// Returns the identifier of the child element that has the NAME attribute equals to the
+    /// given value on the same dialog hierarchy.
+    ///
+    /// Works also for children of a menu that is associated with a dialog.
+    ///
+    /// This function will only found the child if the NAME attribute is set at the control.
+    ///
+    /// The function returns immediatelly with the result (not needing to traverse the hierarchy)
+    /// after the child is mapped.
+    fn dialog_child<S: Into<String>>(&self, name: S) -> Option<Handle> {
+        let cname = CString::new(name.into()).unwrap();
+         match unsafe { iup_sys::IupGetDialogChild(self.raw(), cname.as_ptr()) } {
+            ptr if ptr.is_null() => None,
+            ptr => Some(Handle::from_raw(ptr)),
+        }
+    }
+
+    // XXX IupGetNextChild seems unecessary and it's semantics are very C-ish not combining with
+    // Rust semantics. Instead use IupGetChild(ih, 0) and IupGetBrother() in a loop to have
+    // the same result of IupGetNextChild.
 
     // TODO
-    // class
-    // native handle
-    // expand
-    // x,y
-    // userwidth, userheight
-    // naturalwidth, naturalheight
-    // currentwidth, currentheight
-    // parent
-    // first child
-    // brother
+    // native handle (wid) and attrib_data
+
+    // TODO
+    // IupConvertXYToPos
+    // IupRefresh
+    // IupRefreshChildren
+    // IupUpdate
+    // IupRedraw 
 }
 
 /// Called whenever a Element gets destroyed.
