@@ -5,7 +5,7 @@ use iup::Element;
 use iup::dialog::Dialog;
 use iup::layout::HBox;
 use iup::control::{Button, Text};
-use iup::callback::*;
+use iup::callback::Action;
 
 use std::cell::RefCell;
 use std::rc::Rc;
