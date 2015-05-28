@@ -1,26 +1,30 @@
 //! Example based on hello1 from http://wiki.call-cc.org/iup-tutor
+#[macro_use]
 extern crate iup;
 
-use iup::CallbackReturn;
+use iup::Element;
+use iup::dialog::Dialog;
+use iup::layout::VBox;
+use iup::control::{Button, Label};
+use iup::callback::{Action, CallbackReturn};
 
 fn main () {
     iup::with_iup(|| {
-        let mut btn = iup::button("Ok");
-        iup::callback::set_action(&mut btn, Some(|_| CallbackReturn::Close));
-        iup::set_str_attribute(&mut btn, "EXPAND", "Yes");
-        iup::set_str_attribute(&mut btn, "TIP", "Exit button");
-      
-        let lbl = iup::label("Hello, world!");
+        let button = Button::with_title("Ok")
+                            .set_attrib("EXPAND", "YES")
+                            .set_attrib("TIP", "Exit button")
+                            .set_action(|_| CallbackReturn::Close);
 
-        let mut vb = iup::vboxv(&[lbl, btn]);
-        iup::set_str_attribute(&mut vb, "GAP", "10");
-        iup::set_str_attribute(&mut vb, "MARGIN", "10x10");
-        iup::set_str_attribute(&mut vb, "ALIGNMENT", "ACENTER");
+        let label = Label::with_title("Hello, world!");
 
-        let mut dlg = iup::dialog(vb);
-        iup::set_str_attribute(&mut dlg, "TITLE", "Hello");
+        let vbox = VBox::new(elements![label, button])
+                        .set_attrib("GAP", "10")
+                        .set_attrib("MARGIN", "10x10")
+                        .set_attrib("ALIGNMENT", "ACENTER");
 
-        iup::show(&mut dlg)
+        Dialog::new(vbox)
+                .set_attrib("TITLE", "Hello")
+                .show()
 
     }).unwrap();
 }
