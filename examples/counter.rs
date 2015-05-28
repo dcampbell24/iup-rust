@@ -20,7 +20,7 @@ fn main() {
             let text = text.clone();
             iup::callback::set_action(&mut button, Some(move |_ih| {
                 let mut text = text.borrow_mut();
-                let count = iup::get_attribute(&mut text, "VALUE").unwrap().parse::<i32>().unwrap();
+                let count = iup::get_str_attribute(&mut text, "VALUE").unwrap().parse::<i32>().unwrap();
                 iup::set_str_attribute(&mut text, "VALUE", &(count + 1).to_string());
                 CallbackReturn::Default
             }));
@@ -35,6 +35,6 @@ fn main() {
         iup::set_str_attribute(&mut hbox, "GAP", "10");
 
         iup::show(&mut iup::dialog(hbox))
-        
+
     }).unwrap();
 }
