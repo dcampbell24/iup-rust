@@ -19,4 +19,4 @@ impl VBox {
 	}
 }
 
-impl_element!(VBox);
+impl_element!(VBox, "vbox");

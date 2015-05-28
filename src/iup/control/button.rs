@@ -24,7 +24,7 @@ impl Button {
 	// TODO with_image
 }
 
-impl_element!(Button);
+impl_element!(Button, "button");
 
 /// Action generated when the button 1 (usually left) is selected.
 ///

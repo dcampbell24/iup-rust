@@ -1,7 +1,7 @@
 // TODO MOD DOC
 use iup_sys;
 use std::ptr;
-use std::ffi::CString;
+use std::ffi::{CStr, CString};
 use callback::CallbackReturn;
 use Result;
 
@@ -21,8 +21,11 @@ macro_rules! elements {
 }
 
 /// This macro should be used for every type binding IUP handles.
+///
+/// See applicable `$classname`s [here][1].  Use a empty string if not applicable.
+/// [1]: http://webserver2.tecgraf.puc-rio.br/iup/en/func/iupgetclassname.html
 macro_rules! impl_element {
-    ($ty_path:path) => {
+    ($ty_path:path, $classname:expr) => {
 
         impl $crate::Element for $ty_path {
             #[inline(always)]
@@ -36,6 +39,17 @@ macro_rules! impl_element {
             #[inline(always)]
             unsafe fn from_raw_unchecked(ih: *mut iup_sys::Ihandle) -> Self {
                 $ty_path(ih)
+            }
+            #[inline]
+            unsafe fn target_classname() -> &'static str {
+                $classname
+            }
+        }
+
+        use std::fmt;
+        impl fmt::Debug for $ty_path {
+            fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+                fmt.write_fmt(format_args!("{}({:p})", stringify!($ty_path), self.raw()))
             }
         }
 
@@ -60,9 +74,33 @@ impl Handle {
     pub fn from_element<E: Element>(elem: E) -> Handle {
         Handle(elem.raw())
     }
+
+    /// Converts this handle object into a element object if they are compatible.
+    pub fn to_element<E: Element>(self) -> Option<E> {
+        if self.can_downcast::<E>() {
+            // Since a Handle must be obtained also by using `from_raw` we can assume the handle
+            // has reached the Rust binding thought it and thus using `from_raw_unchecked` here.
+            Some(unsafe { E::from_raw_unchecked(self.raw()) })
+        } else {
+            None
+        }
+    }
+
+    /// Checks if this Element type can be downcasted to the type E.
+    fn can_downcast<E: Element>(&self) -> bool {
+        // TODO what about filedlg, colordlg and such that are essentially "dialog"?
+        let lhs = unsafe { self.classname().to_bytes() };
+        let rhs = unsafe { E::target_classname().as_bytes() };
+        if lhs.len() > 0 && rhs.len() > 0 {
+            lhs == rhs
+        } else {
+            // In case self (a Handle) is trying to cast to a target object of Handle, let it go.
+            rhs == b"__iuprusthandle"
+        }
+    }
 }
 
-impl_element!(Handle);
+impl_element!(Handle, "__iuprusthandle");
 
 
 /// Every IUP object is an `Element`.
@@ -163,6 +201,30 @@ pub trait Element where Self: Sized {
         unsafe { iup_sys::IupDestroy(self.raw()) };
     }
     
+    /// Creates (maps) the native interface objects corresponding to the given IUP interface elements. 
+    ///
+    /// It will also called recursively to create the native element of all the children in the
+    /// element's tree.
+    ///
+    /// The element must be already attached to a mapped container, except the dialog.
+    /// A child can only be mapped if its parent is already mapped.
+    ///
+    /// This function is automatically called before the dialog is shown in
+    ///  `Element::show`, `IupShowXY` (TODO) and `IupPopup` (TODO).
+    ///
+    /// The function returns success if the element is already mapped and if the native creation
+    /// was successful.
+    fn map(&mut self) -> Result<()> {
+        errchk!(unsafe { iup_sys::IupMap(self.raw()) })
+    }
+
+    /// Unmap the element from the native system. It will also unmap all its children.
+    ///
+    /// It will **not** detach the element from its parent, and it will **not** destroy the element.
+    fn unmap(&mut self) {
+        unsafe { iup_sys::IupUnmap(self.raw()) }
+    }
+
     /// Shows an interfance element.
     ///
     /// Displays a dialog in the current position, or changes a control VISIBLE attribute. If the
@@ -183,12 +245,20 @@ pub trait Element where Self: Sized {
         unsafe { iup_sys::IupHide(self.raw()) };
     }
 
+    /// Gets the [class name][1] of this element.
+    /// [1]: http://webserver2.tecgraf.puc-rio.br/iup/en/func/iupgetclassname.html
+    unsafe fn classname(&self) -> &CStr {
+        CStr::from_ptr(iup_sys::IupGetClassName(self.raw()))
+    }
+
+    /// Gets the [class name][1] the derived object should be targeting.
+    /// [1]: http://webserver2.tecgraf.puc-rio.br/iup/en/func/iupgetclassname.html
+    unsafe fn target_classname() -> &'static str;
+
 
 
     // TODO
     // class
-    // common attribs
-    // default events (add in callback.rs)
     // native handle
     // expand
     // x,y

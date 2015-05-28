@@ -30,4 +30,4 @@ impl Dialog {
 	}
 }
 
-impl_element!(Dialog);
+impl_element!(Dialog, "dialog");

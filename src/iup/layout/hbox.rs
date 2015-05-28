@@ -19,4 +19,4 @@ impl HBox {
 	}
 }
 
-impl_element!(HBox);
+impl_element!(HBox, "hbox");

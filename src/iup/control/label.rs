@@ -25,4 +25,4 @@ impl Label {
 	}
 }
 
-impl_element!(Label);
+impl_element!(Label, "label");
