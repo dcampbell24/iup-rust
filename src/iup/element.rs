@@ -1,5 +1,6 @@
 // TODO MOD DOC
 use iup_sys;
+use libc::c_int;
 use std::ptr;
 use std::ffi::{CStr, CString};
 use callback::CallbackReturn;
@@ -272,8 +273,10 @@ pub trait Element where Self: Sized {
     /// [1]: http://webserver2.tecgraf.puc-rio.br/iup/en/func/iupgetclassname.html
     unsafe fn target_classname() -> &'static str;
 
+
     // TODO the follwoing hierarchy operations, they could prehaps be in another trait.
     // For instance allowing append to work only on 'tree able' elements (dialog ,frame, hbox, etc).
+    // ========================================= (begin TODOed hierarchy block)
 
     /// Inserts an interface element at the end of the container, after the last element on it.
     ///
@@ -364,7 +367,7 @@ pub trait Element where Self: Sized {
     /// This function will return the children of the element in the exact same order in
     /// which they were assigned.
     fn child(&self, pos: usize) -> Option<Handle> {
-        match unsafe { iup_sys::IupGetChild(self.raw(), pos as i32) } {
+        match unsafe { iup_sys::IupGetChild(self.raw(), pos as c_int) } {
             ptr if ptr.is_null() => None,
             ptr => Some(Handle::from_raw(ptr)),
         }
@@ -423,16 +426,72 @@ pub trait Element where Self: Sized {
     // XXX IupGetNextChild seems unecessary and it's semantics are very C-ish not combining with
     // Rust semantics. Instead use IupGetChild(ih, 0) and IupGetBrother() in a loop to have
     // the same result of IupGetNextChild.
+    // ========================================= (END TODOed hierarchy block)
+
+    /// Updates the size and layout of all controls in the same dialog. 
+    ///
+    /// Can be called even if the dialog is not mapped.
+    /// Can be used for any control, but it will always affect the whole dialog, to refresh the
+    /// layout of only a subset of the dialog use `Element::refresh_children`.
+    ///
+    /// This function will **not** change the size of the dialog, except if the SIZE or RASTERSIZE
+    /// attributes of the dialog where changed before the call. Changing the size of elements
+    /// without changing the dialog size may position some controls outside the dialog area at the
+    /// left or bottom borders (the elements will be cropped at the dialog borders by the native system).
+    ///
+    /// `Element::map` also updates the dialog layout, but only when called for the dialog itself,
+    /// even if the dialog is already mapped. Since IupShow (TODO), IupShowXY (TODO) and IupPopup (TODO)
+    /// call `Element::map`, then they all will always update the dialog layout before showing it,
+    /// even also if the dialog is already visible.
+    fn refresh(&mut self) {
+        unsafe { iup_sys::IupRefresh(self.raw()) };
+    }
+
+    /// Updates the size and layout of controls after changing size attributes,
+    /// or attributes that affect the size of the control.
+    ///
+    /// Can be used for any element inside a dialog, only its children will be updated.
+    ///
+    /// The given element must be a container. It must be inside a dialog hierarchy and must be
+    /// mapped. It can not be a dialog. For dialogs use `Element::refresh`.
+    ///
+    /// This function will NOT change the size of the given element, even if the natural size of
+    /// its children would increase its natural size.
+    fn refresh_children(&mut self) { // XXX container specific, maybe move to a container trait
+        unsafe { iup_sys::IupRefreshChildren(self.raw()) };
+    }
+
+    /// Mark the element to be redraw when the control returns to the system.
+    fn update(&self) {
+        unsafe { iup_sys::IupUpdate(self.raw()) };
+    }
+
+    /// Mark the element children to be redraw when the control returns to the system.
+    fn update_children(&self) {
+        unsafe { iup_sys::IupUpdateChildren(self.raw()) };
+    }
+
+    /// Force the element and its children to be redraw immediately.
+    fn redraw(&self, also_redraw_children: bool) {
+        unsafe { iup_sys::IupRedraw(self.raw(), also_redraw_children as c_int) };
+    }
+
+    // TODO move this to a trait (or maybe to the object itself) for objects that actually can
+    // use this function
+    /// Converts a x,y coordinate in an item position in the container.
+    ///
+    /// The x,y coordinates are relative to the left corner and top corner of the element.
+    ///
+    /// Has a different effect for each control it is applied to.
+    fn convert_xy_to_pos(&self, x: i32, y: i32) -> Option<i32> {
+        match unsafe { iup_sys::IupConvertXYToPos(self.raw(), x as c_int, y as c_int) } {
+            -1 => None,
+            id => Some(id),
+        }
+    }
 
     // TODO
     // native handle (wid) and attrib_data
-
-    // TODO
-    // IupConvertXYToPos
-    // IupRefresh
-    // IupRefreshChildren
-    // IupUpdate
-    // IupRedraw 
 }
 
 /// Called whenever a Element gets destroyed.

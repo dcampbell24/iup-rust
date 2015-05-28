@@ -244,6 +244,9 @@ extern {
     pub fn IupTextConvertLinColToPos(ih: *mut Ihandle, lin: c_int, col: c_int, pos: *mut c_int);
     pub fn IupTextConvertPosToLinCol(ih: *mut Ihandle, pos: c_int, lin: *mut c_int, col: *mut c_int);
 
+    /* IupText, IupList, IupTree, IupMatrix and IupScintilla utility */
+    pub fn IupConvertXYToPos(ih: *mut Ihandle, x: c_int, y: c_int) -> c_int;
+
     /* IupTree utilities */
     pub fn IupTreeSetUserId(ih: *mut Ihandle, id: c_int, userid: *mut c_void) -> c_int;
     pub fn IupTreeGetUserId(ih: *mut Ihandle, id: c_int) -> *mut c_void;
