@@ -16,4 +16,5 @@ impl Text {
 }
 
 impl_element!(Text);
-impl ::callback::Action for Text {}
+
+// TODO TextAction callback instead of Action. Sign: `(Self, Option<std::char>, &str|String)

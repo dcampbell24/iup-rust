@@ -20,7 +20,16 @@ impl Button {
 		let clabel = CString::new(title.into()).unwrap();
 		unsafe { Button::from_raw(iup_sys::IupButton(clabel.as_ptr(), ptr::null_mut())) }
 	}
+
+	// TODO with_image
 }
 
 impl_element!(Button);
+
+/// Action generated when the button 1 (usually left) is selected.
+///
+/// This callback is called only after the mouse is released and when it is released
+/// inside the button area.
+///
+/// `CallbackReturn::Close` will be processed.
 impl ::callback::Action for Button {}

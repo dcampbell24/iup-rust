@@ -25,12 +25,10 @@ macro_rules! impl_element {
     ($ty_path:path) => {
 
         impl $crate::Element for $ty_path {
-            /// Constructs another object that binds to the same IUP handle as this one.
             #[inline(always)]
             fn dup(&self) -> Self {
                 $ty_path(self.0)
             }
-            /// Gets the raw IUP handle associated with this element.
             #[inline(always)]
             fn raw(&self) -> *mut iup_sys::Ihandle {
                 self.0
@@ -42,6 +40,13 @@ macro_rules! impl_element {
         }
 
         impl $crate::callback::DestroyCb for $ty_path {}
+        impl $crate::callback::MapCb for $ty_path {}
+        impl $crate::callback::UnmapCb for $ty_path {}
+        impl $crate::callback::GetFocusCb for $ty_path {}
+        impl $crate::callback::KillFocusCb for $ty_path {}
+        impl $crate::callback::EnterWindowCb for $ty_path {}
+        impl $crate::callback::LeaveWindowCb for $ty_path {}
+        impl $crate::callback::HelpCb for $ty_path {}
     };
 }
 
