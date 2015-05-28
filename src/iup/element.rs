@@ -4,10 +4,7 @@ use std::ptr;
 use std::ffi::{CStr, CString};
 use callback::CallbackReturn;
 use Result;
-
-// TODO the objects could prehaps be copy as they are loose handles?
-// it does not implement Clone yet either, so we should pick something.
-
+use std::result;
 
 /// Makes a Vec of `Element` trait objects.
 ///
@@ -22,9 +19,27 @@ macro_rules! elements {
 
 /// This macro should be used for every type binding IUP handles.
 ///
-/// See applicable `$classname`s [here][1].  Use a empty string if not applicable.
+/// See applicable `$classname`s [here][1]. Some classes aren't on the list and should be
+/// picked up manually by looking at the IUP source code or by looking at the result
+/// of `Element::classname`.
 /// [1]: http://webserver2.tecgraf.puc-rio.br/iup/en/func/iupgetclassname.html
 macro_rules! impl_element {
+    ($ty_path:path, $classname:expr) => {
+        impl_element_nofrom!($ty_path, $classname);
+
+        impl From<$ty_path> for $crate::element::Handle {
+            fn from(elem: $ty_path) -> $crate::element::Handle {
+                $crate::element::Handle::from_element(elem)
+                // TODO should Handle::from_element be removed in favor of this from/into method?
+            }
+        }
+    };
+}
+/// This is called from impl_element! to do all the work.
+///
+/// This is a necessary thing because if we implemented `From<$ty_path> for Handle` here it'd cause
+/// a compilation error during `From<Handle> for Handle`.
+macro_rules! impl_element_nofrom {
     ($ty_path:path, $classname:expr) => {
 
         impl $crate::Element for $ty_path {
@@ -46,9 +61,9 @@ macro_rules! impl_element {
             }
         }
 
-        use std::fmt;
-        impl fmt::Debug for $ty_path {
-            fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        use std; // TODO any way to get around this?
+        impl std::fmt::Debug for $ty_path {
+            fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
                 fmt.write_fmt(format_args!("{}({:p})", stringify!($ty_path), self.raw()))
             }
         }
@@ -76,41 +91,39 @@ impl Handle {
     }
 
     /// Converts this handle object into a element object if they are compatible.
-    pub fn to_element<E: Element>(self) -> Option<E> {
+    pub fn try_downcast<E: Element>(self) -> result::Result<E, Handle> {
         if self.can_downcast::<E>() {
             // Since a Handle must be obtained also by using `from_raw` we can assume the handle
             // has reached the Rust binding thought it and thus using `from_raw_unchecked` here.
-            Some(unsafe { E::from_raw_unchecked(self.raw()) })
+            Ok(unsafe { E::from_raw_unchecked(self.raw()) })
         } else {
-            None
+            Err(self)
         }
     }
 
     /// Checks if this Element type can be downcasted to the type E.
     fn can_downcast<E: Element>(&self) -> bool {
-        // TODO what about filedlg, colordlg and such that are essentially "dialog"?
         let lhs = unsafe { self.classname().to_bytes() };
         let rhs = unsafe { E::target_classname().as_bytes() };
-        if lhs.len() > 0 && rhs.len() > 0 {
-            lhs == rhs
-        } else {
-            // In case self (a Handle) is trying to cast to a target object of Handle, let it go.
-            rhs == b"__iuprusthandle"
-        }
+        lhs == rhs || rhs == b"__iuprusthandle"
+        // In case self/lhs (a Handle) is trying to cast to a target object of Handle, let it go.
     }
 }
 
-impl_element!(Handle, "__iuprusthandle");
+impl_element_nofrom!(Handle, "__iuprusthandle");
 
+
+// TODO the objects could prehaps be Copy as they are loose handles?
+// it does not implement Clone yet either, so we should pick something.
+// Remove/deprecate the Element::dup method after this choice has been made.
 
 /// Every IUP object is an `Element`.
 pub trait Element where Self: Sized {
 
-    /// Gets the raw IUP handle associated with this element.
-    fn raw(&self) -> *mut iup_sys::Ihandle;
-
-    /// Constructs another object that binds to the same IUP handle as this one.
-    fn dup(&self) -> Self;
+    /// Constructs a specialized Element object from a general Handle if they are compatible.
+    fn from_handle(handle: Handle) -> result::Result<Self, Handle> {
+        handle.try_downcast::<Self>()
+    }
 
     /// Constructs an Element from a raw IUP handle.
     ///
@@ -132,7 +145,7 @@ pub trait Element where Self: Sized {
     /// Panics if the raw handle is a null pointer.
     fn from_raw(ih: *mut iup_sys::Ihandle) -> Self {
         if ih.is_null() {
-            panic!("Failed to create IUP Widget from raw handle.")
+            panic!("Failed to create IUP element from raw handle because the handle is null.")
         } else {
             unsafe {
                 // Note: DESTROY_CB is used here instead of LDESTROY_CB because the DESTROY_CB 
@@ -142,6 +155,12 @@ pub trait Element where Self: Sized {
             }
         }
     }
+
+    /// Gets the raw IUP handle associated with this element.
+    fn raw(&self) -> *mut iup_sys::Ihandle;
+
+    /// Constructs another object that binds to the same IUP handle as this one.
+    fn dup(&self) -> Self;
 
     /// Sets an interface element attribute.
     ///
