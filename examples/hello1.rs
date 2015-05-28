@@ -2,9 +2,10 @@
 #[macro_use]
 extern crate iup;
 
-use iup::CallbackReturn;
-
-use iup::{Element, VBox, Dialog, Label, Button};
+use iup::Element;
+use iup::dialog::Dialog;
+use iup::layout::VBox;
+use iup::control::{Button, Label};
 use iup::callback::*;
 
 fn main () {

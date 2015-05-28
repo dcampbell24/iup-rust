@@ -1,4 +1,4 @@
-// TODO CRATE DOC
+// TODO MOD DOC
 use iup_sys;
 use std::ptr;
 use std::ffi::CString;

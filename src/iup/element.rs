@@ -1,8 +1,8 @@
-// TODO CRATE DOC
+// TODO MOD DOC
 use iup_sys;
 use std::ptr;
 use std::ffi::CString;
-use CallbackReturn;
+use callback::CallbackReturn;
 use Result;
 
 // TODO the objects could prehaps be copy as they are loose handles?
@@ -198,7 +198,7 @@ pub trait Element where Self: Sized {
 /// Called whenever a Element gets destroyed.
 ///
 /// Use this to perform frees related to the Rust binding that are per-element.
-extern fn on_element_destroy(ih: *mut iup_sys::Ihandle) -> CallbackReturn {
+extern fn on_element_destroy(ih: *mut iup_sys::Ihandle) -> iup_sys::CallbackReturn {
     unsafe { ::callback::drop_callbacks(ih); }
-    CallbackReturn::Default
+    iup_sys::CallbackReturn::Default
 }

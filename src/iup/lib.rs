@@ -20,15 +20,11 @@ pub use element::Element;
 
 pub mod callback;
 
-pub mod dialogs;
-pub use dialogs::*;
+pub mod dialog;
 pub mod layout;
-pub use layout::*;
 pub mod control;
-pub use control::*;
 
 pub type Result<T> = result::Result<T, String>;
-pub use iup_sys::CallbackReturn;
 
 /// Initialises IUP toolkit, calls `f` for user initialization and runs the application.
 ///

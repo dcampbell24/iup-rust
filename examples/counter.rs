@@ -1,9 +1,10 @@
 #[macro_use]
 extern crate iup;
 
-use iup::CallbackReturn;
-
-use iup::{Element, HBox, Dialog, Text, Button};
+use iup::Element;
+use iup::dialog::Dialog;
+use iup::layout::HBox;
+use iup::control::{Button, Text};
 use iup::callback::*;
 
 use std::cell::RefCell;
@@ -22,12 +23,10 @@ fn main() {
         let textv = text.clone();
 
         let button = Button::with_title("Count")
-                            .set_destroy_cb(|_| println!("The button is getting destroyed!!"))
                             .set_action(move |_| {
                                 let mut text = textv.borrow_mut();
                                 let count = text.attrib("VALUE").unwrap().parse::<i32>().unwrap();
                                 text.set_attrib("VALUE", (count + 1).to_string());
-                                CallbackReturn::Default
                             });
 
         let mut dialog = Dialog::new(

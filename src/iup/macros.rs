@@ -1,4 +1,4 @@
-// TODO CRATE DOC
+// TODO MOD DOC
 
 /// Converts a Rust string literal into a C null terminated string literal typed `c_char`.
 macro_rules! str_to_c_str {
