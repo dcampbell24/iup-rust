@@ -30,7 +30,6 @@ macro_rules! impl_element {
         impl From<$ty_path> for $crate::element::Handle {
             fn from(elem: $ty_path) -> $crate::element::Handle {
                 $crate::element::Handle::from_element(elem)
-                // TODO should Handle::from_element be removed in favor of this from/into method?
             }
         }
     };
@@ -61,7 +60,7 @@ macro_rules! impl_element_nofrom {
             }
         }
 
-        use std; // TODO any way to get around this?
+        use std;
         impl std::fmt::Debug for $ty_path {
             fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
                 fmt.write_fmt(format_args!("{}({:p})", stringify!($ty_path), self.raw()))
@@ -112,10 +111,6 @@ impl Handle {
 
 impl_element_nofrom!(Handle, "__iuprusthandle");
 
-
-// TODO the objects could prehaps be Copy as they are loose handles?
-// it does not implement Clone yet either, so we should pick something.
-// Remove/deprecate the Element::dup method after this choice has been made.
 
 /// Every IUP object is an `Element`.
 pub trait Element where Self: Sized {
@@ -274,9 +269,6 @@ pub trait Element where Self: Sized {
     unsafe fn target_classname() -> &'static str;
 
 
-    // TODO the follwoing hierarchy operations, they could prehaps be in another trait.
-    // For instance allowing append to work only on 'tree able' elements (dialog ,frame, hbox, etc).
-    // ========================================= (begin TODOed hierarchy block)
 
     /// Inserts an interface element at the end of the container, after the last element on it.
     ///
@@ -324,17 +316,11 @@ pub trait Element where Self: Sized {
 
     /// Inserts an interface element before another child of the container.
     ///
-    /// TODO ref_child NULL doc.
+    /// TODO ref_child NULL doc. See #23.
     ///
     /// See `Element::append` for more details on the semantics of this method.
     fn insert<E1, E2>(&mut self, ref_child: &E1, new_child: E2) -> Result<Handle, E2>
                 where E1: Element, E2: Element {
-
-        // TODO as of IUP docs:
-        // * ref_child: [...] Can be NULL to insert as the first element.
-        // how to deal with this? Option<E1> mayn't be a good option as the compiler would complain
-        // when using None that we need to specify what E1 is...?!?!?
-
         match unsafe { iup_sys::IupInsert(self.raw(), ref_child.raw(), new_child.raw()) } {
             ptr if ptr.is_null() => Err(new_child),
             ptr => Ok(Handle::from_raw(ptr)),
@@ -343,12 +329,11 @@ pub trait Element where Self: Sized {
 
     /// Moves an interface element from one position in the hierarchy tree to another.
     ///
-    /// TODO ref_child NULL doc.
+    /// TODO ref_child NULL doc. See #23.
     ///
     /// See `Element::append` for more details on the semantics of this method.
     fn reparent<E1, E2>(&mut self, new_parent: E1, ref_child: E2) -> Result<(), String>
                 where E1: Element, E2: Element {
-        // TODO same issue as in `Element::insert`, ref_child can be null, what to do about it?
         errchk!(unsafe { iup_sys::IupReparent(self.raw(), new_parent.raw(), ref_child.raw()) })
     }
 
@@ -423,11 +408,6 @@ pub trait Element where Self: Sized {
         }
     }
 
-    // XXX IupGetNextChild seems unecessary and it's semantics are very C-ish not combining with
-    // Rust semantics. Instead use IupGetChild(ih, 0) and IupGetBrother() in a loop to have
-    // the same result of IupGetNextChild.
-    // ========================================= (END TODOed hierarchy block)
-
     /// Updates the size and layout of all controls in the same dialog. 
     ///
     /// Can be called even if the dialog is not mapped.
@@ -476,8 +456,6 @@ pub trait Element where Self: Sized {
         unsafe { iup_sys::IupRedraw(self.raw(), also_redraw_children as c_int) };
     }
 
-    // TODO move this to a trait (or maybe to the object itself) for objects that actually can
-    // use this function
     /// Converts a x,y coordinate in an item position in the container.
     ///
     /// The x,y coordinates are relative to the left corner and top corner of the element.
@@ -489,9 +467,6 @@ pub trait Element where Self: Sized {
             id => Some(id),
         }
     }
-
-    // TODO
-    // native handle (wid) and attrib_data
 }
 
 /// Called whenever a Element gets destroyed.

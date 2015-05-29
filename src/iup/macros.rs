@@ -28,7 +28,7 @@ macro_rules! slice_to_ih_array {
 }
 
 // TODO maybe remove this macro and do the matching directly
-// TODO look into all the things that invoke this macro and make them result a enum instead of string.
+// TODO look into all the things that invoke this macro and make them result a enum. See #23.
 macro_rules! errchk {
     ($expr:expr) => {{ 
         match $expr {

@@ -37,17 +37,11 @@ pub mod control;
 pub fn with_iup<F: FnOnce() -> Result<(), String>>(f: F) -> Result<(), String> {
     unsafe {
         match iup_sys::IupOpen(ptr::null(), ptr::null()) {
-            // TODO improve those Errs, those strings don't look quite useful for matching!
             iup_sys::IUP_NOERROR => {},
             iup_sys::IUP_OPENED => return Err("IUP_OPENED: iup::open called while already open.".into()),
             iup_sys::IUP_ERROR => return Err("IUP_ERROR: X-Windows is not initialized".into()),
             _ => unreachable!(),
         };
-        // TODO make f return a Result<ADialogType, String> and .show it ourselves instead since
-        // IUP asks for at least one visible dialog to be show up during the IupMainLoop otherwise
-        // the app will freeze. If to archive this one uses a specialized type for dialogs (just
-        // a thought) consider changing the return type of functions like Element::dialog that
-        // returns the handle to a dialog.
         let result = f();
         if result.is_ok() {
             // IupMainLoop always returns IUP_NOERROR.

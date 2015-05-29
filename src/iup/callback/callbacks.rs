@@ -124,5 +124,3 @@ impl_callback! {
         fn remove_help_cb(&mut self) -> Option<Box<_>>;
     }
 }
-
-// TODO K_ANY AND K_* COMMON CALLBACKS
