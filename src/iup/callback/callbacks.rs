@@ -1,6 +1,17 @@
 
 // http://sourceforge.net/p/iup/iup/2620/tree//trunk/iup/include/iupcbs.h
 
+impl_callback! {
+    let name = "IDLE_ACTION";
+    extern fn listener() -> CallbackReturn;
+    /// Action generated when there are no events or messages to be processed.
+    ///
+    /// Often used to perform background operations.
+    pub fn set_idle<F: Callback()>(cb: F);
+    /// Removes a previosly set up idle_action callback.
+    pub fn remove_idle() -> Option<Box<_>>;
+}
+
 // This is the common version of the ACTION callback, any so called ACTION that does not
 // have the `(*mut iup_sys::Ihandle)` signature should be another trait.
 impl_callback! {

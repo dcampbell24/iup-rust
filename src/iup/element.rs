@@ -130,11 +130,13 @@ pub trait Element where Self: Sized {
     /// raw handle has reached safe Rust bounds at least once before using this method.
     ///
     /// It's undefined behaviour if the raw handle is incompatible with `Self` bindings.
+    /// Instead use the `Element::from_handle` to perform safe downcasting.
     unsafe fn from_raw_unchecked(ih: *mut iup_sys::Ihandle) -> Self;
 
     /// Constructs an Element from a raw IUP handle.
     ///
     /// It's undefined behaviour if the raw handle is incompatible with `Self` bindings.
+    /// Instead use the `Element::from_handle` to perform safe downcasting.
     ///
     /// # Panics
     /// Panics if the raw handle is a null pointer.
@@ -144,7 +146,7 @@ pub trait Element where Self: Sized {
         } else {
             unsafe {
                 // Note: DESTROY_CB is used here instead of LDESTROY_CB because the DESTROY_CB 
-                // is called later. LDESTROY_CB is used in callback.rs, see it for more details.
+                // is called later. LDESTROY_CB is used in callbacks.rs, see it for more details.
                 iup_sys::IupSetCallback(ih, str_to_c_str!("DESTROY_CB"), on_element_destroy);
                 Element::from_raw_unchecked(ih)
             }
@@ -468,6 +470,41 @@ pub trait Element where Self: Sized {
         }
     }
 }
+
+
+// TODO not exactly sure if this is the place for the global attribute functions
+
+/// Sets an attribute in the global environment.
+///
+/// If the driver process the attribute then it will not be stored internally.
+pub fn set_global<S1, S2>(name: S1, value: S2) 
+                                where S1: Into<String>, S2: Into<String> {
+    let cname = CString::new(name.into()).unwrap();
+    let cvalue = CString::new(value.into()).unwrap();
+    unsafe { iup_sys::IupSetStrGlobal(cname.as_ptr(), cvalue.as_ptr()) };
+}
+
+/// Returns an attribute value from the global environment.
+///
+/// The value can be returned from the driver or from the internal storage.
+///
+/// This function’s return value is not necessarily the same one used by the application to
+/// set the attribute’s value.
+///
+pub fn global<S: Into<String>>(name: S) -> Option<String> {
+    let cname = CString::new(name.into()).unwrap();
+    match unsafe { iup_sys::IupGetGlobal(cname.as_ptr()) } {
+        cvalue if cvalue.is_null() => None,
+        cvalue => Some(string_from_c_str!(cvalue)),
+    }
+}
+
+/// Clears the value associated with an global attribute.
+pub fn clear_attrib<S: Into<String>>(name: S) {
+    let cname = CString::new(name.into()).unwrap();
+    unsafe { iup_sys::IupSetGlobal(cname.as_ptr(), ptr::null()) };
+}
+
 
 /// Called whenever a Element gets destroyed.
 ///

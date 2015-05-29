@@ -9,6 +9,8 @@ macro_rules! fbox_c_str {
 }
 
 /// Sets a closure as a callback to IUP.
+///
+/// Note: `$ih` can be a `ptr::null_mut` to set a callback in the global enviroment.
 macro_rules! set_fbox_callback {
     ($ih:expr, $cb_name:expr, $clistener:expr, $rcb:expr, Callback<$($rargs:ty),*>) => {{
 
@@ -24,14 +26,20 @@ macro_rules! set_fbox_callback {
         let ih = $ih;
         let fb: Box<Box<$crate::callback::Callback<$($rargs),*>>> = Box::new(Box::new($rcb));
         iup_sys::IupSetAttribute(ih, fbox_c_str!($cb_name), box_into_raw(fb) as *const _);
-        iup_sys::IupSetCallback(ih, str_to_c_str!($cb_name), transmute($clistener));
-
+        if ih.is_null() {
+            iup_sys::IupSetFunction(str_to_c_str!($cb_name), transmute($clistener));
+        } else {
+            iup_sys::IupSetCallback(ih, str_to_c_str!($cb_name), transmute($clistener));
+        }
+        
     }}
 }
 
 /// Clears a closure as a callback to IUP.
 ///
 /// Returns a Option<Box<_>> with the previosly set closure.
+///
+/// Note: `$ih` can be a `ptr::null_mut` to set a callback in the global enviroment.
 macro_rules! clear_fbox_callback {
     ($ih:expr, $cb_name:expr, Callback<$($rargs:ty),*>) => {{
         use $crate::iup_sys;
@@ -49,11 +57,28 @@ macro_rules! clear_fbox_callback {
             let inner_box: Box<Box<$crate::callback::Callback<$($rargs),*>>> = transmute(capsule_box);
 
             iup_sys::IupSetAttribute(ih, fbox_c_str!($cb_name), ptr::null());
-            iup_sys::IupSetCallback(ih, str_to_c_str!($cb_name), transmute(ptr::null::<u8>()));
 
+            if ih.is_null() {
+                iup_sys::IupSetFunction(str_to_c_str!($cb_name), transmute(ptr::null::<u8>()));
+            } else {
+                iup_sys::IupSetCallback(ih, str_to_c_str!($cb_name), transmute(ptr::null::<u8>()));
+            }
+            
             Some(*inner_box)
             // inner_box itself gets freed now
         }
+    }}
+}
+
+macro_rules! get_fbox_callback {
+    ($ih:expr, $cb_name:expr, Callback<$($rargs:ty),*>) => {{
+        let fbox_ptr  = unsafe {
+                        iup_sys::IupGetAttribute($ih, fbox_c_str!($cb_name))
+                                as *mut Box<$crate::callback::Callback<($($rargs),*)>>
+        };
+        assert!(fbox_ptr.is_null() == false);
+        let fbox: &mut Box<_> = unsafe { &mut (*(fbox_ptr)) };
+        fbox
     }}
 }
 
@@ -72,6 +97,7 @@ macro_rules! clear_fbox_callback {
 ///
 macro_rules! impl_callback {
 
+    // Used for element callbacks.
     (
         $(#[$trait_attr:meta])* // allow doc comments here
         pub trait $trait_name:ident where Self: Element {
@@ -95,12 +121,7 @@ macro_rules! impl_callback {
 
                 extern fn listener<Self0: $trait_name>(ih: *mut iup_sys::Ihandle, $($ls_arg: $ls_arg_ty),*)
                         -> $crate::iup_sys::CallbackReturn {
-                    let fbox_ptr  = unsafe {
-                                       iup_sys::IupGetAttribute(ih, fbox_c_str!($cb_name))
-                                         as *mut Box<$crate::callback::Callback<(Self0, $($fn_arg_ty),*)>>
-                                    };
-                    assert!(fbox_ptr.is_null() == false);
-                    let fbox: &mut Box<_> = unsafe { &mut (*(fbox_ptr)) };
+                    let fbox: &mut Box<_> = get_fbox_callback!(ih, $cb_name, Callback<(Self0, $($fn_arg_ty),*)>);
                     let element = unsafe { <Self0 as $crate::Element>::from_raw_unchecked(ih) };
                     fbox.on_callback((element, $($ls_arg),*))
                 }
@@ -122,7 +143,49 @@ macro_rules! impl_callback {
                 }
             }
         }
-    }
+    };
+
+    // Used for global callbacks.
+    (
+            let name = $cb_name:expr;
+            extern fn listener($($ls_arg:ident: $ls_arg_ty:ty),*) -> CallbackReturn;
+            $(#[$set_func_attr:meta])*
+            pub fn $set_func:ident<F: Callback($($fn_arg_ty:ty),*)>(cb: F);
+            $(#[$rem_func_attr:meta])*
+            pub fn $remove_func:ident() -> Option<Box<_>>;
+    ) => {
+
+            $(#[$set_func_attr])*
+            pub fn $set_func<F>(cb: F)
+                    where F: $crate::callback::Callback<($($fn_arg_ty),*)> {
+
+                use std::mem::transmute;
+                use $crate::iup_sys;
+                use std::ptr;
+
+                extern fn listener($($ls_arg: $ls_arg_ty),*)
+                        -> $crate::iup_sys::CallbackReturn {
+                    let fbox: &mut Box<_> = get_fbox_callback!(ptr::null_mut(), $cb_name, Callback<($($fn_arg_ty),*)>);
+                    fbox.on_callback(($($ls_arg),*))
+                }
+
+                unsafe {
+                    set_fbox_callback!(ptr::null_mut(), $cb_name, listener, cb, 
+                                       Callback<($($fn_arg_ty),*)>);
+                }
+            }
+
+            $(#[$rem_func_attr])*
+            pub fn $remove_func()
+                    -> Option<Box<$crate::callback::Callback<($($fn_arg_ty),*)>>> {
+                unsafe {
+                    //use std::ptr;
+                    let old_cb = clear_fbox_callback!(ptr::null_mut(), $cb_name,
+                                                      Callback<($($fn_arg_ty),*)>);
+                    old_cb
+                }
+            }
+    };
 }
 
 /// Drops the closure associated with the `$cb_name` (literal) callback in the element `$ih`.

@@ -46,6 +46,13 @@ pub trait Callback<Args> : 'static {
     fn on_callback(&mut self, args: Args) -> iup_sys::CallbackReturn; 
 }
 
+// TODO `Callback<Args> for F where F: FnMut<Args, Output=Out>`
+// error: angle-bracket notation is not stable when used with the `Fn` family of traits,
+//       use parentheses [E0215]
+//
+// This would allow the functions to receive a variadic number of arguments instead of a single
+// tuple argument with a variadic length.
+
 impl<Args, Out: Into<CallbackReturn>, F: 'static> Callback<Args> for F where F: FnMut(Args) -> Out {
     /// Because of the `impl From<()> for CallbackReturn`, closures that return `()` can be
     /// accepted by this impl.
