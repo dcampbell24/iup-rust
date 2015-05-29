@@ -104,7 +104,7 @@ macro_rules! impl_callback {
             let name = $cb_name:expr;
             extern fn listener(ih: *mut iup_sys::Ihandle $(, $ls_arg:ident: $ls_arg_ty:ty)*) -> CallbackReturn;
 
-            fn $set_method:ident<F: Callback(Self $(, $fn_arg_ty:ty),*)>(&mut self, cb: F) -> Self;
+            fn $set_method:ident<F: Callback(Self $(, $fn_arg_ty:ty)*)>(&mut self, cb: F) -> Self;
             fn $remove_method:ident(&mut self) -> Option<Box<_>>;
         }
         
@@ -123,7 +123,7 @@ macro_rules! impl_callback {
                         -> $crate::iup_sys::CallbackReturn {
                     let fbox: &mut Box<_> = get_fbox_callback!(ih, $cb_name, Callback<(Self0, $($fn_arg_ty),*)>);
                     let element = unsafe { <Self0 as $crate::Element>::from_raw_unchecked(ih) };
-                    fbox.on_callback((element, $($ls_arg),*))
+                    fbox.on_callback((element, $($ls_arg.into_rust()),*))
                 }
 
                 unsafe {
@@ -166,7 +166,7 @@ macro_rules! impl_callback {
                 extern fn listener($($ls_arg: $ls_arg_ty),*)
                         -> $crate::iup_sys::CallbackReturn {
                     let fbox: &mut Box<_> = get_fbox_callback!(ptr::null_mut(), $cb_name, Callback<($($fn_arg_ty),*)>);
-                    fbox.on_callback(($($ls_arg),*))
+                    fbox.on_callback(($($ls_arg.into_rust()),*))
                 }
 
                 unsafe {

@@ -338,22 +338,32 @@ pub const IUP_SBDRAGH: c_int   = 11;
 /************************************************************************/
 /*               Mouse Button Values and Functions                      */
 /************************************************************************/
-pub const IUP_BUTTON1: c_char = '1' as c_char;
-pub const IUP_BUTTON2: c_char = '2' as c_char;
-pub const IUP_BUTTON3: c_char = '3' as c_char;
-pub const IUP_BUTTON4: c_char = '4' as c_char;
-pub const IUP_BUTTON5: c_char = '5' as c_char;
+pub const IUP_BUTTON1: c_int = '1' as c_int;
+pub const IUP_BUTTON2: c_int = '2' as c_int;
+pub const IUP_BUTTON3: c_int = '3' as c_int;
+pub const IUP_BUTTON4: c_int = '4' as c_int;
+pub const IUP_BUTTON5: c_int = '5' as c_int;
 
-pub fn iup_isshift(s: &[c_char]) -> bool   { s[0] == 'S' as c_char }
-pub fn iup_iscontrol(s: &[c_char]) -> bool { s[1] == 'C' as c_char }
-pub fn iup_isbutton1(s: &[c_char]) -> bool { s[2] == '1' as c_char }
-pub fn iup_isbutton2(s: &[c_char]) -> bool { s[3] == '2' as c_char }
-pub fn iup_isbutton3(s: &[c_char]) -> bool { s[4] == '3' as c_char }
-pub fn iup_isdouble(s: &[c_char]) -> bool  { s[5] == 'D' as c_char }
-pub fn iup_isalt(s: &[c_char]) -> bool     { s[6] == 'A' as c_char }
-pub fn iup_issys(s: &[c_char]) -> bool     { s[7] == 'Y' as c_char }
-pub fn iup_isbutton4(s: &[c_char]) -> bool { s[8] == '4' as c_char }
-pub fn iup_isbutton5(s: &[c_char]) -> bool { s[9] == '5' as c_char }
+#[inline(always)]
+pub unsafe fn iup_isshift(s: *const c_char) -> bool   { *s.offset(0) == 'S' as c_char }
+#[inline(always)]
+pub unsafe fn iup_iscontrol(s: *const c_char) -> bool { *s.offset(1) == 'C' as c_char }
+#[inline(always)]
+pub unsafe fn iup_isbutton1(s: *const c_char) -> bool { *s.offset(2) == '1' as c_char }
+#[inline(always)]
+pub unsafe fn iup_isbutton2(s: *const c_char) -> bool { *s.offset(3) == '2' as c_char }
+#[inline(always)]
+pub unsafe fn iup_isbutton3(s: *const c_char) -> bool { *s.offset(4) == '3' as c_char }
+#[inline(always)]
+pub unsafe fn iup_isdouble(s: *const c_char) -> bool  { *s.offset(5) == 'D' as c_char }
+#[inline(always)]
+pub unsafe fn iup_isalt(s: *const c_char) -> bool     { *s.offset(6) == 'A' as c_char }
+#[inline(always)]
+pub unsafe fn iup_issys(s: *const c_char) -> bool     { *s.offset(7) == 'Y' as c_char }
+#[inline(always)]
+pub unsafe fn iup_isbutton4(s: *const c_char) -> bool { *s.offset(8) == '4' as c_char }
+#[inline(always)]
+pub unsafe fn iup_isbutton5(s: *const c_char) -> bool { *s.offset(9) == '5' as c_char }
 
 /************************************************************************/
 /*                      Pre-Defined Masks                               */

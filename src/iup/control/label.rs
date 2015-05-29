@@ -26,3 +26,10 @@ impl Label {
 }
 
 impl_element!(Label, "label");
+impl ::callback::MapCb for Label {}
+impl ::callback::UnmapCb for Label {}
+impl ::callback::EnterWindowCb for Label {}
+impl ::callback::LeaveWindowCb for Label {}
+
+/// Action generated when any mouse button is pressed or released.
+impl ::callback::button::ButtonCb for Label {}

@@ -16,5 +16,19 @@ impl Text {
 }
 
 impl_element!(Text, "text");
+impl ::callback::MapCb for Text {}
+impl ::callback::UnmapCb for Text {}
+impl ::callback::GetFocusCb for Text {}
+impl ::callback::KillFocusCb for Text {}
+impl ::callback::EnterWindowCb for Text {}
+impl ::callback::LeaveWindowCb for Text {}
+impl ::callback::HelpCb for Text {}
+// TODO impl K_ callbacks when it's implemented.
 
 // TODO TextAction callback instead of Action. Sign: `(Self, Option<std::char>, &str|String)
+// (though is the `int c` parameter really a unicode thing?)
+
+/// Action generated when any mouse button is pressed or released.
+///
+/// Use `Element::convert_xy_to_pos` to convert (x,y) coordinates in character positioning.
+impl ::callback::button::ButtonCb for Text {}

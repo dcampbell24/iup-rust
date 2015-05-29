@@ -25,6 +25,14 @@ impl Button {
 }
 
 impl_element!(Button, "button");
+impl ::callback::MapCb for Button {}
+impl ::callback::UnmapCb for Button {}
+impl ::callback::GetFocusCb for Button {}
+impl ::callback::KillFocusCb for Button {}
+impl ::callback::EnterWindowCb for Button {}
+impl ::callback::LeaveWindowCb for Button {}
+impl ::callback::HelpCb for Button {}
+// TODO impl K_ callbacks when it's implemented.
 
 /// Action generated when the button 1 (usually left) is selected.
 ///
@@ -33,3 +41,6 @@ impl_element!(Button, "button");
 ///
 /// `CallbackReturn::Close` will be processed.
 impl ::callback::Action for Button {}
+
+/// Action generated when any mouse button is pressed and released.
+impl ::callback::button::ButtonCb for Button {}

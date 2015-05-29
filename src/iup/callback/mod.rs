@@ -1,11 +1,14 @@
 //! Event-driven communication.
 
 use iup_sys;
+use libc::{c_int};
 
 #[macro_use]
 mod macros;
 pub mod callbacks;
 pub use self::callbacks::*;
+
+pub mod button; // TODO move to somewhere else?
 
 /// Return this from a callback to tell the framework a non-default action to be performed.
 ///
@@ -61,6 +64,23 @@ impl<Args, Out: Into<CallbackReturn>, F: 'static> Callback<Args> for F where F: 
     fn on_callback(&mut self, args: Args) -> iup_sys::CallbackReturn {
         let r = self(args).into();
         r.to_cb_return()
+    }
+}
+
+/// This is a internal trait used to convert IUP C types into IUP Rust types in callbacks.
+///
+/// For instance BUTTON_CB has a `char* status` parameter that must be abstracted into another
+/// type (e.g. `KeyStatus`).
+///
+/// This trait method `into_rust` is called from the `impl_callback!` macro.
+#[doc(hidden)]
+trait IntoRust<T> {
+    fn into_rust(self) -> T;
+}
+
+impl IntoRust<i32> for c_int {
+    fn into_rust(self) -> i32 {
+        self as i32
     }
 }
 

@@ -24,3 +24,11 @@ impl Dialog {
 }
 
 impl_element!(Dialog, "dialog");
+impl ::callback::MapCb for Dialog {}
+impl ::callback::UnmapCb for Dialog {}
+impl ::callback::GetFocusCb for Dialog {}
+impl ::callback::KillFocusCb for Dialog {}
+impl ::callback::EnterWindowCb for Dialog {}
+impl ::callback::LeaveWindowCb for Dialog {}
+impl ::callback::HelpCb for Dialog {}
+// TODO impl K_ callbacks when it's implemented.

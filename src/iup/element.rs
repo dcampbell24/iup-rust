@@ -70,13 +70,14 @@ macro_rules! impl_element_nofrom {
         }
 
         impl $crate::callback::DestroyCb for $ty_path {}
-        impl $crate::callback::MapCb for $ty_path {}
+        // TODO remove those from impl_element, must be 'impl'ed manually by each object instead.
+        /*impl $crate::callback::MapCb for $ty_path {}
         impl $crate::callback::UnmapCb for $ty_path {}
         impl $crate::callback::GetFocusCb for $ty_path {}
         impl $crate::callback::KillFocusCb for $ty_path {}
         impl $crate::callback::EnterWindowCb for $ty_path {}
         impl $crate::callback::LeaveWindowCb for $ty_path {}
-        impl $crate::callback::HelpCb for $ty_path {}
+        impl $crate::callback::HelpCb for $ty_path {}*/
     };
 }
 
@@ -121,6 +122,21 @@ impl Handle {
 }
 
 impl_element_nofrom!(Handle, "__iuprusthandle");
+/// Note: The wrapped element may not support `MapCb`.
+impl ::callback::MapCb for Handle {}
+/// Note: The wrapped element may not support `UnmapCb`.
+impl ::callback::UnmapCb for Handle {}
+/// Note: The wrapped element may not support `GetFocusCb`.
+impl ::callback::GetFocusCb for Handle {}
+/// Note: The wrapped element may not support `KillFocusCb`.
+impl ::callback::KillFocusCb for Handle {}
+/// Note: The wrapped element may not support `EnterWindowCb`.
+impl ::callback::EnterWindowCb for Handle {}
+/// Note: The wrapped element may not support `LeaveWindowCb`.
+impl ::callback::LeaveWindowCb for Handle {}
+/// Note: The wrapped element may not support `HelpCb`.
+impl ::callback::HelpCb for Handle {}
+// TODO impl K_ callbacks when it's implemented.
 
 
 /// Every IUP object is an `Element`.
