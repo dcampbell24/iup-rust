@@ -91,8 +91,8 @@ impl Handle {
         Handle(elem.raw())
     }
 
-    /// Constructs from a name associated with a element (with `Element::add_name` or LED).
-    pub fn from_name<S: Into<String>>(name: S) -> Option<Handle> {
+    /// Constructs from a name associated with a element handle (with `Element::add_handle_name` or LED).
+    pub fn from_named<S: Into<String>>(name: S) -> Option<Handle> {
         let cname = CString::new(name.into()).unwrap();
         match unsafe { iup_sys::IupGetHandle(cname.as_ptr()) } {
             ptr if ptr.is_null() => None,
@@ -225,46 +225,6 @@ pub trait Element where Self: Sized {
     fn reset_attrib<S: Into<String>>(&mut self, name: S) {
         let cname = CString::new(name.into()).unwrap();
         unsafe { iup_sys::IupResetAttribute(self.raw(), cname.as_ptr()) };
-    }
-
-    // TODO not sure if name, add_name and clear_name should be here on Element.
-
-    /// Returns the identifier of an interface element that has an associated name using
-    /// `Element::set_name` or using LED.
-    fn name(&self) -> Option<String> {
-        match unsafe { iup_sys::IupGetName(self.raw()) } {
-            name if name.is_null() => None,
-            name => Some(string_from_c_str!(name)),
-        }
-    }
-
-    /// Associates a name with an interface element.
-    ///
-    /// Can be called several times with the same element and different names.
-    /// There is no restriction for the number of names a pointer can have, but `Element::name`
-    /// will return the first name found.
-    ///
-    /// Returns the handle of the interface element previously associated to the parameter name.
-    fn add_name<S: Into<String>>(&self, name: S) -> Option<Handle> {
-        let cname = CString::new(name.into()).unwrap();
-        match unsafe { iup_sys::IupSetHandle(cname.as_ptr(), self.raw()) } {
-            ptr if ptr.is_null() => None,
-            ptr => Some(Handle::from_raw(ptr)),
-        }
-    }
-
-    /// Clears the name association on the specified name.
-    ///
-    /// Note this will not destroy associated elements, just remove a name from the
-    /// association table.
-    ///
-    /// Returns the handle of the interface element previously associated to the parameter name.
-    fn clear_name<S: Into<String>>(name: S) -> Option<Handle> {
-        let cname = CString::new(name.into()).unwrap();
-        match unsafe { iup_sys::IupSetHandle(cname.as_ptr(), ptr::null_mut()) } {
-            ptr if ptr.is_null() => None,
-            ptr => Some(Handle::from_raw(ptr)),
-        }
     }
 
     /// Creates (maps) the native interface objects corresponding to the given IUP interface elements. 
@@ -449,7 +409,7 @@ pub trait Element where Self: Sized {
     ///
     /// Works also for children of a menu that is associated with a dialog.
     ///
-    /// This function will only found the child if the NAME attribute is set at the control.
+    /// This function will only found the child if the **NAME attribute** is set at the control.
     ///
     /// The function returns immediatelly with the result (not needing to traverse the hierarchy)
     /// after the child is mapped.
@@ -518,6 +478,51 @@ pub trait Element where Self: Sized {
         match unsafe { iup_sys::IupConvertXYToPos(self.raw(), x as c_int, y as c_int) } {
             -1 => None,
             id => Some(id),
+        }
+    }
+
+
+    /// Returns the identifier of an interface element that has an associated handle name using
+    /// `Element::add_handle_name` or using LED.
+    ///
+    /// Handle names shouldn't be confused with the NAME attribute.
+    fn handle_name(&self) -> Option<String> {
+        match unsafe { iup_sys::IupGetName(self.raw()) } {
+            name if name.is_null() => None,
+            name => Some(string_from_c_str!(name)),
+        }
+    }
+
+    /// Associates a handle name with an interface element.
+    ///
+    /// Can be called several times with the same element and different names.
+    /// There is no restriction for the number of names a pointer can have, but `Element::name`
+    /// will return the first name found.
+    ///
+    /// Returns the handle of the interface element previously associated to the parameter name.
+    ///
+    /// Handle names shouldn't be confused with the NAME attribute.
+    fn add_handle_name<S: Into<String>>(&self, name: S) -> Option<Handle> {
+        let cname = CString::new(name.into()).unwrap();
+        match unsafe { iup_sys::IupSetHandle(cname.as_ptr(), self.raw()) } {
+            ptr if ptr.is_null() => None,
+            ptr => Some(Handle::from_raw(ptr)),
+        }
+    }
+
+    /// Clears the handle name association on the specified name.
+    ///
+    /// Note this will not destroy associated elements, just remove a name from the
+    /// association table.
+    ///
+    /// Returns the handle of the interface element previously associated to the parameter name.
+    ///
+    /// Handle names shouldn't be confused with the NAME attribute.
+    fn clear_handle_name<S: Into<String>>(name: S) -> Option<Handle> {
+        let cname = CString::new(name.into()).unwrap();
+        match unsafe { iup_sys::IupSetHandle(cname.as_ptr(), ptr::null_mut()) } {
+            ptr if ptr.is_null() => None,
+            ptr => Some(Handle::from_raw(ptr)),
         }
     }
 }

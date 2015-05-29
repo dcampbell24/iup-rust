@@ -24,8 +24,8 @@ fn main () {
 			)
 		"######).unwrap();
 
-    	let mut dialog = Dialog::from_handle(Handle::from_name("dlg").unwrap()).unwrap();
-		let mut button = Button::from_handle(Handle::from_name("btn").unwrap()).unwrap();
+    	let mut dialog = Dialog::from_handle(Handle::from_named("dlg").unwrap()).unwrap();
+		let mut button = Button::from_handle(Handle::from_named("btn").unwrap()).unwrap();
 		button.set_action(|_| CallbackReturn::Close);
 
 		dialog.show()
