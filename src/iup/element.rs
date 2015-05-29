@@ -89,6 +89,15 @@ impl Handle {
         Handle(elem.raw())
     }
 
+    /// Constructs from a name associated with a element (with `Element::add_name` or LED).
+    pub fn from_name<S: Into<String>>(name: S) -> Option<Handle> {
+        let cname = CString::new(name.into()).unwrap();
+        match unsafe { iup_sys::IupGetHandle(cname.as_ptr()) } {
+            ptr if ptr.is_null() => None,
+            ptr => Some(Handle::from_raw(ptr)),
+        }
+    }
+
     /// Converts this handle object into a element object if they are compatible.
     pub fn try_downcast<E: Element>(self) -> Result<E, Handle> {
         if self.can_downcast::<E>() {
@@ -159,6 +168,19 @@ pub trait Element where Self: Sized {
     /// Constructs another object that binds to the same IUP handle as this one.
     fn dup(&self) -> Self;
 
+    /// Destroys an interface element and all its children.
+    ///
+    /// Only dialogs, timers, popup menus and images should be normally destroyed, but **detached**
+    /// controls can also be destroyed.
+    ///
+    /// Menu bars associated with dialogs are automatically destroyed when the dialog is destroyed. 
+    ///
+    /// Images associated with controls are **NOT** automatically destroyed. The application must
+    /// destroy them when they are not used anymore.
+    fn destroy(self) {
+        unsafe { iup_sys::IupDestroy(self.raw()) };
+    }
+
     /// Sets an interface element attribute.
     ///
     /// See also the [IUP Attributes Guide][1].
@@ -203,17 +225,44 @@ pub trait Element where Self: Sized {
         unsafe { iup_sys::IupResetAttribute(self.raw(), cname.as_ptr()) };
     }
 
-    /// Destroys an interface element and all its children.
+    // TODO not sure if name, add_name and clear_name should be here on Element.
+
+    /// Returns the identifier of an interface element that has an associated name using
+    /// `Element::set_name` or using LED.
+    fn name(&self) -> Option<String> {
+        match unsafe { iup_sys::IupGetName(self.raw()) } {
+            name if name.is_null() => None,
+            name => Some(string_from_c_str!(name)),
+        }
+    }
+
+    /// Associates a name with an interface element.
     ///
-    /// Only dialogs, timers, popup menus and images should be normally destroyed, but **detached**
-    /// controls can also be destroyed.
+    /// Can be called several times with the same element and different names.
+    /// There is no restriction for the number of names a pointer can have, but `Element::name`
+    /// will return the first name found.
     ///
-    /// Menu bars associated with dialogs are automatically destroyed when the dialog is destroyed. 
+    /// Returns the handle of the interface element previously associated to the parameter name.
+    fn add_name<S: Into<String>>(&self, name: S) -> Option<Handle> {
+        let cname = CString::new(name.into()).unwrap();
+        match unsafe { iup_sys::IupSetHandle(cname.as_ptr(), self.raw()) } {
+            ptr if ptr.is_null() => None,
+            ptr => Some(Handle::from_raw(ptr)),
+        }
+    }
+
+    /// Clears the name association on the specified name.
     ///
-    /// Images associated with controls are **NOT** automatically destroyed. The application must
-    /// destroy them when they are not used anymore.
-    fn destroy(self) {
-        unsafe { iup_sys::IupDestroy(self.raw()) };
+    /// Note this will not destroy associated elements, just remove a name from the
+    /// association table.
+    ///
+    /// Returns the handle of the interface element previously associated to the parameter name.
+    fn clear_name<S: Into<String>>(name: S) -> Option<Handle> {
+        let cname = CString::new(name.into()).unwrap();
+        match unsafe { iup_sys::IupSetHandle(cname.as_ptr(), ptr::null_mut()) } {
+            ptr if ptr.is_null() => None,
+            ptr => Some(Handle::from_raw(ptr)),
+        }
     }
 
     /// Creates (maps) the native interface objects corresponding to the given IUP interface elements. 

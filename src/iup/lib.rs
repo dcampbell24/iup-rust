@@ -24,6 +24,8 @@ pub mod dialog;
 pub mod layout;
 pub mod control;
 
+pub mod led;
+
 
 /// Initialises IUP toolkit, calls `f` for user initialization and runs the application.
 ///
