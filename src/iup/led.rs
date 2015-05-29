@@ -24,8 +24,8 @@
 //! You need to check out the [IUP documentation][0] for each control to see their
 //! respective function signatures in LED.
 //!
-//! **Note:** Using LED may allow you to create controls not yet implemented in IUP Rust, and
-//! that's *fine*. Use `Element::Handle` to have access to controls created from LED.
+//! **Note:** Using LED may allow you to create controls not yet implemented in iup-rust and
+//! that's *fine*. Use a `Handle` to have access to controls created from LED.
 //!
 //! [0]: http://webserver2.tecgraf.puc-rio.br/iup/
 //! [1]: http://webserver2.tecgraf.puc-rio.br/iup/en/led.html

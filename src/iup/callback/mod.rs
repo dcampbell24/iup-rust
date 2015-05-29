@@ -1,4 +1,4 @@
-// TODO MOD DOC
+//! Event-driven communication.
 
 use iup_sys;
 
@@ -17,9 +17,11 @@ pub enum CallbackReturn {
     /// If this is returned from a callback, then when the callback returns the dialog containing
     /// the element on which the callback was invoked will be closed.
     Close,
-    /// TODO DOC
+    /// Callback specific, check the callback documentation to see if it accepts this return value
+    /// and it's effect.
     Ignore,
-    /// TODO DOC
+    /// Callback specific, check the callback documentation to see if it accepts this return value
+    /// and it's effect.
     Continue,
 }
 

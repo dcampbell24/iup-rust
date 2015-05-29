@@ -1,4 +1,6 @@
-// TODO MOD DOC
+//! Common operations between objects.
+//!
+//! Every IUP object is so called an element and can be encapsulated in a `Handle`.
 use iup_sys;
 use libc::c_int;
 use std::ptr;
@@ -10,7 +12,7 @@ use std::result::Result;
 ///
 /// This actually uses the `Handle` wrapper instead of `Element` due to the Sized requirement.
 /// 
-/// This should be passed to functions that expect a list of elements in the constructor and such.
+/// This should be passed to functions that expect a list of elements in the constructor.
 #[macro_export]
 macro_rules! elements {
     () => { vec! [] };
@@ -80,7 +82,7 @@ macro_rules! impl_element_nofrom {
 
 
 
-/// An object that can wrap **any** IUP element/handle.
+/// An object that can wrap **any** IUP element.
 pub struct Handle(*mut iup_sys::Ihandle);
 
 impl Handle {
@@ -486,7 +488,7 @@ pub trait Element where Self: Sized {
     /// The given element must be a container. It must be inside a dialog hierarchy and must be
     /// mapped. It can not be a dialog. For dialogs use `Element::refresh`.
     ///
-    /// This function will NOT change the size of the given element, even if the natural size of
+    /// This function will **not** change the size of the given element, even if the natural size of
     /// its children would increase its natural size.
     fn refresh_children(&mut self) { // XXX container specific, maybe move to a container trait
         unsafe { iup_sys::IupRefreshChildren(self.raw()) };
@@ -511,7 +513,7 @@ pub trait Element where Self: Sized {
     ///
     /// The x,y coordinates are relative to the left corner and top corner of the element.
     ///
-    /// Has a different effect for each control it is applied to.
+    /// This have a different effect for each control it is applied to.
     fn convert_xy_to_pos(&self, x: i32, y: i32) -> Option<i32> {
         match unsafe { iup_sys::IupConvertXYToPos(self.raw(), x as c_int, y as c_int) } {
             -1 => None,
