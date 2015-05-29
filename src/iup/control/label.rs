@@ -10,19 +10,19 @@ use Element;
 pub struct Label(*mut iup_sys::Ihandle);
 
 impl Label {
-	///Creates a label with no predefined text, image or separator.
-	pub fn new() -> Label {
-		unsafe { Label::from_raw(iup_sys::IupLabel(ptr::null_mut())) }
-	}
+    ///Creates a label with no predefined text, image or separator.
+    pub fn new() -> Label {
+        unsafe { Label::from_raw(iup_sys::IupLabel(ptr::null_mut())) }
+    }
 
-	// TODO new_separator()
-	// TODO with_image(...)
+    // TODO new_separator()
+    // TODO with_image(...)
 
-	/// Creates a label interface element which displays a text.
-	pub fn with_title<S: Into<String>>(label: S) -> Label {
-		let clabel = CString::new(label.into()).unwrap();
-		unsafe { Label::from_raw(iup_sys::IupLabel(clabel.as_ptr())) }
-	}
+    /// Creates a label interface element which displays a text.
+    pub fn with_title<S: Into<String>>(label: S) -> Label {
+        let clabel = CString::new(label.into()).unwrap();
+        unsafe { Label::from_raw(iup_sys::IupLabel(clabel.as_ptr())) }
+    }
 }
 
 impl_element!(Label, "label");

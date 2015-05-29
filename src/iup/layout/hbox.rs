@@ -12,11 +12,11 @@ use Element;
 pub struct HBox(*mut iup_sys::Ihandle);
 
 impl HBox {
-	/// Creates a horizontal container box with the specified childs.
-	pub fn new<A>(elems: A) -> HBox where A: AsRef<[Handle]>  {
-		let mut carray = slice_to_ih_array!(elems.as_ref());
-		unsafe { HBox::from_raw(iup_sys::IupHboxv(carray.as_mut_ptr())) }
-	}
+    /// Creates a horizontal container box with the specified childs.
+    pub fn new<A>(elems: A) -> HBox where A: AsRef<[Handle]>  {
+        let mut carray = slice_to_ih_array!(elems.as_ref());
+        unsafe { HBox::from_raw(iup_sys::IupHboxv(carray.as_mut_ptr())) }
+    }
 }
 
 impl_element!(HBox, "hbox");

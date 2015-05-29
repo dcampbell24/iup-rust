@@ -10,18 +10,18 @@ use Element;
 pub struct Button(*mut iup_sys::Ihandle);
 
 impl Button {
-	/// Creates a Button with no text.
-	pub fn new() -> Button {
-		unsafe { Button::from_raw(iup_sys::IupButton(ptr::null_mut(), ptr::null_mut())) }
-	}
+    /// Creates a Button with no text.
+    pub fn new() -> Button {
+        unsafe { Button::from_raw(iup_sys::IupButton(ptr::null_mut(), ptr::null_mut())) }
+    }
 
-	/// Creates a Button with the specified text.
-	pub fn with_title<S: Into<String>>(title: S) -> Button {
-		let clabel = CString::new(title.into()).unwrap();
-		unsafe { Button::from_raw(iup_sys::IupButton(clabel.as_ptr(), ptr::null_mut())) }
-	}
+    /// Creates a Button with the specified text.
+    pub fn with_title<S: Into<String>>(title: S) -> Button {
+        let clabel = CString::new(title.into()).unwrap();
+        unsafe { Button::from_raw(iup_sys::IupButton(clabel.as_ptr(), ptr::null_mut())) }
+    }
 
-	// TODO with_image
+    // TODO with_image
 }
 
 impl_element!(Button, "button");

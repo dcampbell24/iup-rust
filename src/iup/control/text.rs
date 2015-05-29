@@ -9,10 +9,10 @@ use Element;
 pub struct Text(*mut iup_sys::Ihandle);
 
 impl Text {
-	///Creates a Text with no predefined text.
-	pub fn new() -> Text {
-		unsafe { Text::from_raw(iup_sys::IupText(ptr::null_mut())) }
-	}
+    ///Creates a Text with no predefined text.
+    pub fn new() -> Text {
+        unsafe { Text::from_raw(iup_sys::IupText(ptr::null_mut())) }
+    }
 }
 
 impl_element!(Text, "text");
