@@ -11,6 +11,9 @@
 // This file is based on iup.h. If you update this file, please follow the same
 // formatting and ordering as found in iup.h to make comparison easy.
 
+// The IUP library this header file is derived from is a Tecgraf product under a MIT style license.
+// See LICENSE-TECGRAF for the full license.
+
 // #include "iupkey.h"
 // #include "iupdef.h"
 
