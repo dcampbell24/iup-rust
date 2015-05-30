@@ -25,9 +25,8 @@ are only being created as the author needs them or other contributers add them.
 Installation
 ------------
 
-See the iup-sys [README.md](https://github.com/dcampbell24/iup-rust/tree/master/iup-sys)
-for information on installing the IUP system libraries needed to use this
-library.
+See the iup-sys [README.md](https://github.com/dcampbell24/rust-iup-sys) for
+information on installing the IUP system libraries needed to use this library.
 
 Contribute
 ----------

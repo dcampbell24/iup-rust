@@ -7,8 +7,5 @@ authors = ["David Campbell <dcampbell24@gmail.com>"]
 name = "iup"
 
 [dependencies]
+iup-sys = "0.0"
 libc = "0.1"
-
-[dependencies.iup-sys]
-path = "iup-sys"
-version = "*"
