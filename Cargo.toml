@@ -5,7 +5,6 @@ authors = ["David Campbell <dcampbell24@gmail.com>"]
 
 [lib]
 name = "iup"
-path = "src/iup/lib.rs"
 
 [dependencies]
 libc = "0.1"
