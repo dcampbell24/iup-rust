@@ -17,7 +17,7 @@ information. Note that this crate only links with IUP, not IM or CD.
 After installing IUP, add this crate as a dependecny in your Cargo.toml file:
 ``` toml
 [dependencies]
-iup = "0.0"
+iup-sys = "0.0"
 ```
 
 License
