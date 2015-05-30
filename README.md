@@ -25,17 +25,9 @@ are only being created as the author needs them or other contributers add them.
 Installation
 ------------
 
-To use this library you must install IUP. See [download tips][2] for more
-information. Note that the iup-sys crate is currently only configured to link
-with IUP and not IM or CD.
-
-[2]: http://www.tecgraf.puc-rio.br/iup/en/download_tips.html
-
-After installing IUP, add this crate as a dependecny in your Cargo.toml file:
-```
-[dependencies.iup]
-git = "https://github.com/dcampbell24/iup-rust"
-```
+See the iup-sys [README.md](https://github.com/dcampbell24/iup-rust/tree/master/iup-sys)
+for information on installing the IUP system libraries needed to use this
+library.
 
 Contribute
 ----------
@@ -52,4 +44,4 @@ If you find any issues with the library, please create a github issue for it.
 License
 -------
 
-The project is licensed under the MIT license.
+The project is licensed under the MIT license. See LICENSE for the full license.
