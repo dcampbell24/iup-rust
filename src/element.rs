@@ -2,7 +2,7 @@
 //!
 //! Every IUP object is so called an element and can be encapsulated in a `Handle`.
 use iup_sys;
-use libc::c_int;
+use libc::{c_void, c_char, c_int};
 use std::ptr;
 use std::ffi::{CStr, CString};
 use callback::CallbackReturn;
@@ -174,7 +174,7 @@ pub trait Element where Self: Sized {
             unsafe {
                 // Note: DESTROY_CB is used here instead of LDESTROY_CB because the DESTROY_CB 
                 // is called later. LDESTROY_CB is used in callbacks.rs, see it for more details.
-                iup_sys::IupSetCallback(ih, str_to_c_str!("DESTROY_CB"), on_element_destroy);
+                iup_sys::IupSetCallback(ih, cstr!("DESTROY_CB"), on_element_destroy);
                 Element::from_raw_unchecked(ih)
             }
         }
@@ -202,7 +202,6 @@ pub trait Element where Self: Sized {
     /// Sets an interface element attribute.
     ///
     /// See also the [IUP Attributes Guide][1].
-    ///
     /// [1]: http://webserver2.tecgraf.puc-rio.br/iup/en/attrib_guide.html
     fn set_attrib<S1, S2>(&mut self, name: S1, value: S2) -> Self
                                         where S1: Into<String>, S2: Into<String> {
@@ -216,7 +215,6 @@ pub trait Element where Self: Sized {
     /// Gets an interface element attribute.
     ///
     /// See also the [IUP Attributes Guide][1].
-    ///
     /// [1]: http://webserver2.tecgraf.puc-rio.br/iup/en/attrib_guide.html
     fn attrib<S: Into<String>>(&self, name: S) -> Option<String> {
         // Notice IupGetAttribute does not really give strings but pointers (that may be anything)
@@ -225,10 +223,36 @@ pub trait Element where Self: Sized {
         let cname = CString::new(name.into()).unwrap();
         match unsafe { iup_sys::IupGetAttribute(self.raw(), cname.as_ptr()) } {
             cvalue if cvalue.is_null() => None,
-            cvalue => Some(string_from_c_str!(cvalue)),
+            cvalue => Some(string_from_cstr!(cvalue)),
         }
     }
 
+    /// Sets a raw interface element attribute.
+    ///
+    /// # Safety
+    /// While this function is not unsafe, care must be taken while using it, prefer to use
+    /// `Element::set_attrib` instead. The `data` pointer must live long enough (most of the time
+    /// statically).
+    ///
+    /// See also the [IUP Attributes Guide][1].
+    /// [1]: http://webserver2.tecgraf.puc-rio.br/iup/en/attrib_guide.html
+    fn set_attrib_data<S1>(&mut self, name: S1, data: *const c_void) -> Self
+                                                              where S1: Into<String> {
+        let cname = CString::new(name.into()).unwrap();                                        
+        unsafe { iup_sys::IupSetAttribute(self.raw(), cname.as_ptr(), data as *const c_char) };
+        self.dup()
+    }
+
+    /// Gets a raw interface element attribute.
+    ///
+    /// See also the [IUP Attributes Guide][1].
+    /// [1]: http://webserver2.tecgraf.puc-rio.br/iup/en/attrib_guide.html
+    fn attrib_data<S1>(&mut self, name: S1) -> *mut c_void
+                                       where S1: Into<String> {
+        let cname = CString::new(name.into()).unwrap();
+        unsafe { iup_sys::IupGetAttribute(self.raw(), cname.as_ptr()) as *mut c_void }
+    }
+    
     /// Clears the value associated with an attribute and use the default value.
     fn clear_attrib<S: Into<String>>(&mut self, name: S) {
         let cname = CString::new(name.into()).unwrap();
@@ -505,7 +529,7 @@ pub trait Element where Self: Sized {
     fn handle_name(&self) -> Option<String> {
         match unsafe { iup_sys::IupGetName(self.raw()) } {
             name if name.is_null() => None,
-            name => Some(string_from_c_str!(name)),
+            name => Some(string_from_cstr!(name)),
         }
     }
 
@@ -567,7 +591,7 @@ pub fn global<S: Into<String>>(name: S) -> Option<String> {
     let cname = CString::new(name.into()).unwrap();
     match unsafe { iup_sys::IupGetGlobal(cname.as_ptr()) } {
         cvalue if cvalue.is_null() => None,
-        cvalue => Some(string_from_c_str!(cvalue)),
+        cvalue => Some(string_from_cstr!(cvalue)),
     }
 }
 

@@ -1,7 +1,8 @@
 //! Event-driven communication.
 
 use iup_sys;
-use libc::{c_int};
+use libc::{c_char, c_int};
+use std::path::PathBuf;
 
 #[macro_use]
 mod macros;
@@ -83,6 +84,25 @@ impl IntoRust<i32> for c_int {
         self as i32
     }
 }
+
+impl IntoRust<usize> for c_int {
+    fn into_rust(self) -> usize {
+        self as usize
+    }
+}
+
+impl IntoRust<bool> for c_int {
+    fn into_rust(self) -> bool {
+        self != 0
+    }
+}
+
+impl IntoRust<PathBuf> for *const c_char {
+    fn into_rust(self) -> PathBuf {
+        PathBuf::from(string_from_cstr!(self))
+    }
+}
+
 
 // This is called right when a IUP element is being destroyed and it should free up all data
 // associated with callbacks. Just use the `drop_callback!` macro for each callback implemented.

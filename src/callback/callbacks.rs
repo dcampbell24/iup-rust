@@ -1,3 +1,5 @@
+use libc::{c_char, c_int};
+use std::path::PathBuf;
 
 // http://sourceforge.net/p/iup/iup/2620/tree//trunk/iup/include/iupcbs.h
 
@@ -11,6 +13,9 @@ impl_callback! {
     /// Removes a previosly set up idle_action callback.
     pub fn remove_idle() -> Option<Box<_>>;
 }
+
+// Common Callbacks
+// ----------------------------
 
 // This is the common version of the ACTION callback, any so called ACTION that does not
 // have the `(*mut iup_sys::Ihandle)` signature should be another trait.
@@ -135,3 +140,35 @@ impl_callback! {
         fn remove_help_cb(&mut self) -> Option<Box<_>>;
     }
 }
+
+// Other Callbacks
+// ----------------------------
+
+impl_callback! {
+    /// Action called when a file is *dropped* into the control.
+    ///
+    /// When several files are dropped at once, the callback is called several times, once for
+    /// each file. 
+    ///
+    /// If defined after the element is mapped then the attribute DROPFILESTARGET must be set
+    /// to YES.
+    ///
+    /// The third parameter of the callback is the number index of the dropped file. If several
+    /// files are dropped, it is the index of the dropped file starting from *total-1* to *0*.
+    /// The fourth and fifth parameters are x,y coordinate of the point where the user
+    /// released the mouse button.
+    ///
+    /// if `CallbackReturn::Ignore`  is returned the callback will **not** be called for the
+    /// next dropped files, and the processing of dropped files will be interrupted.
+    ///
+    #[doc="\\[Windows and GTK Only\\] (GTK 2.6)"]
+    pub trait DropFilesCb where Self: Element {
+        let name = "DROPFILES_CB";
+        extern fn listener(ih: *mut iup_sys::Ihandle, filename: *const c_char,
+                           num: c_int, x: c_int, y: c_int) -> CallbackReturn;
+        fn set_dropfiles_cb<F: Callback(Self, PathBuf, usize, i32, i32)>(&mut self, cb: F) -> Self;
+        fn remove_dropfiles_cb(&mut self) -> Option<Box<_>>;
+        // TODO should it be plural (dropfiles_cb) just like IUP or singular (dropfile_cb)?
+    }
+}
+

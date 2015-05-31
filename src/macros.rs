@@ -1,7 +1,7 @@
 // TODO MOD DOC
 
 /// Converts a Rust string literal into a C null terminated string literal typed `c_char`.
-macro_rules! str_to_c_str {
+macro_rules! cstr {
     ($str_lit:expr) => {{    // must be a literal!!!
         use libc::c_char;
         concat!($str_lit, '\0').as_ptr() as *const c_char
@@ -9,7 +9,7 @@ macro_rules! str_to_c_str {
 }
 
 /// Converts a `*const c_char` pointer into a owned `String`.
-macro_rules! string_from_c_str {
+macro_rules! string_from_cstr {
     ($c_str:expr) => {{
         use std::ffi::CStr;
         let cstr = $c_str;

@@ -122,12 +122,6 @@ impl IntoRust<MouseButtonState> for c_int {
     }
 }
 
-impl IntoRust<bool> for c_int {
-    fn into_rust(self) -> bool {
-        self != 0
-    }
-}
-
 
 impl_callback! {
     /// Action generated when a mouse button is pressed or released.

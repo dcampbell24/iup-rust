@@ -4,7 +4,7 @@ macro_rules! fbox_c_str {
     ($cb_name:expr) => {
         // It's important to use the prefix '_IUP*', it's reserved by IUP for internal use and bindings.
         // So we use '_IUPRUST_*' prefix to refer to data reserved for the Rust binding.
-        str_to_c_str!(concat!("_IUPRUST_FBOX_", $cb_name))
+        cstr!(concat!("_IUPRUST_FBOX_", $cb_name))
     }
 }
 
@@ -27,9 +27,9 @@ macro_rules! set_fbox_callback {
         let fb: Box<Box<$crate::callback::Callback<$($rargs),*>>> = Box::new(Box::new($rcb));
         iup_sys::IupSetAttribute(ih, fbox_c_str!($cb_name), box_into_raw(fb) as *const _);
         if ih.is_null() {
-            iup_sys::IupSetFunction(str_to_c_str!($cb_name), transmute($clistener));
+            iup_sys::IupSetFunction(cstr!($cb_name), transmute($clistener));
         } else {
-            iup_sys::IupSetCallback(ih, str_to_c_str!($cb_name), transmute($clistener));
+            iup_sys::IupSetCallback(ih, cstr!($cb_name), transmute($clistener));
         }
         
     }}
@@ -59,9 +59,9 @@ macro_rules! clear_fbox_callback {
             iup_sys::IupSetAttribute(ih, fbox_c_str!($cb_name), ptr::null());
 
             if ih.is_null() {
-                iup_sys::IupSetFunction(str_to_c_str!($cb_name), transmute(ptr::null::<u8>()));
+                iup_sys::IupSetFunction(cstr!($cb_name), transmute(ptr::null::<u8>()));
             } else {
-                iup_sys::IupSetCallback(ih, str_to_c_str!($cb_name), transmute(ptr::null::<u8>()));
+                iup_sys::IupSetCallback(ih, cstr!($cb_name), transmute(ptr::null::<u8>()));
             }
             
             Some(*inner_box)
@@ -118,9 +118,12 @@ macro_rules! impl_callback {
 
                 use std::mem::transmute;
                 use $crate::iup_sys;
+                #[allow(unused_imports)]
+                use $crate::callback::IntoRust;
 
                 extern fn listener<Self0: $trait_name>(ih: *mut iup_sys::Ihandle, $($ls_arg: $ls_arg_ty),*)
                         -> $crate::iup_sys::CallbackReturn {
+
                     let fbox: &mut Box<_> = get_fbox_callback!(ih, $cb_name, Callback<(Self0, $($fn_arg_ty),*)>);
                     let element = unsafe { <Self0 as $crate::Element>::from_raw_unchecked(ih) };
                     fbox.on_callback((element, $($ls_arg.into_rust()),*))
@@ -160,8 +163,10 @@ macro_rules! impl_callback {
                     where F: $crate::callback::Callback<($($fn_arg_ty),*)> {
 
                 use std::mem::transmute;
-                use $crate::iup_sys;
                 use std::ptr;
+                use $crate::iup_sys;
+                #[allow(unused_imports)]
+                use $crate::callback::IntoRust;
 
                 extern fn listener($($ls_arg: $ls_arg_ty),*)
                         -> $crate::iup_sys::CallbackReturn {

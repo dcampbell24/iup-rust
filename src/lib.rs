@@ -26,6 +26,23 @@ pub mod control;
 
 pub mod led;
 
+pub enum Orientation {
+    Vertical,
+    Horizontal,
+}
+
+impl Orientation {
+    #[doc(hidden)]
+    pub fn as_cstr(self) -> *const libc::c_void {
+        use self::Orientation::*;
+        let cstr = match self {
+            Vertical => cstr!("VERTICAL"),
+            Horizontal => cstr!("HORIZONTAL"),
+        };
+        cstr as *const libc::c_void
+    }
+}
+
 
 /// Initialises IUP toolkit, calls `f` for user initialization and runs the application.
 ///
@@ -56,7 +73,7 @@ pub fn with_iup<F: FnOnce() -> Result<(), String>>(f: F) -> Result<(), String> {
 
 /// Returns a string with the IUP version number.
 pub fn version() -> String {
-    string_from_c_str!(unsafe { iup_sys::IupVersion() })
+    string_from_cstr!(unsafe { iup_sys::IupVersion() })
 }
 
 /// Returns a number indicating the IUP version.

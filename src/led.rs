@@ -52,7 +52,7 @@ pub fn load<P: AsRef<Path>>(path: P) -> Result<(), String> {
 
     match unsafe { iup_sys::IupLoad(cstr.as_ptr()) } {
         err if err.is_null() => Ok(()),
-        err => Err(string_from_c_str!(err)),
+        err => Err(string_from_cstr!(err)),
     }
 }
 
@@ -63,7 +63,7 @@ pub fn load_buffer<S: Into<String>>(buf: S) -> Result<(), String> {
     let cstr = CString::new(buf.into()).unwrap();
     match unsafe { iup_sys::IupLoadBuffer(cstr.as_ptr()) } {
         err if err.is_null() => Ok(()),
-        err => Err(string_from_c_str!(err)),
+        err => Err(string_from_cstr!(err)),
     }
 }
 
