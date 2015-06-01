@@ -1,4 +1,4 @@
-use libc::{c_char, c_int};
+use libc::c_char;
 use std::path::PathBuf;
 
 // http://sourceforge.net/p/iup/iup/2620/tree//trunk/iup/include/iupcbs.h

@@ -4,7 +4,6 @@ use iup_sys;
 use libc::{c_char, c_int};
 use std::path::PathBuf;
 use std::char;
-use std::mem::transmute;
 
 #[macro_use]
 mod macros;
@@ -35,14 +34,14 @@ pub enum CallbackReturn {
 }
 
 impl CallbackReturn {
-    fn to_cb_return(self) -> iup_sys::CallbackReturn {
+    fn to_cb_return(self) -> c_int {
         use self::CallbackReturn::*;
         match self {
-            Close => iup_sys::CallbackReturn::Close,
-            Default => iup_sys::CallbackReturn::Default,
-            Ignore => iup_sys::CallbackReturn::Ignore,
-            Continue => iup_sys::CallbackReturn::Continue,
-            Char(c) => unsafe { transmute(c) }, // HACK, should be soon fixed by rust-iup-sys/#1
+            Close => iup_sys::IUP_CLOSE,
+            Default => iup_sys::IUP_DEFAULT,
+            Ignore => iup_sys::IUP_IGNORE,
+            Continue => iup_sys::IUP_CONTINUE,
+            Char(c) => c as c_int,
         }
     }
 }
@@ -55,7 +54,7 @@ impl From<()> for CallbackReturn {
 }
 
 pub trait Callback<Args> : 'static {
-    fn on_callback(&mut self, args: Args) -> iup_sys::CallbackReturn; 
+    fn on_callback(&mut self, args: Args) -> c_int; 
 }
 
 // TODO `Callback<Args> for F where F: FnMut<Args, Output=Out>`
@@ -68,7 +67,7 @@ pub trait Callback<Args> : 'static {
 impl<Args, Out: Into<CallbackReturn>, F: 'static> Callback<Args> for F where F: FnMut(Args) -> Out {
     /// Because of the `impl From<()> for CallbackReturn`, closures that return `()` can be
     /// accepted by this impl.
-    fn on_callback(&mut self, args: Args) -> iup_sys::CallbackReturn {
+    fn on_callback(&mut self, args: Args) -> c_int {
         let r = self(args).into();
         r.to_cb_return()
     }

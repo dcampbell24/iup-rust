@@ -5,7 +5,6 @@ use iup_sys;
 use libc::{c_void, c_char, c_int};
 use std::ptr;
 use std::ffi::{CStr, CString};
-use callback::CallbackReturn;
 use std::result::Result;
 
 /// Makes a Vec of `Element` trait objects.
@@ -605,7 +604,7 @@ pub fn clear_attrib<S: Into<String>>(name: S) {
 /// Called whenever a Element gets destroyed.
 ///
 /// Use this to perform frees related to the Rust binding that are per-element.
-extern fn on_element_destroy(ih: *mut iup_sys::Ihandle) -> iup_sys::CallbackReturn {
+extern fn on_element_destroy(ih: *mut iup_sys::Ihandle) -> c_int {
     unsafe { ::callback::drop_callbacks(ih); }
-    iup_sys::CallbackReturn::Default
+    iup_sys::IUP_DEFAULT
 }

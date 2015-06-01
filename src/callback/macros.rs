@@ -117,13 +117,12 @@ macro_rules! impl_callback {
                     where F: $crate::callback::Callback<(Self, $($fn_arg_ty),*)> {
 
                 use std::mem::transmute;
+                use libc::c_int;
                 use $crate::iup_sys;
                 #[allow(unused_imports)]
                 use $crate::callback::IntoRust;
 
-                extern fn listener<Self0: $trait_name>(ih: *mut iup_sys::Ihandle, $($ls_arg: $ls_arg_ty),*)
-                        -> $crate::iup_sys::CallbackReturn {
-
+                extern fn listener<Self0: $trait_name>(ih: *mut iup_sys::Ihandle, $($ls_arg: $ls_arg_ty),*) -> c_int {
                     let fbox: &mut Box<_> = get_fbox_callback!(ih, $cb_name, Callback<(Self0, $($fn_arg_ty),*)>);
                     let element = unsafe { <Self0 as $crate::Element>::from_raw_unchecked(ih) };
                     fbox.on_callback((element, $($ls_arg.into_rust()),*))
@@ -164,12 +163,12 @@ macro_rules! impl_callback {
 
                 use std::mem::transmute;
                 use std::ptr;
+                use libc::c_int;
                 use $crate::iup_sys;
                 #[allow(unused_imports)]
                 use $crate::callback::IntoRust;
 
-                extern fn listener($($ls_arg: $ls_arg_ty),*)
-                        -> $crate::iup_sys::CallbackReturn {
+                extern fn listener($($ls_arg: $ls_arg_ty),*) -> c_int {
                     let fbox: &mut Box<_> = get_fbox_callback!(ptr::null_mut(), $cb_name, Callback<($($fn_arg_ty),*)>);
                     fbox.on_callback(($($ls_arg.into_rust()),*))
                 }
