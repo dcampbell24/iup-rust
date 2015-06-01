@@ -15,7 +15,7 @@ use std::result::Result;
 #[macro_export]
 macro_rules! elements {
     () => { vec! [] };
-    ($($elem:expr),*) => { vec! [ $($crate::element::Handle::from_element($elem)),* ] };
+    ($($elem:expr),*) => { vec! [ $($crate::element::Handle::from($elem)),* ] };
 }
 
 /// This macro should be used for every type binding IUP handles.
@@ -30,7 +30,7 @@ macro_rules! impl_element {
 
         impl From<$ty_path> for $crate::element::Handle {
             fn from(elem: $ty_path) -> $crate::element::Handle {
-                $crate::element::Handle::from_element(elem)
+                unsafe { $crate::element::Handle::from_raw_unchecked(elem.raw()) }
             }
         }
     };
@@ -86,10 +86,6 @@ macro_rules! impl_element_nofrom {
 pub struct Handle(*mut iup_sys::Ihandle);
 
 impl Handle {
-    /// Constructs from another elementar object.
-    pub fn from_element<E: Element>(elem: E) -> Handle {
-        Handle(elem.raw())
-    }
 
     /// Constructs from a name associated with a element handle (with `Element::add_handle_name` or LED).
     pub fn from_named<S: Into<String>>(name: S) -> Option<Handle> {
