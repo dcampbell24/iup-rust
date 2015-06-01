@@ -70,14 +70,6 @@ macro_rules! impl_element_nofrom {
         }
 
         impl $crate::callback::DestroyCb for $ty_path {}
-        // TODO remove those from impl_element, must be 'impl'ed manually by each object instead.
-        /*impl $crate::callback::MapCb for $ty_path {}
-        impl $crate::callback::UnmapCb for $ty_path {}
-        impl $crate::callback::GetFocusCb for $ty_path {}
-        impl $crate::callback::KillFocusCb for $ty_path {}
-        impl $crate::callback::EnterWindowCb for $ty_path {}
-        impl $crate::callback::LeaveWindowCb for $ty_path {}
-        impl $crate::callback::HelpCb for $ty_path {}*/
     };
 }
 

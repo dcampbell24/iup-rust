@@ -1,4 +1,3 @@
-// TODO MOD DOC
 use iup_sys;
 use libc::{c_char, c_int};
 use std::{mem, ptr};
@@ -101,7 +100,7 @@ impl_callback! {
     ///  + `CallbackReturn::Default` or `()` for the default reaction.
     ///  + `CallbackReturn::Close` will be processed, but the change will be ignored.
     ///  + `CallbackReturn::Ignore` ignores the new value.
-    ///  + An `CallbackReturn::Char`, if the received `c` is `None` or `\0` is returned it'll act
+    ///  + An `CallbackReturn::Char`, if the received `c` is `None` or NUL is returned it'll act
     ///    just like `CallbackReturn::Default` otherwise the returned character will be used
     ///    instead of the one sent to the callback.
     ///

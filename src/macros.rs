@@ -1,4 +1,3 @@
-// TODO MOD DOC
 
 /// Converts a Rust string literal into a C null terminated string literal typed `c_char`.
 macro_rules! cstr {
