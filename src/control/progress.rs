@@ -8,10 +8,10 @@ use Element;
 pub struct ProgressBar(*mut iup_sys::Ihandle);
 
 impl ProgressBar {
-	/// Creates a progress bar control.
-	pub fn new() -> ProgressBar {
-		unsafe { ProgressBar::from_raw(iup_sys::IupProgressBar()) } 
-	}
+    /// Creates a progress bar control.
+    pub fn new() -> ProgressBar {
+        unsafe { ProgressBar::from_raw(iup_sys::IupProgressBar()) } 
+    }
 }
 
 impl_element!(ProgressBar, "progressbar");
