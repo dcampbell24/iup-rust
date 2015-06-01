@@ -92,24 +92,24 @@ impl ::callback::ValueChangedCb for Text {}
 /// See the `TextAction` documentation.
 impl self::TextAction for Text {}
 impl_callback! {
-    /// Action generated when the text is edited, but before its value is actually changed.
-    ///
-    /// Can be generated when using the keyboard, undo system or from the clipboard.
-    /// 
-    /// The following values can be returned from the callback:
-    ///  + `CallbackReturn::Default` or `()` for the default reaction.
-    ///  + `CallbackReturn::Close` will be processed, but the change will be ignored.
-    ///  + `CallbackReturn::Ignore` ignores the new value.
-    ///  + An `CallbackReturn::Char`, if the received `c` is `None` or NUL is returned it'll act
-    ///    just like `CallbackReturn::Default` otherwise the returned character will be used
-    ///    instead of the one sent to the callback.
-    ///
-    /// The VALUE attribute can be changed only if `CallbackReturn::Ignore` is returned.
-    ///
-    /// **NOTE:** The **character** received and returned must be in the ASCII range of
-    ///  UTF-8 (0-127). No restriction on the `newvalue` string, when the value added to the VALUE
-    /// is a non-ASCII character the `c` parameter will be `None` but the value is still used for
-    /// updating the VALUE attribute.
+    #[doc="Action generated when the text is edited, but before its value is actually changed."]
+    #[doc=""]
+    #[doc="Can be generated when using the keyboard, undo system or from the clipboard."]
+    #[doc=""]
+    #[doc="The following values can be returned from the callback:"]
+    #[doc=" + `CallbackReturn::Default` or `()` for the default reaction."]
+    #[doc=" + `CallbackReturn::Close` will be processed, but the change will be ignored."]
+    #[doc=" + `CallbackReturn::Ignore` ignores the new value."]
+    #[doc=" + An `CallbackReturn::Char`, if the received `c` is `None` or NUL is returned it'll act"]
+    #[doc="   just like `CallbackReturn::Default` otherwise the returned character will be used"]
+    #[doc="   instead of the one sent to the callback."]
+    #[doc=""]
+    #[doc="The VALUE attribute can be changed only if `CallbackReturn::Ignore` is returned."]
+    #[doc=""]
+    #[doc="**NOTE:** The **character** received and returned must be in the ASCII range of"]
+    #[doc=" UTF-8 (0-127). No restriction on the `newvalue` string, when the value added to the VALUE"]
+    #[doc="is a non-ASCII character the `c` parameter will be `None` but the value is still used for"]
+    #[doc="updating the VALUE attribute."]
     pub trait TextAction where Self: Element {
         let name = "ACTION";
         extern fn listener(ih: *mut iup_sys::Ihandle, c: c_int, newvalue: *const c_char) -> CallbackReturn;

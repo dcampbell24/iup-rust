@@ -39,11 +39,11 @@ impl ::callback::ValueChangedCb for Toggle {}
 /// See the `ToggleAction` documentation.
 impl self::ToggleAction for Toggle {}
 impl_callback! {
-    /// Action generated when the toggle's state (on/off) was changed.
-    ///
-    /// The callback boolean parameter represents the state the toggle was switched to.
-    ///
-    /// `CallbackReturn::Close` will be processed
+    #[doc="Action generated when the toggle's state (on/off) was changed."]
+    #[doc=""]
+    #[doc="The callback boolean parameter represents the state the toggle was switched to."]
+    #[doc=""]
+    #[doc="`CallbackReturn::Close` will be processed"]
     pub trait ToggleAction where Self: Element {
         let name = "ACTION";
         extern fn listener(ih: *mut iup_sys::Ihandle, state: c_int) -> CallbackReturn;
