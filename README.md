@@ -1,31 +1,28 @@
-IUP Rust
-========
-
 [![Build Status](https://travis-ci.org/dcampbell24/iup-rust.svg)](https://travis-ci.org/dcampbell24/iup-rust)
 [![Join the chat at https://gitter.im/dcampbell24/iup-rust](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/dcampbell24/iup-rust?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-This library provides a thin wrapper around [IUP][1], which is a multi-platform
-toolkit for building graphical user interfaces. For a full overview of IUP see
-the overview section on IUP's website
+IUP Rust
+========
+
+_WARNING: this library is currently undergoing many changes!_
+
+This library provides a high level wrapper around [IUP][1], a multi-platform
+toolkit for building graphical user interfaces. See [rust-iup-sys](https://github.com/dcampbell24/rust-iup-sys) for low level bindings.
 
 [1]: http://www.tecgraf.puc-rio.br/iup/
-
-See the examples directory for examples of simple programs.
 
 Features
 --------
 
-Currently, code written with library looks a lot like IUP C code, but this may
-change in the future. The main goal right now is to allow people to create
-simple GUI applications in Rust.
+The library is currently undergoing significant changes in its architecture to
+move toward a more Rustic approach using structs and traits to wrap IUP objects.
 
-Although there are FFI bindings for most of the library, higher level wrappers
-are only being created as the author needs them or other contributers add them.
+More to come soon.
 
 Installation
 ------------
 
-See the iup-sys [README.md](https://github.com/dcampbell24/rust-iup-sys) for
+See [rust-iup-sys](https://github.com/dcampbell24/rust-iup-sys) for
 information on installing the IUP system libraries needed to use this library.
 
 Contribute
