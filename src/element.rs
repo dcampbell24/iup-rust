@@ -15,6 +15,7 @@ use std::result::Result;
 #[macro_export]
 macro_rules! elements {
     () => { vec! [] };
+    ($($elem:expr),+,) => { elements! [ $($elem),+ ] };
     ($($elem:expr),*) => { vec! [ $($crate::element::Handle::from($elem)),* ] };
 }
 
@@ -140,6 +141,15 @@ pub trait Element where Self: Sized {
     /// Constructs a specialized Element object from a general Handle if they are compatible.
     fn from_handle(handle: Handle) -> Result<Self, Handle> {
         handle.try_downcast::<Self>()
+    }
+
+    /// Constructs from a name associated with a element handle (with `Element::add_handle_name` or LED).
+    fn from_name<S: Into<String>>(name: S) -> Option<Handle> {
+        let cname = CString::new(name.into()).unwrap();
+        match unsafe { iup_sys::IupGetHandle(cname.as_ptr()) } {
+            ptr if ptr.is_null() => None,
+            ptr => Some(Handle::from_raw(ptr)),
+        }
     }
 
     /// Constructs an Element from a raw IUP handle.
