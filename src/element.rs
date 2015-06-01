@@ -585,7 +585,6 @@ pub fn set_global<S1, S2>(name: S1, value: S2)
 ///
 /// This function’s return value is not necessarily the same one used by the application to
 /// set the attribute’s value.
-///
 pub fn global<S: Into<String>>(name: S) -> Option<String> {
     let cname = CString::new(name.into()).unwrap();
     match unsafe { iup_sys::IupGetGlobal(cname.as_ptr()) } {
@@ -598,6 +597,18 @@ pub fn global<S: Into<String>>(name: S) -> Option<String> {
 pub fn clear_attrib<S: Into<String>>(name: S) {
     let cname = CString::new(name.into()).unwrap();
     unsafe { iup_sys::IupSetGlobal(cname.as_ptr(), ptr::null()) };
+}
+
+pub fn set_global_data<S1>(name: S1, data: *const c_void)
+                                            where S1: Into<String> {
+    let cname = CString::new(name.into()).unwrap();
+    unsafe { iup_sys::IupSetGlobal(cname.as_ptr(), data as *const _) };
+}
+
+pub fn global_data<S1>(name: S1) -> *mut c_void
+                           where S1: Into<String> {
+    let cname = CString::new(name.into()).unwrap();
+    unsafe { iup_sys::IupGetGlobal(cname.as_ptr()) as *mut c_void }
 }
 
 

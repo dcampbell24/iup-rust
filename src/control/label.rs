@@ -18,7 +18,7 @@ impl Label {
 
     /// Creates a label separator in the specified orientation.
     pub fn new_separator(orient: Orientation) -> Label {
-        Label::new().set_attrib_data("SEPARATOR", orient.as_cstr())
+        Label::new().set_attrib_data("SEPARATOR", orient.as_cstr() as *const _)
     }
 
     // TODO with_image(...)

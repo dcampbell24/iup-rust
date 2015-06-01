@@ -34,13 +34,12 @@ pub enum Orientation {
 
 impl Orientation {
     #[doc(hidden)]
-    pub fn as_cstr(self) -> *const libc::c_void {
+    pub fn as_cstr(self) -> *const libc::c_char {
         use self::Orientation::*;
-        let cstr = match self {
+        match self {
             Vertical => cstr!("VERTICAL"),
             Horizontal => cstr!("HORIZONTAL"),
-        };
-        cstr as *const libc::c_void
+        }
     }
 }
 
@@ -55,21 +54,29 @@ impl Orientation {
 /// Returns `Ok` if the IUP initialization and initialization were successful. `Err` otherwise,
 /// forwarding the user error if possible.
 pub fn with_iup<F: FnOnce() -> Result<(), String>>(f: F) -> Result<(), String> {
-    unsafe {
-        match iup_sys::IupOpen(ptr::null(), ptr::null()) {
-            iup_sys::IUP_NOERROR => {},
-            iup_sys::IUP_OPENED => return Err("IUP_OPENED: iup::open called while already open.".into()),
-            iup_sys::IUP_ERROR => return Err("IUP_ERROR: X-Windows is not initialized".into()),
-            _ => unreachable!(),
-        };
-        let result = f();
-        if result.is_ok() {
-            // IupMainLoop always returns IUP_NOERROR.
-            iup_sys::IupMainLoop();
-        }
-        iup_sys::IupClose();
-        result
+    match unsafe { iup_sys::IupOpen(ptr::null(), ptr::null()) } {
+        iup_sys::IUP_NOERROR => {},
+        iup_sys::IUP_OPENED => return Err("IUP_OPENED: iup::open called while already open.".into()),
+        iup_sys::IUP_ERROR => return Err("IUP_ERROR: X-Windows is not initialized".into()),
+        _ => unreachable!(),
+    };
+
+    // Turn UTF-8 mode ON since Rust uses UTF-8 on strings.
+    match element::global("DRIVER").unwrap().as_ref() {
+        "GTK" | "Win32" => unsafe {
+            iup_sys::IupSetGlobal(cstr!("UTF8MODE"), cstr!("YES"));
+            iup_sys::IupSetGlobal(cstr!("UTF8MODE_FILE"), cstr!("YES"));
+        },
+        _ => println!("Warning: This IUP driver does not seem to support UTF-8!"),
     }
+
+    let result = f();
+    if result.is_ok() {
+        // IupMainLoop always returns IUP_NOERROR.
+        unsafe { iup_sys::IupMainLoop(); }
+    }
+    unsafe { iup_sys::IupClose(); }
+    result
 }
 
 /// Returns a string with the IUP version number.
