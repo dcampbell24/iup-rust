@@ -149,3 +149,20 @@ impl_callback! {
         fn remove_button_cb(&mut self) -> Option<Box<_>>;
     }
 }
+
+impl_callback! {
+    /// Action generated when the mouse moves.
+    ///
+    /// The `i32` parameters are the x,y position in the canvas where the event has occurred,
+    /// in pixels.
+    ///
+    /// The `KeyStates` parameter is the state of the mouse buttons and some keyboard keys at
+    //// the moment the event is generated.
+    pub trait MotionCb where Self: Element {
+        let name = "MOTION_CB";
+        extern fn listener(ih: *mut iup_sys::Ihandle, x: c_int, y: c_int, status: *mut c_char) -> CallbackReturn;
+        fn set_motion_cb<F: Callback(Self, i32, i32, KeyStates)>(&mut self, cb: F) -> Self;
+        fn remove_motion_cb(&mut self) -> Option<Box<_>>;
+    }
+}
+

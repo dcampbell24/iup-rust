@@ -3,6 +3,8 @@
 use iup_sys;
 use libc::{c_char, c_int};
 use std::path::PathBuf;
+use std::char;
+use std::mem::transmute;
 
 #[macro_use]
 mod macros;
@@ -27,6 +29,9 @@ pub enum CallbackReturn {
     /// Callback specific, check the callback documentation to see if it accepts this return value
     /// and it's effect.
     Continue,
+    /// Callback specific, check the callback documentation to see if it accepts this return value
+    /// and it's effect.
+    Char(char),
 }
 
 impl CallbackReturn {
@@ -37,6 +42,7 @@ impl CallbackReturn {
             Default => iup_sys::CallbackReturn::Default,
             Ignore => iup_sys::CallbackReturn::Ignore,
             Continue => iup_sys::CallbackReturn::Continue,
+            Char(c) => unsafe { transmute(c) }, // HACK, should be soon fixed by rust-iup-sys/#1
         }
     }
 }
@@ -75,7 +81,7 @@ impl<Args, Out: Into<CallbackReturn>, F: 'static> Callback<Args> for F where F: 
 ///
 /// This trait method `into_rust` is called from the `impl_callback!` macro.
 #[doc(hidden)]
-trait IntoRust<T> {
+pub trait IntoRust<T> {
     fn into_rust(self) -> T;
 }
 
@@ -100,6 +106,18 @@ impl IntoRust<bool> for c_int {
 impl IntoRust<PathBuf> for *const c_char {
     fn into_rust(self) -> PathBuf {
         PathBuf::from(string_from_cstr!(self))
+    }
+}
+
+impl IntoRust<String> for *const c_char {
+    fn into_rust(self) -> String {
+        string_from_cstr!(self)
+    }
+}
+
+impl IntoRust<Option<char>> for c_int {
+    fn into_rust(self) -> Option<char> {
+        if self == 0 { None } else { Some(char::from_u32(self as u32).unwrap()) }
     }
 }
 

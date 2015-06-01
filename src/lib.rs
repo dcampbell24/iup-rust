@@ -18,6 +18,7 @@ pub mod element;
 pub use element::Handle;
 pub use element::Element;
 
+#[macro_use]
 pub mod callback;
 
 pub mod dialog;

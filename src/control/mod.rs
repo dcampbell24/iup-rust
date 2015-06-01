@@ -5,6 +5,6 @@ pub mod label;
 pub mod text;
 pub mod button;
 
-pub use self::text::Text;
+pub use self::text::{Text, TextAction};
 pub use self::label::Label;
 pub use self::button::Button;

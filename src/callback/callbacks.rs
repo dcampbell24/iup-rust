@@ -145,6 +145,42 @@ impl_callback! {
 // ----------------------------
 
 impl_callback! {
+    /// Action generated when the caret/cursor position is changed.
+    ///
+    /// The second and third parameters are the line and column number (start at 1).
+    /// The fourth parameter is a 0 based character position.
+    pub trait CaretCb where Self: Element {
+        let name = "CARET_CB";
+        extern fn listener(ih: *mut iup_sys::Ihandle, lin: c_int, col: c_int, pos: c_int) -> CallbackReturn;
+        fn set_caret_cb<F: Callback(Self, i32, i32, usize)>(&mut self, cb: F) -> Self;
+        fn remove_caret_cb(&mut self) -> Option<Box<_>>;
+    }
+}
+
+impl_callback! {
+    /// Action generated when a spin button is pressed.
+    pub trait SpinCb where Self: Element {
+        let name = "SPIN_CB";
+        extern fn listener(ih: *mut iup_sys::Ihandle, i: c_int) -> CallbackReturn;
+        fn set_spin_cb<F: Callback(Self, i32)>(&mut self, cb: F) -> Self;
+        fn remove_spin_cb(&mut self) -> Option<Box<_>>;
+    }
+}
+
+impl_callback! {
+    /// Usually called after the value of a control changed.
+    ///
+    /// See the specific control documentation for more details.
+    pub trait ValueChangedCb where Self: Element {
+        let name = "VALUECHANGED_CB";
+        extern fn listener(ih: *mut iup_sys::Ihandle) -> CallbackReturn;
+        fn set_valuechanged_cb<F: Callback(Self)>(&mut self, cb: F) -> Self;
+        fn remove_valuechanged_cb(&mut self) -> Option<Box<_>>;
+    }
+}
+
+
+impl_callback! {
     /// Action called when a file is *dropped* into the control.
     ///
     /// When several files are dropped at once, the callback is called several times, once for
