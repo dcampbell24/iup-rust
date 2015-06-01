@@ -4,11 +4,11 @@ use std::path::PathBuf;
 impl_callback! {
     let name = "IDLE_ACTION";
     extern fn listener() -> CallbackReturn;
-    /// Action generated when there are no events or messages to be processed.
-    ///
-    /// Often used to perform background operations.
+    #[doc="Action generated when there are no events or messages to be processed."]
+    #[doc=""]
+    #[doc="Often used to perform background operations."]
     pub fn set_idle<F: Callback()>(cb: F);
-    /// Removes a previosly set up idle_action callback.
+    #[doc="Removes a previosly set up idle_action callback."]
     pub fn remove_idle() -> Option<Box<_>>;
 }
 
@@ -18,9 +18,9 @@ impl_callback! {
 // This is the common version of the ACTION callback, any so called ACTION that does not
 // have the `(*mut iup_sys::Ihandle)` signature should be another trait.
 impl_callback! {
-    /// Action generated when the element is activated. Affects each element differently.
-    /// 
-    /// See the documentation of the `Self` object for the effect of this callback on it.
+    #[doc="Action generated when the element is activated. Affects each element differently."]
+    #[doc=""]
+    #[doc="See the documentation of the `Self` object for the effect of this callback on it."]
     pub trait Action where Self: Element {
         let name = "ACTION";
         extern fn listener(ih: *mut iup_sys::Ihandle) -> CallbackReturn;
@@ -37,7 +37,7 @@ impl_callback! {
 //    The binding free needs to be called after LDESTROY_CB (i.e. at DESTROY_CB) because
 //    the LDESTROY_CB event call depends on the binding boxed data to work properly.
 impl_callback! {
-    /// Called right before an element is destroyed.
+    #[doc="Called right before an element is destroyed."]
     pub trait DestroyCb where Self: Element {
         let name = "LDESTROY_CB";   // See comments above for reason behind LDESTROY_CB.
         extern fn listener(ih: *mut iup_sys::Ihandle) -> CallbackReturn;
@@ -47,11 +47,11 @@ impl_callback! {
 }
 
 impl_callback! {
-    /// Called right after an element is mapped and its attributes updated in `Element::map`.
-    ///
-    /// When the element is a dialog, it is called after the layout is updated. For all other
-    /// elements is called before the layout is updated, so the element current size will still
-    /// be 0x0 during MAP_CB.
+    #[doc="Called right after an element is mapped and its attributes updated in `Element::map`."]
+    #[doc=""]
+    #[doc="When the element is a dialog, it is called after the layout is updated. For all other"]
+    #[doc="elements is called before the layout is updated, so the element current size will still"]
+    #[doc="be 0x0 during MAP_CB."]
     pub trait MapCb where Self: Element {
         let name = "MAP_CB";
         extern fn listener(ih: *mut iup_sys::Ihandle) -> CallbackReturn;
@@ -61,7 +61,7 @@ impl_callback! {
 }
 
 impl_callback! {
-    /// Called right before an element is unmapped.
+    #[doc="Called right before an element is unmapped."]
     pub trait UnmapCb where Self: Element {
         let name = "UNMAP_CB";
         extern fn listener(ih: *mut iup_sys::Ihandle) -> CallbackReturn;
@@ -71,10 +71,10 @@ impl_callback! {
 }
 
 impl_callback! {
-    /// Action generated when an element is given keyboard focus.
-    ///
-    /// This callback is called after the `KillFocusCb` of the element that loosed the focus.
-    /// The IupGetFocus (TODO) function during the callback returns the element that loosed the focus.
+    #[doc="Action generated when an element is given keyboard focus."]
+    #[doc=""]
+    #[doc="This callback is called after the `KillFocusCb` of the element that loosed the focus."]
+    #[doc="The IupGetFocus (TODO) function during the callback returns the element that loosed the focus."]
     pub trait GetFocusCb where Self: Element {
         let name = "GETFOCUS_CB";
         extern fn listener(ih: *mut iup_sys::Ihandle) -> CallbackReturn;
@@ -84,13 +84,13 @@ impl_callback! {
 }
 
 impl_callback! {
-    /// Action generated when an element loses keyboard focus.
-    ///
-    /// This callback is called before the `GetFocusCb` of the element that gets the focus.
-    ///
-    /// While processing this message, do not make any function calls that display or activate a
-    /// window. This causes the thread to yield control and can cause the application to stop
-    /// responding to messages.
+    #[doc="Action generated when an element loses keyboard focus."]
+    #[doc=""]
+    #[doc="This callback is called before the `GetFocusCb` of the element that gets the focus."]
+    #[doc=""]
+    #[doc="While processing this message, do not make any function calls that display or activate a"]
+    #[doc="window. This causes the thread to yield control and can cause the application to stop"]
+    #[doc="responding to messages."]
     pub trait KillFocusCb where Self: Element {
         let name = "KILLFOCUS_CB";
         extern fn listener(ih: *mut iup_sys::Ihandle) -> CallbackReturn;
@@ -100,11 +100,11 @@ impl_callback! {
 }
 
 impl_callback! {
-    /// Action generated when the mouse enters the native element.
-    ///
-    /// When the cursor is moved from one element to another, the call order in all platforms will
-    /// be first the `LeaveWindowCb` callback of the old control followed by the `EnterWindowCb`
-    /// callback of the new control.
+    #[doc="Action generated when the mouse enters the native element."]
+    #[doc=""]
+    #[doc="When the cursor is moved from one element to another, the call order in all platforms will"]
+    #[doc="be first the `LeaveWindowCb` callback of the old control followed by the `EnterWindowCb`"]
+    #[doc="callback of the new control."]
     pub trait EnterWindowCb where Self: Element {
         let name = "ENTERWINDOW_CB";
         extern fn listener(ih: *mut iup_sys::Ihandle) -> CallbackReturn;
@@ -114,11 +114,11 @@ impl_callback! {
 }
 
 impl_callback! {
-    /// Action generated when the mouse leaves the native element.
-    ///
-    /// When the cursor is moved from one element to another, the call order in all platforms will
-    /// be first the `LeaveWindowCb` callback of the old control followed by the `EnterWindowCb`
-    /// callback of the new control.
+    #[doc="Action generated when the mouse leaves the native element."]
+    #[doc=""]
+    #[doc="When the cursor is moved from one element to another, the call order in all platforms will"]
+    #[doc="be first the `LeaveWindowCb` callback of the old control followed by the `EnterWindowCb`"]
+    #[doc="callback of the new control."]
     pub trait LeaveWindowCb where Self: Element {
         let name = "LEAVEWINDOW_CB";
         extern fn listener(ih: *mut iup_sys::Ihandle) -> CallbackReturn;
@@ -128,9 +128,9 @@ impl_callback! {
 }
 
 impl_callback! {
-    /// Action generated when the user press F1 at a control.
-    ///
-    /// `CallbackReturn::Close` will be processed.
+    #[doc="Action generated when the user press F1 at a control."]
+    #[doc=""]
+    #[doc="`CallbackReturn::Close` will be processed."]
     pub trait HelpCb where Self: Element {
         let name = "HELP_CB";
         extern fn listener(ih: *mut iup_sys::Ihandle) -> CallbackReturn;
@@ -143,10 +143,10 @@ impl_callback! {
 // ----------------------------
 
 impl_callback! {
-    /// Action generated when the caret/cursor position is changed.
-    ///
-    /// The second and third parameters are the line and column number (start at 1).
-    /// The fourth parameter is a 0 based character position.
+    #[doc="Action generated when the caret/cursor position is changed."]
+    #[doc=""]
+    #[doc="The second and third parameters are the line and column number (start at 1)."]
+    #[doc="The fourth parameter is a 0 based character position."]
     pub trait CaretCb where Self: Element {
         let name = "CARET_CB";
         extern fn listener(ih: *mut iup_sys::Ihandle, lin: c_int, col: c_int, pos: c_int) -> CallbackReturn;
@@ -156,7 +156,7 @@ impl_callback! {
 }
 
 impl_callback! {
-    /// Action generated when a spin button is pressed.
+    #[doc="Action generated when a spin button is pressed."]
     pub trait SpinCb where Self: Element {
         let name = "SPIN_CB";
         extern fn listener(ih: *mut iup_sys::Ihandle, i: c_int) -> CallbackReturn;
@@ -166,9 +166,9 @@ impl_callback! {
 }
 
 impl_callback! {
-    /// Usually called after the value of a control changed.
-    ///
-    /// See the specific control documentation for more details.
+    #[doc="Usually called after the value of a control changed."]
+    #[doc=""]
+    #[doc="See the specific control documentation for more details."]
     pub trait ValueChangedCb where Self: Element {
         let name = "VALUECHANGED_CB";
         extern fn listener(ih: *mut iup_sys::Ihandle) -> CallbackReturn;
@@ -179,22 +179,22 @@ impl_callback! {
 
 
 impl_callback! {
-    /// Action called when a file is *dropped* into the control.
-    ///
-    /// When several files are dropped at once, the callback is called several times, once for
-    /// each file. 
-    ///
-    /// If defined after the element is mapped then the attribute DROPFILESTARGET must be set
-    /// to YES.
-    ///
-    /// The third parameter of the callback is the number index of the dropped file. If several
-    /// files are dropped, it is the index of the dropped file starting from *total-1* to *0*.
-    /// The fourth and fifth parameters are x,y coordinate of the point where the user
-    /// released the mouse button.
-    ///
-    /// if `CallbackReturn::Ignore`  is returned the callback will **not** be called for the
-    /// next dropped files, and the processing of dropped files will be interrupted.
-    ///
+    #[doc="Action called when a file is *dropped* into the control."]
+    #[doc=""]
+    #[doc="When several files are dropped at once, the callback is called several times, once for"]
+    #[doc="each file. "]
+    #[doc=""]
+    #[doc="If defined after the element is mapped then the attribute DROPFILESTARGET must be set"]
+    #[doc="to YES."]
+    #[doc=""]
+    #[doc="The third parameter of the callback is the number index of the dropped file. If several"]
+    #[doc="files are dropped, it is the index of the dropped file starting from *total-1* to *0*."]
+    #[doc="The fourth and fifth parameters are x,y coordinate of the point where the user"]
+    #[doc="released the mouse button."]
+    #[doc=""]
+    #[doc="if `CallbackReturn::Ignore`  is returned the callback will **not** be called for the"]
+    #[doc="next dropped files, and the processing of dropped files will be interrupted."]
+    #[doc=""]
     #[doc="\\[Windows and GTK Only\\] (GTK 2.6)"]
     pub trait DropFilesCb where Self: Element {
         let name = "DROPFILES_CB";
