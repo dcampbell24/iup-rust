@@ -4,6 +4,7 @@
 use iup_sys;
 use libc::{c_void, c_char, c_int};
 use std::ptr;
+use std::mem;
 use std::ffi::{CStr, CString};
 use std::result::Result;
 
@@ -271,24 +272,29 @@ pub trait Element where Self: Sized {
     }   
 
     /// Gets the handle associated with an attribute.
-    fn attrib_handle<S1>(&mut self, name: S1) -> Handle
+    fn attrib_handle<S1>(&mut self, name: S1) -> Option<Handle>
                                     where S1: Into<String> {
         let cname = CString::new(name.into()).unwrap();
-        unsafe { Handle::from_raw(iup_sys::IupGetAttributeHandle(self.raw(), cname.as_ptr())) }
+        match unsafe { iup_sys::IupGetAttributeHandle(self.raw(), cname.as_ptr()) } {
+            ptr if ptr.is_null() => None,
+            ptr => Some(Handle::from_raw(ptr)),
+        }
     }
 
     /// Clears the value associated with an attribute and use the default value.
-    fn clear_attrib<S: Into<String>>(&mut self, name: S) {
+    fn clear_attrib<S: Into<String>>(&mut self, name: S) -> Self {
         let cname = CString::new(name.into()).unwrap();
         unsafe { iup_sys::IupSetAttribute(self.raw(), cname.as_ptr(), ptr::null()) };
+        self.dup()
     }
 
     /// Removes an attribute from element and its children if the attrib is inheritable.
     ///
     /// It is useful to reset the state of inheritable attributes in a tree of elements.
-    fn reset_attrib<S: Into<String>>(&mut self, name: S) {
+    fn reset_attrib<S: Into<String>>(&mut self, name: S) -> Self {
         let cname = CString::new(name.into()).unwrap();
         unsafe { iup_sys::IupResetAttribute(self.raw(), cname.as_ptr()) };
+        self.dup()
     }
 
     /// Creates (maps) the native interface objects corresponding to the given IUP interface elements. 
@@ -331,8 +337,9 @@ pub trait Element where Self: Sized {
     ///
     /// This function has the same effect as attributing value "NO" to the interface element’s
     /// VISIBLE attribute.
-    fn hide(&mut self) {
+    fn hide(&mut self) -> Self {
         unsafe { iup_sys::IupHide(self.raw()) };
+        self.dup()
     }
 
     /// Gets the [class name][1] of this element.
@@ -387,8 +394,9 @@ pub trait Element where Self: Sized {
     ///
     /// The elements are **not** immediately repositioned. Call `Element::refresh` for the
     /// container (or any other element in the dialog) to update the dialog layout.
-    fn detach(&mut self) {
+    fn detach(&mut self) -> Self {
         unsafe { iup_sys::IupDetach(self.raw()) };
+        self.dup()
     }
 
     /// Inserts an interface element before another child of the container.
@@ -588,6 +596,31 @@ pub trait Element where Self: Sized {
             ptr if ptr.is_null() => None,
             ptr => Some(Handle::from_raw(ptr)),
         }
+    }
+
+
+    //
+
+    fn set_attrib_rgb<S1>(&mut self, name: S1, rgb: (u8, u8, u8)) -> Self
+                                                              where S1: Into<String> {
+        let cname = CString::new(name.into()).unwrap();
+        unsafe { iup_sys::IupSetRGB(self.raw(), cname.as_ptr(), rgb.0, rgb.1, rgb.2) };
+        self.dup()
+    }
+    fn attrib_rgb<S1>(&mut self, name: S1) -> Option<(u8, u8, u8)>
+                                       where S1: Into<String> {
+        let cname = CString::new(name.into()).unwrap();
+        if self.does_attrib_exist(&cname) {
+            let mut rgb: (u8, u8, u8) = unsafe { mem::uninitialized() };
+            unsafe { iup_sys::IupGetRGB(self.raw(), cname.as_ptr(), &mut rgb.0, &mut rgb.1, &mut rgb.2) };
+            Some(rgb)
+        } else {
+            None
+        }
+    }
+    fn does_attrib_exist(&mut self, cname: &CString) -> bool {
+        let attrib = unsafe { iup_sys::IupGetAttribute(self.raw(), cname.as_ptr()) };
+        !attrib.is_null()
     }
 }
 

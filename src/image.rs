@@ -76,8 +76,8 @@ impl Image {
     /// Panics if the length of the colors pallet is greater than 256.
     pub fn set_colors<U>(&mut self, colors: U) -> Image where U: AsRef<[(u8, u8, u8)]> {
         assert!(colors.as_ref().len() < 256);
-    	for (i, color) in colors.as_ref().iter().enumerate() {
-    		self.set_attrib(i.to_string(), format!("{} {} {}", color.0, color.1, color.2));
+    	for (i, &color) in colors.as_ref().iter().enumerate() {
+    		self.set_attrib_rgb(i.to_string(), color);
     	}
     	self.dup()
     }
