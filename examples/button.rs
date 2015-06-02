@@ -82,7 +82,7 @@ fn main() {
                 ]),
                 text, btn_big
             ])
-        ).set_attrib("TITLE", "IupButton")
+        ).set_attrib("TITLE", "Button")
          .set_attrib("RESIZE", "NO")        // Turn of resize
          .set_attrib("MENUBOX", "NO")       // ... menu box
          .set_attrib("MAXBOX", "NO")        // ... maximize
