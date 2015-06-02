@@ -7,7 +7,7 @@ toolkit for building graphical user interfaces. See [rust-iup-sys](https://githu
 [IUP][1] is a multi-platform toolkit for building graphical user interfaces.
 
 It's purpose is to allow a program to run in different systems without changes - the toolkit
-provides the application portability. Supported systems include: GTK+, Motif and Windows. 
+provides the application portability. Supported systems include: GTK+, Motif and Windows.
 
 IUP has some advantages over other interface toolkits available:
 
@@ -24,10 +24,10 @@ The Rust binding provides a way to do things in a more Rustic way but without mo
 IUP base nameclatures and philosophy in such a way that one can program on this binding by reading the
 original [IUP documentation][1].
 
-Documentation
+[Documentation](http://dcampbell24.github.io/iup-rust/)
 ---------------
 
-Currently the documentation is not hosted anywhere and you need to manually `cargo doc` on this repository.
+Click the link above or run `cargo doc` on this repository to view the documentation locally.
 
 Installation
 ------------
