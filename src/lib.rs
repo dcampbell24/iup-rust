@@ -92,6 +92,7 @@ pub mod layout;
 pub mod control;
 
 pub mod led;
+pub mod image;
 
 pub enum Orientation {
     Vertical,

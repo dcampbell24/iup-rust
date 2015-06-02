@@ -62,9 +62,8 @@ macro_rules! impl_element_nofrom {
             }
         }
 
-        use std;
-        impl std::fmt::Debug for $ty_path {
-            fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
+        impl ::std::fmt::Debug for $ty_path {
+            fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
                 fmt.write_fmt(format_args!("{}({:p})", stringify!($ty_path), self.raw()))
             }
         }
@@ -235,7 +234,7 @@ pub trait Element where Self: Sized {
     /// [1]: http://webserver2.tecgraf.puc-rio.br/iup/en/attrib_guide.html
     fn set_attrib_data<S1>(&mut self, name: S1, data: *const c_void) -> Self
                                                               where S1: Into<String> {
-        let cname = CString::new(name.into()).unwrap();                                        
+        let cname = CString::new(name.into()).unwrap();
         unsafe { iup_sys::IupSetAttribute(self.raw(), cname.as_ptr(), data as *const c_char) };
         self.dup()
     }
@@ -249,7 +248,26 @@ pub trait Element where Self: Sized {
         let cname = CString::new(name.into()).unwrap();
         unsafe { iup_sys::IupGetAttribute(self.raw(), cname.as_ptr()) as *mut c_void }
     }
-    
+
+    /// Associates a element with an attribute.
+    ///
+    /// Instead of using `Element::add_handle_name` and `Element::set_attrib` with a new creative
+    /// name, this function automatically creates a non conflict name and associates the name
+    /// with the attribute.
+     fn set_attrib_handle<S1, E>(&mut self, name: S1, elem: E) -> Self
+                                                where S1: Into<String>, E: Element {
+        let cname = CString::new(name.into()).unwrap();
+        unsafe { iup_sys::IupSetAttributeHandle(self.raw(), cname.as_ptr(), elem.raw()) };
+        self.dup()
+    }   
+
+    /// Gets the handle associated with an attribute.
+    fn attrib_handle<S1>(&mut self, name: S1) -> Handle
+                                    where S1: Into<String> {
+        let cname = CString::new(name.into()).unwrap();
+        unsafe { Handle::from_raw(iup_sys::IupGetAttributeHandle(self.raw(), cname.as_ptr())) }
+    }
+
     /// Clears the value associated with an attribute and use the default value.
     fn clear_attrib<S: Into<String>>(&mut self, name: S) {
         let cname = CString::new(name.into()).unwrap();
