@@ -5,7 +5,9 @@
 pub mod vbox;
 pub mod hbox;
 pub mod radio;
+pub mod fill;
 
 pub use self::vbox::VBox;
 pub use self::hbox::HBox;
 pub use self::radio::Radio;
+pub use self::fill::Fill;
