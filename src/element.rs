@@ -68,6 +68,14 @@ macro_rules! impl_element_nofrom {
             }
         }
 
+        impl Copy for $ty_path {}
+        
+        impl Clone for $ty_path {
+            fn clone(&self) -> $ty_path {
+                *self
+            }
+        }
+
         impl $crate::callback::DestroyCb for $ty_path {}
     };
 }
@@ -180,7 +188,8 @@ pub trait Element where Self: Sized {
     fn raw(&self) -> *mut iup_sys::Ihandle;
 
     /// Constructs another object that binds to the same IUP handle as this one.
-    fn dup(&self) -> Self;
+    #[doc(hidden)]          // This function is now deperecated, Copy+Clone should be used.
+    fn dup(&self) -> Self;  // TODO remove this method.
 
     /// Destroys an interface element and all its children.
     ///

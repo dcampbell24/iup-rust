@@ -71,7 +71,11 @@ impl Image {
     /// Sets the pallet of colors to be used by the pixels.
     ///
     /// This is a shortcut to the `0`, `1`, `2`, ..., `i` attributes.
+    ///
+    /// # Panics
+    /// Panics if the length of the colors pallet is greater than 256.
     pub fn set_colors<U>(&mut self, colors: U) -> Image where U: AsRef<[(u8, u8, u8)]> {
+        assert!(colors.as_ref().len() < 256);
     	for (i, color) in colors.as_ref().iter().enumerate() {
     		self.set_attrib(i.to_string(), format!("{} {} {}", color.0, color.1, color.2));
     	}

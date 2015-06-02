@@ -5,7 +5,7 @@ use libc::{c_char, c_int};
 use callback::IntoRust;
 
 /// Mouse buttons.
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum MouseButton {
     /// Left mouse button.
     Button1,
@@ -20,7 +20,7 @@ pub enum MouseButton {
 }
 
 /// Specifies what happened to the mouse button in the `ButtonCb`.
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum MouseButtonState {
     Released,
     Pressed,
