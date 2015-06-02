@@ -1,5 +1,6 @@
 env:
   global:
+    - secure: "CB2priUBlpzv2aMQcYg7hYajUt2iC2kE/OZaWXAS3tfH+nXZO4Mz8O6sR4ScXYw7V//xeadf7hoKtds1sIK7I+3aQK3fzVi7oLH/Qc68iQQ1pC8eBhPqSgDi0EbUHl9qIMvy+8UbjwW3qUWrdzWA8yrMkOFf+8SxtDdAOAMFnB4feEa1ozyqxZrnj4FoaeaxROulSCgRhyQY2LGlr0kMPxxdAQbfbHYMGvl/+/F/T4evZTt+h5pgTHClUe9f5EKVUERiBovEBX7scAUnBNrT6w9GKIILuvF+6PMzxP31yxUbGukmko1D5AtdogVATZEy1NfyR4u280TUgSOQl9BX8psJ2kdJp06po9s+t2/CuLHsoT1KoFiHhzWv588hF11+pLNxoBxtboEwhndf8idUTRRkPfGui4/nPpSFH1yBuDTPq3lXokqjb+b16DcBIQXqLDM4N95LyrGHn739rWkuwau+wHmOZOUosUYQsIgvzOL+ZKN2ma+7NpAC05hrCVKz3h/fS1pxK6Vrb2F25UOq/L743/z2TVHeSNjgGtc43VHwENSDZJIpKfDlVbjZ4V5ysHM/zr/BHPjnBvc3ZGVtnMTCq0z/Lrn4p+SBn/jtjoJn+vsWNFt2Ku0bHlLOOH4JCpG8dRYseuCwVcERAkF5Cdqr5Jb1xOyQPSiGKVpI2MY="
     - IUP_DL='http://sourceforge.net/projects/iup/files/3.14/Linux%20Libraries/iup-3.14_Linux32_64_lib.tar.gz'
 
 language: rust
@@ -16,3 +17,12 @@ install:
 script:
   - cargo build -v
   - cargo test -v
+  - cargo doc -v
+
+after_success: |
+  [ $TRAVIS_BRANCH = master ] &&
+  [ $TRAVIS_PULL_REQUEST = false ] &&
+  echo '<meta http-equiv=refresh content=0;url=iup-rust/index.html>' > target/doc/index.html &&
+  sudo pip install ghp-import &&
+  ghp-import -n target/doc &&
+  git push -fq https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages
