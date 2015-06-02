@@ -96,7 +96,7 @@ fn main() {
 
         // Setup the dialog and show it up
         dialog
-         .set_attrib("TITLE", "IupToggle")
+         .set_attrib("TITLE", "Toggle")
          .set_attrib("MARGIN", "5x5")
          .set_attrib("GAP", "5")
          .set_attrib("RESIZE", "NO")

@@ -3,9 +3,8 @@ extern crate iup;
 
 use iup::{Element, Orientation};
 use iup::dialog::Dialog;
-use iup::layout::{HBox, VBox};
-use iup::control::{Button, Label};
-use iup::callback::{Action, CallbackReturn};
+use iup::layout::VBox;
+use iup::control::Label;
 
 fn main () {
     iup::with_iup(|| {
@@ -29,6 +28,7 @@ fn main () {
               .set_attrib("MARGIN", "10x10")
 
         ).set_attrib("TITLE", "Label")
+         .set_attrib("RESIZE", "NO")
          .show()
 
     }).unwrap();
