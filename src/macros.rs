@@ -25,16 +25,3 @@ macro_rules! slice_to_ih_array {
         v
     }};    
 }
-
-// TODO maybe remove this macro and do the matching directly
-// TODO look into all the things that invoke this macro and make them result a enum. See #23.
-macro_rules! errchk {
-    ($expr:expr) => {{ 
-        match $expr {
-            iup_sys::IUP_NOERROR => Ok(()),
-            iup_sys::IUP_ERROR => Err("IUP_ERROR".into()),
-            _ => unreachable!(),
-        }
-    }};
-}
-

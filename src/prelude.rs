@@ -14,11 +14,12 @@
 
 // Common Types
 pub use ::Orientation;
-pub use dialog::Dialog;
+pub use dialog::{Dialog, DialogPos};
 
 // Common Traits
 pub use element::{Element, Widget, Container, Node, ConvertXYToPos};
-pub use image::{ImageElement};
+pub use image::ImageElement;
+pub use dialog::DialogElement;
 
 // Callbacks
 pub use callback::{CallbackReturn, Action, DestroyCb};

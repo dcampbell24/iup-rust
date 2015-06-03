@@ -104,9 +104,13 @@ pub trait Node : Element {
     /// TODO ref_child NULL doc. See #23.
     ///
     /// See `Container::append` for more details on the semantics of this method.
-    fn reparent<E1, E2>(&mut self, new_parent: E1, ref_child: E2) -> Result<(), String>
+    fn reparent<E1, E2>(&mut self, new_parent: E1, ref_child: E2) -> Result<Self, Self>
                 where E1: Container, E2: Node {
-        errchk!(unsafe { iup_sys::IupReparent(self.raw(), new_parent.raw(), ref_child.raw()) })
+        match unsafe { iup_sys::IupReparent(self.raw(), new_parent.raw(), ref_child.raw()) } {
+            iup_sys::IUP_NOERROR => Ok(*self),
+            iup_sys::IUP_ERROR => Err(*self),
+            _ => unreachable!(),
+        }
     }
 
     /// Returns the parent of a element.

@@ -112,6 +112,12 @@ impl Orientation {
     }
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub enum InitError {
+    AlreadyOpen,
+    Error,
+}
+
 /// Initialises IUP toolkit, calls `f` for user initialization and runs the application.
 ///
 /// All iup-rust functions, objects and methods must be used within the bounds of the `f` closure.
@@ -119,13 +125,13 @@ impl Orientation {
 ///
 /// This function will eturn only after the gui application is closed.
 ///
-/// Returns `Ok` if the IUP initialization and initialization were successful. `Err` otherwise,
-/// forwarding the user error if possible.
-pub fn with_iup<F: FnOnce() -> Result<(), String>>(f: F) -> Result<(), String> {
+/// Returns `Ok` if the IUP initialization and user initialization were successful. `Err` otherwise.
+pub fn with_iup<T, E, F: FnOnce() -> Result<T, E>>(f: F) -> Result<(), InitError> {
+
     match unsafe { iup_sys::IupOpen(ptr::null(), ptr::null()) } {
         iup_sys::IUP_NOERROR => {},
-        iup_sys::IUP_OPENED => return Err("IUP_OPENED: iup::open called while already open.".into()),
-        iup_sys::IUP_ERROR => return Err("IUP_ERROR: X-Windows is not initialized".into()),
+        iup_sys::IUP_OPENED => return Err(InitError::AlreadyOpen),
+        iup_sys::IUP_ERROR => return Err(InitError::Error),
         _ => unreachable!(),
     };
 
@@ -138,13 +144,12 @@ pub fn with_iup<F: FnOnce() -> Result<(), String>>(f: F) -> Result<(), String> {
         _ => println!("Warning: This IUP driver does not seem to support UTF-8!"),
     }
 
-    let result = f();
-    if result.is_ok() {
+    if f().is_ok() {
         // IupMainLoop always returns IUP_NOERROR.
         unsafe { iup_sys::IupMainLoop(); }
     }
     unsafe { iup_sys::IupClose(); }
-    result
+    Ok(())
 }
 
 /// Returns a string with the IUP version number.

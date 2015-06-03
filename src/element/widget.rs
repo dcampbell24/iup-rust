@@ -35,8 +35,12 @@ pub trait Widget : Element + Node {
     ///
     /// The function returns success if the element is already mapped and if the native creation
     /// was successful.
-    fn map(&mut self) -> Result<(), String> {
-        errchk!(unsafe { iup_sys::IupMap(self.raw()) })
+    fn map(&mut self) -> Result<Self, Self> {
+        match unsafe { iup_sys::IupMap(self.raw()) } {
+            iup_sys::IUP_NOERROR => Ok(*self),
+            iup_sys::IUP_ERROR => Err(*self),
+            _ => unreachable!(),
+        }
     }
 
     /// Unmap the element from the native system. It will also unmap all its children.
@@ -53,9 +57,15 @@ pub trait Widget : Element + Node {
     ///
     /// This function can be executed more than once for the same dialog. This will make the dialog
     /// be placed above all other dialogs in the application, changing its Z-order, and update
-    /// its position and/or size on screen. 
-    fn show(&mut self) -> Result<(), String> {
-        errchk!(unsafe { iup_sys::IupShow(self.raw()) })
+    /// its position and/or size on screen.
+    ///
+    /// See also `DialogElement::showxy` and `DialogElement::popup`.
+    fn show(&mut self) -> Result<Self, Self> {
+        match unsafe { iup_sys::IupShow(self.raw()) } {
+            iup_sys::IUP_NOERROR => Ok(*self),
+            iup_sys::IUP_ERROR => Err(*self),
+            _ => unreachable!(),
+        }
     }
 
     /// Hides an interface element.

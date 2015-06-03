@@ -34,7 +34,7 @@ pub enum CallbackReturn {
 }
 
 impl CallbackReturn {
-    fn to_cb_return(self) -> c_int {
+    fn to_raw(self) -> c_int {
         use self::CallbackReturn::*;
         match self {
             Close => iup_sys::IUP_CLOSE,
@@ -69,7 +69,7 @@ impl<Args, Out: Into<CallbackReturn>, F: 'static> Callback<Args> for F where F: 
     /// accepted by this impl.
     fn on_callback(&mut self, args: Args) -> c_int {
         let r = self(args).into();
-        r.to_cb_return()
+        r.to_raw()
     }
 }
 
