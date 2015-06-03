@@ -1,7 +1,8 @@
 [package]
 name = "iup"
 version = "0.0.3"
-authors = ["David Campbell <dcampbell24@gmail.com>"]
+authors = ["David Campbell <dcampbell24@gmail.com>",
+           "Denilson das Mercês Amorim <dma_2012@hotmail.com>"]
 
 [lib]
 name = "iup"
