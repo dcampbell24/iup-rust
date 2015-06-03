@@ -1,6 +1,14 @@
 use libc::c_char;
 use std::path::PathBuf;
 
+//
+// The following regex can be used to convert from doc comments to attrib comments:
+//     ([\t ]*)\/\/\/[ ]?(.*)
+//     $1#[doc="$2"]
+///
+// See also PR #26
+//
+
 impl_callback! {
     let name = "IDLE_ACTION";
     extern fn listener() -> CallbackReturn;
@@ -206,3 +214,38 @@ impl_callback! {
     }
 }
 
+impl_callback! {
+    #[doc="Called just before a dialog is closed when the user clicks the close button of the title bar"]
+    #[doc="or an equivalent action."]
+    #[doc=""]
+    #[doc="`CallbackReturn::Close` will be processed. If `CallbackReturn::Ignore`, it prevents the dialog"]
+    #[doc="from being closed. If you destroy the dialog in this callback, you must"]
+    #[doc="return `CallbackReturn::Ignore`."]
+    pub trait CloseCb where Self: Element {
+        let name = "CLOSE_CB";
+        extern fn listener(ih: *mut iup_sys::Ihandle) -> CallbackReturn;
+        fn set_move_cb<F: Callback(Self)>(&mut self, cb: F) -> Self;
+        fn remove_move_cb(&mut self) -> Option<Box<_>>;
+    }
+}
+
+impl_callback! {
+    #[doc="Called after the widget is moved, see it's documentation for more details."]
+    pub trait MoveCb where Self: Element {
+        let name = "MOVE_CB";
+        extern fn listener(ih: *mut iup_sys::Ihandle, x: c_int, y: c_int) -> CallbackReturn;
+        fn set_move_cb<F: Callback(Self, i32, i32)>(&mut self, cb: F) -> Self;
+        fn remove_move_cb(&mut self) -> Option<Box<_>>;
+    }
+}
+
+
+impl_callback! {
+    #[doc="Action generated when the canvas or dialog size is changed."]
+    pub trait ResizeCb where Self: Element {
+        let name = "RESIZE_CB";
+        extern fn listener(ih: *mut iup_sys::Ihandle, w: c_int, h: c_int) -> CallbackReturn;
+        fn set_move_cb<F: Callback(Self, i32, i32)>(&mut self, cb: F) -> Self;
+        fn remove_move_cb(&mut self) -> Option<Box<_>>;
+    }
+}

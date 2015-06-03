@@ -19,6 +19,20 @@ pub enum MouseButton {
     Button5,
 }
 
+impl MouseButton {
+    #[doc(hidden)]
+    pub fn from_id(id: c_int) -> MouseButton {
+        match id {
+            1 => MouseButton::Button1,
+            2 => MouseButton::Button2,
+            3 => MouseButton::Button3,
+            4 => MouseButton::Button4,
+            5 => MouseButton::Button5,
+            _ => unreachable!(),
+        }
+    }
+}
+
 /// Specifies what happened to the mouse button in the `ButtonCb`.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum MouseButtonState {

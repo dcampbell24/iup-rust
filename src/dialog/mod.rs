@@ -18,7 +18,7 @@ pub mod dialog;
 pub mod alarm;
 pub mod message;
 
-pub use self::dialog::Dialog;
+pub use self::dialog::{Dialog, ShowState, CopyDataCb, MdiActivateCb, ShowCb, TrayClickCb};
 pub use self::alarm::{AlarmButton, alarm};
 pub use self::message::{MessageDlg, message};
 

@@ -91,6 +91,9 @@ macro_rules! get_fbox_callback {
 ///     The `F` (macro captured) constraint defines the type of high-level callback.
 ///   + `$remove_method` to remove a previosly associated callback `$cb_name`.
 ///   + `listener` is **not** defined. It is the native C callback signature (macro captured).
+///   + `resolve_args` is optional should have a code body, and is also not defined.
+///      It is responsible for translating the C arguments into Rust arguments. By default it just
+///      calls the `IntoRust` trait for each argument.
 ///
 /// **Note**: Don't forget to add a dropper for the event in `drop_callbacks` after using this
 /// macro. You **must** do so to free allocations associated with closures.
@@ -98,6 +101,7 @@ macro_rules! get_fbox_callback {
 macro_rules! impl_callback {
 
     // Used for element callbacks.
+    // (no resolve_args version)
     (
         $(#[$trait_attr:meta])* // allow doc comments here
         pub trait $trait_name:ident where Self: Element {
@@ -106,6 +110,39 @@ macro_rules! impl_callback {
 
             fn $set_method:ident<F: Callback(Self $(, $fn_arg_ty:ty)*)>(&mut self, cb: F) -> Self;
             fn $remove_method:ident(&mut self) -> Option<Box<_>>;
+        }
+        
+    ) => {
+        impl_callback! {
+            $(#[$trait_attr])*
+            pub trait $trait_name where Self: Element {
+                let name = $cb_name;
+                extern fn listener(ih: *mut iup_sys::Ihandle $(, $ls_arg: $ls_arg_ty)*) -> CallbackReturn;
+
+                fn $set_method<F: Callback(Self $(, $fn_arg_ty)*)>(&mut self, cb: F) -> Self;
+                fn $remove_method(&mut self) -> Option<Box<_>>;
+
+                fn resolve_args(elem: Self, $($ls_arg: $ls_arg_ty),*) -> (Self, $($fn_arg_ty),*) {
+                    (elem, $($ls_arg.into_rust()),*)
+                }
+            }
+        }
+    };
+
+    // Used for element callbacks.
+    // (resolve args version)
+    (
+        $(#[$trait_attr:meta])* // allow doc comments here
+        pub trait $trait_name:ident where Self: Element {
+            let name = $cb_name:expr;
+            extern fn listener(ih: *mut iup_sys::Ihandle $(, $ls_arg:ident: $ls_arg_ty:ty)*) -> CallbackReturn;
+
+            fn $set_method:ident<F: Callback(Self $(, $fn_arg_ty:ty)*)>(&mut self, cb: F) -> Self;
+            fn $remove_method:ident(&mut self) -> Option<Box<_>>;
+
+            fn resolve_args($aa_argself:ident: Self, $($aa_arg:ident: $aa_arg_ty:ty),*)
+                            -> (Self, $($aa_ret_ty:ty),*)
+            $resolve_args:expr
         }
         
     ) => {
@@ -122,10 +159,15 @@ macro_rules! impl_callback {
                 #[allow(unused_imports)]
                 use $crate::callback::IntoRust;
 
+                fn resolve_args<Self0: $trait_name>($aa_argself: Self0, $($aa_arg: $aa_arg_ty),*)
+                                                                       -> (Self0, $($aa_ret_ty),*) {
+                    $resolve_args
+                }
+
                 extern fn listener<Self0: $trait_name>(ih: *mut iup_sys::Ihandle, $($ls_arg: $ls_arg_ty),*) -> c_int {
                     let fbox: &mut Box<_> = get_fbox_callback!(ih, $cb_name, Callback<(Self0, $($fn_arg_ty),*)>);
                     let element = unsafe { <Self0 as $crate::Element>::from_raw_unchecked(ih) };
-                    fbox.on_callback((element, $($ls_arg.into_rust()),*))
+                    fbox.on_callback(resolve_args::<Self0>(element, $($ls_arg),*))
                 }
 
                 unsafe {

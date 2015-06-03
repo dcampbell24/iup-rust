@@ -25,5 +25,7 @@ pub use dialog::DialogElement;
 pub use callback::{CallbackReturn, Action, DestroyCb};
 pub use callback::{MapCb, UnmapCb, GetFocusCb, KillFocusCb, EnterWindowCb, LeaveWindowCb, HelpCb};
 pub use callback::{CaretCb, SpinCb, ValueChangedCb, DropFilesCb};
+pub use callback::{CloseCb, MoveCb, ResizeCb};
 pub use callback::button::{ButtonCb, MotionCb};
 pub use control::{TextAction, ToggleAction};
+pub use dialog::{CopyDataCb, MdiActivateCb, ShowCb, TrayClickCb};

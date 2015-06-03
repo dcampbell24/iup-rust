@@ -12,6 +12,16 @@ pub use self::callbacks::*;
 
 pub mod button; // TODO move to somewhere else?
 
+// This is called right when a IUP element is being destroyed and it should free up all data
+// associated with callbacks. Just use the `drop_callback!` macro for each callback implemented.
+#[doc(hidden)]
+pub unsafe fn drop_callbacks(ih: *mut iup_sys::Ihandle) {
+    // TODO add the rest of the callbacks.
+    drop_callback!(ih, "ACTION");
+    drop_callback!(ih, "LDESTROY_CB");
+}
+
+
 /// Return this from a callback to tell the framework a non-default action to be performed.
 ///
 /// Not all callbacks accepts `Close`, `Ignore` or `Continue`, check their respective docs.
@@ -118,13 +128,4 @@ impl IntoRust<Option<char>> for c_int {
     fn into_rust(self) -> Option<char> {
         if self == 0 { None } else { Some(char::from_u32(self as u32).unwrap()) }
     }
-}
-
-
-// This is called right when a IUP element is being destroyed and it should free up all data
-// associated with callbacks. Just use the `drop_callback!` macro for each callback implemented.
-#[doc(hidden)]
-pub unsafe fn drop_callbacks(ih: *mut iup_sys::Ihandle) {
-    drop_callback!(ih, "ACTION");
-    drop_callback!(ih, "LDESTROY_CB");
 }
