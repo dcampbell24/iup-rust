@@ -45,7 +45,11 @@ impl Text {
     }
 }
 
-impl_element!(Text, "text");
+impl_widget!(Text, "text");
+
+/// Returns a position in the string.
+impl ::element::ConvertXYToPos for Text {}
+
 impl ::callback::MapCb for Text {}
 impl ::callback::UnmapCb for Text {}
 impl ::callback::GetFocusCb for Text {}

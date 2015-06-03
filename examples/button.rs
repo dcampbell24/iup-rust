@@ -7,13 +7,11 @@
 #[macro_use]
 extern crate iup;
 
-use iup::Element;
-use iup::dialog::Dialog;
+use iup::prelude::*;
 use iup::control::{Button, Text};
 use iup::layout::{VBox, HBox, Fill};
-use iup::image::{Image, ImageElement};
-use iup::callback::{Action, CallbackReturn};
-use iup::callback::button::{MouseButton, MouseButtonState, ButtonCb};
+use iup::image::Image;
+use iup::callback::button::{MouseButton, MouseButtonState};
 
 fn main() {
     iup::with_iup(|| {

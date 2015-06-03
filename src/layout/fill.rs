@@ -18,4 +18,4 @@ impl Fill {
     }
 }
 
-impl_element!(Fill, "fill");
+impl_widget!(Fill, "fill");

@@ -21,7 +21,7 @@ impl Toggle {
     }
 }
 
-impl_element!(Toggle, "toggle");
+impl_widget!(Toggle, "toggle");
 impl ::callback::MapCb for Toggle {}
 impl ::callback::UnmapCb for Toggle {}
 impl ::callback::GetFocusCb for Toggle {}

@@ -1,11 +1,9 @@
 #[macro_use]
 extern crate iup;
 
-use iup::Element;
-use iup::dialog::Dialog;
+use iup::prelude::*;
 use iup::layout::HBox;
 use iup::control::{Button, Text};
-use iup::callback::Action;
 
 fn main() {
     iup::with_iup(|| {

@@ -29,7 +29,7 @@ impl Label {
     }
 }
 
-impl_element!(Label, "label");
+impl_widget!(Label, "label");
 impl ::callback::MapCb for Label {}
 impl ::callback::UnmapCb for Label {}
 impl ::callback::EnterWindowCb for Label {}

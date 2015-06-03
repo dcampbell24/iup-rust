@@ -23,7 +23,7 @@ impl Button {
     // TODO with_image
 }
 
-impl_element!(Button, "button");
+impl_widget!(Button, "button");
 impl ::callback::MapCb for Button {}
 impl ::callback::UnmapCb for Button {}
 impl ::callback::GetFocusCb for Button {}

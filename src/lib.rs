@@ -94,6 +94,8 @@ pub mod control;
 pub mod led;
 pub mod image;
 
+pub mod prelude;
+
 pub enum Orientation {
     Vertical,
     Horizontal,
@@ -109,7 +111,6 @@ impl Orientation {
         }
     }
 }
-
 
 /// Initialises IUP toolkit, calls `f` for user initialization and runs the application.
 ///

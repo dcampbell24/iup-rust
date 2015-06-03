@@ -18,4 +18,4 @@ impl HBox {
     }
 }
 
-impl_element!(HBox, "hbox");
+impl_widget_container!(HBox, "hbox");

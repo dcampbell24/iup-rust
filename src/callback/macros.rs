@@ -133,7 +133,7 @@ macro_rules! impl_callback {
                                        Callback<(Self, $($fn_arg_ty),*)>);
                 }
 
-                self.dup()
+                self.clone()
             }
 
             fn $remove_method(&mut self)

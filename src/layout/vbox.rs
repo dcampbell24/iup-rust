@@ -18,4 +18,4 @@ impl VBox {
     }
 }
 
-impl_element!(VBox, "vbox");
+impl_widget_container!(VBox, "vbox");

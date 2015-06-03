@@ -22,7 +22,7 @@ impl Dialog {
     }
 }
 
-impl_element!(Dialog, "dialog");
+impl_widget_container!(Dialog, "dialog");
 impl ::callback::MapCb for Dialog {}
 impl ::callback::UnmapCb for Dialog {}
 impl ::callback::GetFocusCb for Dialog {}

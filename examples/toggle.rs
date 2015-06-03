@@ -12,10 +12,9 @@ extern crate iup;
 use std::rc::Rc;
 use std::cell::Cell;
 
-use iup::{Element, Orientation};
-use iup::dialog::Dialog;
+use iup::prelude::*;
 use iup::layout::{Radio, VBox};
-use iup::control::{Frame, Toggle, ToggleAction, Label};
+use iup::control::{Frame, Toggle, Label};
 
 const RED: (u8, u8, u8)   = (255, 0, 0);
 const GREEN: (u8, u8, u8) = (0, 255, 0);

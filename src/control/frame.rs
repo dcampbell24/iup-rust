@@ -19,6 +19,6 @@ impl Frame {
     }
 }
 
-impl_element!(Frame, "frame");
+impl_widget_container!(Frame, "frame");
 impl ::callback::MapCb for Frame {}
 impl ::callback::UnmapCb for Frame {}

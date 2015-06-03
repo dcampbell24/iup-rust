@@ -1,8 +1,7 @@
 #[macro_use]
 extern crate iup;
 
-use iup::{Element, Orientation};
-use iup::dialog::Dialog;
+use iup::prelude::*;
 use iup::layout::VBox;
 use iup::control::Label;
 

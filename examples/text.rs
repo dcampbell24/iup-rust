@@ -3,11 +3,9 @@
 #[macro_use]
 extern crate iup;
 
-use iup::Element;
-use iup::dialog::Dialog;
+use iup::prelude::*;
 use iup::layout::{HBox, VBox};
 use iup::control::Text;
-use iup::callback::{SpinCb, CaretCb};
 
 fn main () {
     iup::with_iup(|| {

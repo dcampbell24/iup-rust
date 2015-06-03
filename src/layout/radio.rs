@@ -25,4 +25,4 @@ impl Radio {
     }
 }
 
-impl_element!(Radio, "radio");
+impl_widget_container!(Radio, "radio");

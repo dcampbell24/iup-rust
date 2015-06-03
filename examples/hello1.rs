@@ -2,11 +2,9 @@
 #[macro_use]
 extern crate iup;
 
-use iup::Element;
-use iup::dialog::Dialog;
+use iup::prelude::*;
 use iup::layout::VBox;
 use iup::control::{Button, Label};
-use iup::callback::{Action, CallbackReturn};
 
 fn main () {
     iup::with_iup(|| {

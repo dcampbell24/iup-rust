@@ -79,7 +79,7 @@ impl Image {
     	for (i, &color) in colors.as_ref().iter().enumerate() {
     		self.set_attrib_rgb(i.to_string(), color);
     	}
-    	self.dup()
+    	self.clone()
     }
 }
 

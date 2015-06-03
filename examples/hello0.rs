@@ -2,8 +2,7 @@
 
 extern crate iup;
 
-use iup::Element;
-use iup::dialog::Dialog;
+use iup::prelude::*;
 use iup::control::Label;
 
 fn main() {

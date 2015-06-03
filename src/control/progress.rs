@@ -13,6 +13,6 @@ impl ProgressBar {
     }
 }
 
-impl_element!(ProgressBar, "progressbar");
+impl_widget!(ProgressBar, "progressbar");
 impl ::callback::MapCb for ProgressBar {}
 impl ::callback::UnmapCb for ProgressBar {}
