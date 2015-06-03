@@ -31,13 +31,16 @@ pub trait DialogElement : Element + Widget + Container {
 	/// This function can be executed more than once for the same dialog. This will make the
 	/// dialog be placed above all other dialogs in the application, changing its Z-order, and
 	/// update its position and/or size on screen.
-	///
+    ///
+    /// The string wrapped in `Err` may be meaningless, it is this way so that the returned value
+    /// of this call can be passed directly to the closure return of `with_iup`.
+    ///
 	/// # Panics
 	/// Panics if `x` is either `Bottom` or `Top` or if `y` is either `Left` or `Right`.
-	fn showxy(&mut self, x: DialogPos, y: DialogPos) -> Result<Self, Self> {
+	fn showxy(&mut self, x: DialogPos, y: DialogPos) -> Result<(), String> {
         match unsafe { iup_sys::IupShowXY(self.raw(), x.to_raw_x(), y.to_raw_y()) } {
-            iup_sys::IUP_NOERROR => Ok(*self),
-            iup_sys::IUP_ERROR => Err(*self),
+            iup_sys::IUP_NOERROR => Ok(()),
+            iup_sys::IUP_ERROR => Err("showxy:IUP_ERROR".into()),
             _ => unreachable!(),
         }
     }

@@ -59,11 +59,14 @@ pub trait Widget : Element + Node {
     /// be placed above all other dialogs in the application, changing its Z-order, and update
     /// its position and/or size on screen.
     ///
+    /// The string wrapped in `Err` may be meaningless, it is this way so that the returned value
+    /// of this call can be passed directly to the closure return of `with_iup`.
+    ///
     /// See also `DialogElement::showxy` and `DialogElement::popup`.
-    fn show(&mut self) -> Result<Self, Self> {
+    fn show(&mut self) -> Result<(), String> {
         match unsafe { iup_sys::IupShow(self.raw()) } {
-            iup_sys::IUP_NOERROR => Ok(*self),
-            iup_sys::IUP_ERROR => Err(*self),
+            iup_sys::IUP_NOERROR => Ok(()),
+            iup_sys::IUP_ERROR => Err("show:IUP_ERROR".into()),
             _ => unreachable!(),
         }
     }

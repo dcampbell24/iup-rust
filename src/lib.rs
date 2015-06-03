@@ -112,21 +112,51 @@ impl Orientation {
     }
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum InitError {
-    AlreadyOpen,
+    /// An IUP initialization error has happened.
+    ///
+    /// This usually happens only in UNIX because X-Windows may be not initialized.
     Error,
+    /// The error returned by the user initialization function.
+    UserError(String),
+    /// IUP is already initialized.
+    AlreadyOpen,
 }
 
-/// Initialises IUP toolkit, calls `f` for user initialization and runs the application.
+/// Initializes IUP toolkit, calls `f` for user initialization and runs the application.
 ///
-/// All iup-rust functions, objects and methods must be used within the bounds of the `f` closure.
+/// All IUP-Rust functions, objects and methods must be used within the bounds of the `f` closure.
 /// Such closure must  return a `Result` indicating whether the user initialization was successful.
 ///
-/// This function will eturn only after the gui application is closed.
+/// This function will return only after the GUI application is closed.
 ///
 /// Returns `Ok` if the IUP initialization and user initialization were successful. `Err` otherwise.
-pub fn with_iup<T, E, F: FnOnce() -> Result<T, E>>(f: F) -> Result<(), InitError> {
+///
+/// # Notes
+///
+/// ## Blocking
+/// This functin will not return until until a callback returns `CallbackReturn::Close`,
+/// IupExitLoop (TODO) is called, or there are no visible dialogs. 
+///
+/// If the `f` closure returns successfully without any visible dialogs and no active timers,
+/// the application will hang and will not be possible to close the main loop. The process will
+/// have to be interrupted by the system.
+///
+/// When the last visible dialog is hidden the IupExitLoop (TODO) function is automatically called,
+/// causing this function to return. To avoid that set LOCKLOOP=YES before hiding the last dialog.
+///
+/// ## Enviroment Variables
+///
+/// The toolkit's initialization depends also on platform-dependent environment variables, see
+/// each driver documentation.
+///
+///   + **QUIET**: When this variable is set to `NO`, IUP will generate a message in console
+///     indicating the driver’s version when initializing. Default: `YES`.
+///   + **VERSION**: When this variable is set to `YES`, IUP generates a message dialog indicating
+///     the driver's version when initializing.  Default: `NO`.
+///
+pub fn with_iup<F: FnOnce() -> Result<(), String>>(f: F) -> Result<(), InitError> {
 
     match unsafe { iup_sys::IupOpen(ptr::null(), ptr::null()) } {
         iup_sys::IUP_NOERROR => {},
@@ -144,12 +174,13 @@ pub fn with_iup<T, E, F: FnOnce() -> Result<T, E>>(f: F) -> Result<(), InitError
         _ => println!("Warning: This IUP driver does not seem to support UTF-8!"),
     }
 
-    if f().is_ok() {
+    let user_result = f();
+    if user_result.is_ok() {
         // IupMainLoop always returns IUP_NOERROR.
         unsafe { iup_sys::IupMainLoop(); }
     }
     unsafe { iup_sys::IupClose(); }
-    Ok(())
+    user_result.map_err(|e| InitError::UserError(e))
 }
 
 /// Returns a string with the IUP version number.
