@@ -67,6 +67,38 @@
 //! the [LED](led/) file format and allow users to easily modify the user interface with no
 //! programming experience.
 //!
+//! ## Ownership
+//!
+//! IUP have a few ownership restrictions, the library owns most of the elements it creates.
+//! That unfortunately means the Rust ownership semantics are a bit useless on IUP and thus all
+//! elements are `Copy`able.
+//!
+//! The following elements are automatically destroyed when IUP closes:
+//!
+//!  + All the dialogs and all of it's children widgets.
+//!  + Any element associated with a handle name (as set by [LED](led/), `Element::add_handle_name`,
+//!    or implicitly by `Element::set_attrib_handle`).
+//!
+//! The user is also able to destroy elements manually by calling `Element::destroy`, one should
+//! make sure such element does not have other *references* to it wandering in the code.
+//!
+//! From looking on the above auto-destroy rules, the following are the cases of elements that must
+//! be destroyed manually:
+//!
+//!  + Dettached widgets with no handle name.
+//!  + Images not associated with any widget and thus no handle name.
+//!  + Resources with no handle name — usually timers, clipboards, popup menus, config and user elements.
+//!
+//! To help on the task of destroying those mentioned cases, the `Guard` type is available to
+//! provide some kind of RAII to them. This type wrapper automatically destroys the wrapped element
+//! when it gets out of scope. Please refer to its documentation for more details.
+//!
+//! ## UTF-8
+//! 
+//! By default in C, IUP uses strings in the current locale, IUP-Rust enables the UTF-8 mode of
+//! IUP to conform with Rust string standards, thus both `UTF8MODE` and `UTF8MODE_FILE` attributes
+//! are enabled by default in IUP-Rust.
+//!
 //! [1]: http://www.tecgraf.puc-rio.br/iup/
 //!
 
@@ -81,8 +113,7 @@ mod macros;
 
 #[macro_use]
 pub mod element;
-pub use element::Handle;
-pub use element::Element;
+pub use element::{Element, Handle, Guard};
 
 #[macro_use]
 pub mod callback;
@@ -93,6 +124,7 @@ pub mod control;
 
 pub mod led;
 pub mod image;
+pub mod timer;
 
 pub mod prelude;
 
@@ -179,7 +211,13 @@ pub fn with_iup<F: FnOnce() -> Result<(), String>>(f: F) -> Result<(), InitError
         // IupMainLoop always returns IUP_NOERROR.
         unsafe { iup_sys::IupMainLoop(); }
     }
+
+    // perform manual drop_callback! on the global callbacks.
+    // also calls our iup-rust specific close callback.
+    callback::remove_idle();
+    callback::remove_close_cb().map( |mut fbox| fbox.on_callback(()) );
     unsafe { iup_sys::IupClose(); }
+
     user_result.map_err(|e| InitError::UserError(e))
 }
 

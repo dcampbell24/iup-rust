@@ -16,10 +16,38 @@ pub mod button; // TODO move to somewhere else?
 // associated with callbacks. Just use the `drop_callback!` macro for each callback implemented.
 #[doc(hidden)]
 pub unsafe fn drop_callbacks(ih: *mut iup_sys::Ihandle) {
-    // TODO add the rest of the callbacks.
+    // Prehaps this isn't the best way to get on it as we might forget to add things...
+
+    // button.rs
+    drop_callback!(ih, "BUTTON_CB");
+    drop_callback!(ih, "MOTION_CB");
+
+    // callbacks.rs
     drop_callback!(ih, "ACTION");
     drop_callback!(ih, "LDESTROY_CB");
+    drop_callback!(ih, "MAP_CB");
+    drop_callback!(ih, "UNMAP_CB");
+    drop_callback!(ih, "GETFOCUS_CB");
+    drop_callback!(ih, "KILLFOCUS_CB");
+    drop_callback!(ih, "ENTERWINDOW_CB");
+    drop_callback!(ih, "LEAVEWINDOW_CB");
+    drop_callback!(ih, "HELP_CB");
+    drop_callback!(ih, "CARET_CB");
+    drop_callback!(ih, "SPIN_CB");
+    drop_callback!(ih, "VALUECHANGED_CB");
+    drop_callback!(ih, "DROPFILES_CB");
+    drop_callback!(ih, "CLOSE_CB");
+    drop_callback!(ih, "MOVE_CB");
+    drop_callback!(ih, "RESIZE_CB");
+
+    // dialog.rs
+    drop_callback!(ih, "COPYDATA_CB");
+    drop_callback!(ih, "MDIACTIVATE_CB");
+    drop_callback!(ih, "SHOW_CB");
+    drop_callback!(ih, "TRAYCLICK_CB");
 }
+
+
 
 
 /// Return this from a callback to tell the framework a non-default action to be performed.

@@ -9,7 +9,7 @@ use element::{Element, Handle};
 /// Containers are elements that can store childs.
 pub trait Container : Node {
 
-   /// Inserts an interface element at the end of the container, after the last element on it.
+    /// Inserts an interface element at the end of the container, after the last element on it.
     ///
     /// This function can be used when elements that will compose a container are not known a *priori*
     /// and should be *dynamically* constructed.

@@ -9,6 +9,16 @@ use std::path::PathBuf;
 // See also PR #26
 //
 
+// Note: This callback is IUP-Rust specific, evaluated manually in `with_iup`.
+impl_callback! {
+    let name = "_IUPRUST_CLOSE_CB";
+    extern fn listener() -> CallbackReturn;
+    #[doc="Action generated when IUP closes (i.e. at the end of `with_iup`)."]
+    pub fn set_close_cb<F: Callback()>(cb: F);
+    #[doc="Removes a previosly set up idle_action callback."]
+    pub fn remove_close_cb() -> Option<Box<_>>;
+}
+
 impl_callback! {
     let name = "IDLE_ACTION";
     extern fn listener() -> CallbackReturn;

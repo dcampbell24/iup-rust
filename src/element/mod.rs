@@ -7,6 +7,10 @@ use std::ptr;
 use std::mem;
 use std::ffi::{CStr, CString};
 use std::result::Result;
+use std::iter::repeat;
+
+pub mod guard;
+pub use self::guard::Guard;
 
 pub mod hierarchy;
 pub use self::hierarchy::{Container, Node};
@@ -229,6 +233,15 @@ pub trait Element : Sized + Copy + Clone {
         !attrib.is_null()
     }
 
+    /// Returns the names of all attributes of an element that are set in its internal
+    /// hash table only.
+    fn attribs(&self) -> Vec<String> {
+        let max = unsafe { iup_sys::IupGetAllAttributes(self.raw(), ptr::null_mut(), 0) };
+        let mut vec = repeat(ptr::null_mut()).take(max as usize).collect::<Vec<*mut c_char>>();
+        let len = unsafe { iup_sys::IupGetAllAttributes(self.raw(), vec.as_mut_ptr(), max) };
+        vec.into_iter().take(len as usize).map(|cstr| string_from_cstr!(cstr)).collect()
+    }
+
     /// Sets an interface element attribute.
     ///
     /// See also the [IUP Attributes Guide][1].
@@ -280,7 +293,7 @@ pub trait Element : Sized + Copy + Clone {
     /// Associates a element with an attribute.
     ///
     /// Instead of using `Element::add_handle_name` and `Element::set_attrib` with a new creative
-    /// name, this function automatically creates a non conflict name and associates the name
+    /// name, this function automatically creates a non conflict handle name and associates that
     /// with the attribute.
      fn set_attrib_handle<S1, E>(&mut self, name: S1, elem: E) -> Self
                                                 where S1: Into<String>, E: Element {
