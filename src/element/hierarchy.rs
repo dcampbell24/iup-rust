@@ -18,9 +18,9 @@ pub trait Container : Node {
     /// zbox or menu.
     ///
     /// The `new_child` can **not** be mapped. It will **not** map the `new_child` into the native
-    /// system. If the parent is already mapped you must explicitly call `Element::map` for the new child.
+    /// system. If the parent is already mapped you must explicitly call `Widget::map` for the new child.
     ///
-    /// The elements are **not** immediately repositioned. Call `Element::refresh` for the container
+    /// The elements are **not** immediately repositioned. Call `Node::refresh` for the container
     /// (or any other element in the dialog) to update the dialog layout.
     ///
     /// If the actual parent is a layout box (`VBox`, `HBox` or `ZBox`) and you try to append a
@@ -86,7 +86,7 @@ pub trait Node : Element {
 
     /// Detaches an interface element from its parent.
     ///
-    /// It will automatically call `Element::unmap` to unmap the element if necessary,
+    /// It will automatically call `Widget::unmap` to unmap the element if necessary,
     /// and then detach the element.
     ///
     /// If left detached it is still **necessary to call `Element::destroy`** to destroy the
@@ -167,10 +167,10 @@ pub trait Node : Element {
     /// without changing the dialog size may position some controls outside the dialog area at the
     /// left or bottom borders (the elements will be cropped at the dialog borders by the native system).
     ///
-    /// `Element::map` also updates the dialog layout, but only when called for the dialog itself,
-    /// even if the dialog is already mapped. Since IupShow (TODO), IupShowXY (TODO) and IupPopup (TODO)
-    /// call `Element::map`, then they all will always update the dialog layout before showing it,
-    /// even also if the dialog is already visible.
+    /// `Widget::map` also updates the dialog layout, but only when called for the dialog itself,
+    /// even if the dialog is already mapped. Since `Widget::show`, `DialogElement::showxy` and
+    /// `DialogElement::popup` call `Widget::map`, then they all will always update the dialog
+    /// layout before showing it, even also if the dialog is already visible.
     fn refresh(&mut self) {
         unsafe { iup_sys::IupRefresh(self.raw()) };
     }

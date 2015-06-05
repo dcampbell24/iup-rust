@@ -31,7 +31,7 @@ pub trait Widget : Element + Node {
     /// A child can only be mapped if its parent is already mapped.
     ///
     /// This function is automatically called before the dialog is shown in
-    ///  `Element::show`, `IupShowXY` (TODO) and `IupPopup` (TODO).
+    ///  `Widget::show`, `DialogElement::showxy` and `DialogElement::popup`.
     ///
     /// The function returns success if the element is already mapped and if the native creation
     /// was successful.

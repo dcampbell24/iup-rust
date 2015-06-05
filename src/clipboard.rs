@@ -50,7 +50,7 @@
 //! is pasted into the document. Otherwise, the text data is pasted into the document and the
 //! formatting information is lost.
 //!
-//! Explanation ripped off [MSDN][MSDN].
+//! Explanation borrowed off [MSDN][MSDN].
 //! [MSDN]: https://msdn.microsoft.com/en-us/library/windows/desktop/ms649013%28v=vs.85%29.aspx
 //!
 //! ## Example
@@ -58,19 +58,21 @@
 //! ### Copying
 //!
 //! ```no_run
+//! # use iup::clipboard::Clipboard;
 //! // Sets the user clipboard to have a text in two possible formats, HTML (as a custom format
 //! // using it's MIME type) and text. If the application that receives the paste supports 
 //! // any of these it'll use it.
 //! Clipboard::new()
 //!               .clear()
 //!               .add_format("text/html")
-//!               .set_data("text/html", r"This is <b>my</b> <i>awesome</i> text");
+//!               .set_data("text/html", r"This is <b>my</b> <i>awesome</i> text")
 //!               .set_text("This is my awesome text");
 //! ```
 //!
 //! ### Pasting
 //! 
 //! ```no_run
+//! # use iup::clipboard::Clipboard;
 //! let mut clipboard = Clipboard::new();
 //! if let Some(html) = clipboard.add_format("text/html").data("text/html") {
 //!     // Use HTML pasted content.

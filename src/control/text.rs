@@ -63,7 +63,7 @@ impl ::callback::HelpCb for Text {}
 
 /// Action generated when any mouse button is pressed or released.
 ///
-/// Use `Element::convert_xy_to_pos` to convert (x,y) coordinates in character positioning.
+/// Use `convert_xy_to_pos` to convert (x,y) coordinates in character positioning.
 impl ::callback::button::ButtonCb for Text {}
 
 /// Action generated when the caret/cursor position is changed. 
@@ -76,7 +76,7 @@ impl ::callback::DropFilesCb for Text {}
 
 /// Action generated when the mouse is moved.
 ///
-/// Use `Element::convert_xy_to_pos` to convert (x,y) coordinates in character positioning.
+/// Use `convert_xy_to_pos` to convert (x,y) coordinates in character positioning.
 impl ::callback::button::MotionCb for Text {}
 
 /// Action generated when a spin button is pressed.

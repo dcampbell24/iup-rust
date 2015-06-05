@@ -79,7 +79,7 @@ impl_callback! {
 }
 
 impl_callback! {
-    #[doc="Called right after an element is mapped and its attributes updated in `Element::map`."]
+    #[doc="Called right after an element is mapped and its attributes updated in `Widget::map`."]
     #[doc=""]
     #[doc="When the element is a dialog, it is called after the layout is updated. For all other"]
     #[doc="elements is called before the layout is updated, so the element current size will still"]
