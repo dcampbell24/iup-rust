@@ -36,7 +36,7 @@ See [rust-iup-sys](https://github.com/dcampbell24/rust-iup-sys) for
 information on installing the IUP system libraries needed to use this library.
 After you have the IUP system libraries just add this to your `Cargo.toml`:
 
-    [dependencies.iup-rust]
+    [dependencies.iup]
     git = "https://github.com/dcampbell24/iup-rust"
 
 Contribute
