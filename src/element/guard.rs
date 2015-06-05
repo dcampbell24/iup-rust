@@ -23,28 +23,28 @@ use std::ops::{Deref, DerefMut};
 pub struct Guard<E: Element>(E);
 
 impl<E: Element> Guard<E> {
-	/// Creates a guard for the specified element.
-	pub fn new(element: E) -> Guard<E> {
-		Guard(element)
-	}
+    /// Creates a guard for the specified element.
+    pub fn new(element: E) -> Guard<E> {
+        Guard(element)
+    }
 
-	/// Forgets this guard and unwraps out the contained element.
-	pub fn unwrap(self) -> E {
-		let inner = self.0;
-		forget(self);	// Don't drop me or I'll destroy `inner`!
-		inner
-	}
+    /// Forgets this guard and unwraps out the contained element.
+    pub fn unwrap(self) -> E {
+        let inner = self.0;
+        forget(self);   // Don't drop me or I'll destroy `inner`!
+        inner
+    }
 }
 
 impl<E: Element> Drop for Guard<E> {
-	fn drop(&mut self) {
-		self.0.destroy()
-	}
+    fn drop(&mut self) {
+        self.0.destroy()
+    }
 }
 
 /// Be careful on deferecing so you don't store another copy of the element somewhere.
 impl<E: Element> Deref for Guard<E> {
-	type Target = E;
+    type Target = E;
     fn deref(&self) -> &E {
         &self.0
     }
@@ -53,6 +53,6 @@ impl<E: Element> Deref for Guard<E> {
 /// Be careful on deferecing so you don't store another copy of the element somewhere.
 impl<E: Element> DerefMut for Guard<E> {
     fn deref_mut(&mut self) -> &mut E {
-    	&mut self.0
+        &mut self.0
     }
 }

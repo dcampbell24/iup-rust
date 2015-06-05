@@ -24,6 +24,7 @@ pub unsafe fn drop_callbacks(ih: *mut iup_sys::Ihandle) {
 
     // callbacks.rs
     drop_callback!(ih, "ACTION");
+    drop_callback!(ih, "ACTION_CB");
     drop_callback!(ih, "LDESTROY_CB");
     drop_callback!(ih, "MAP_CB");
     drop_callback!(ih, "UNMAP_CB");

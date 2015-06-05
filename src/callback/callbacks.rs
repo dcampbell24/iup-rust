@@ -15,7 +15,7 @@ impl_callback! {
     extern fn listener() -> CallbackReturn;
     #[doc="Action generated when IUP closes (i.e. at the end of `with_iup`)."]
     pub fn set_close_cb<F: Callback()>(cb: F);
-    #[doc="Removes a previosly set up idle_action callback."]
+    #[doc="Removes a previosly set up close callback."]
     pub fn remove_close_cb() -> Option<Box<_>>;
 }
 
@@ -44,6 +44,20 @@ impl_callback! {
         extern fn listener(ih: *mut iup_sys::Ihandle) -> CallbackReturn;
         fn set_action<F: Callback(Self)>(&mut self, cb: F) -> Self;
         fn remove_action(&mut self) -> Option<Box<_>>;
+    }
+}
+
+impl_callback! {
+    #[doc="Action generated when the element is activated. Affects each element differently."]
+    #[doc=""]
+    #[doc="See the documentation of the `Self` object for the effect of this callback on it."]
+    #[doc=""]
+    #[doc="Note: This is different from the `ACTION` callback."]
+    pub trait ActionCb where Self: Element {
+        let name = "ACTION_CB";
+        extern fn listener(ih: *mut iup_sys::Ihandle) -> CallbackReturn;
+        fn set_action_cb<F: Callback(Self)>(&mut self, cb: F) -> Self;
+        fn remove_action_cb(&mut self) -> Option<Box<_>>;
     }
 }
 

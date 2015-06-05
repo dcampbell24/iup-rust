@@ -8,6 +8,7 @@ use std::mem;
 use std::ffi::{CStr, CString};
 use std::result::Result;
 use std::iter::repeat;
+use std::str::FromStr;
 
 pub mod guard;
 pub use self::guard::Guard;
@@ -228,7 +229,7 @@ pub trait Element : Sized + Copy + Clone {
     }
 
     /// Checks if a specific attribute exists in the element.
-    fn does_attrib_exist(&mut self, cname: &CString) -> bool {
+    fn does_attrib_exist(&self, cname: &CString) -> bool {
         let attrib = unsafe { iup_sys::IupGetAttribute(self.raw(), cname.as_ptr()) };
         !attrib.is_null()
     }
@@ -312,31 +313,6 @@ pub trait Element : Sized + Copy + Clone {
         }
     }
 
-    /// Sets a RGB attribute.
-    ///
-    /// This is just sugar for the `set_attrib` with a `format!("{} {} {}", ...)`.
-    fn set_attrib_rgb<S1>(&mut self, name: S1, rgb: (u8, u8, u8)) -> Self
-                                                              where S1: Into<String> {
-        let cname = CString::new(name.into()).unwrap();
-        unsafe { iup_sys::IupSetRGB(self.raw(), cname.as_ptr(), rgb.0, rgb.1, rgb.2) };
-        self.clone()
-    }
-
-    /// Gets a RGB attribute.
-    fn attrib_rgb<S1>(&mut self, name: S1) -> Option<(u8, u8, u8)>
-                                       where S1: Into<String> {
-        unsafe {
-            let cname = CString::new(name.into()).unwrap();
-            if self.does_attrib_exist(&cname) {
-                let mut rgb: (u8, u8, u8) = mem::uninitialized();
-                iup_sys::IupGetRGB(self.raw(), cname.as_ptr(), &mut rgb.0, &mut rgb.1, &mut rgb.2);
-                Some(rgb)
-            } else {
-                None
-            }
-        }
-    }
-
     /// Clears the value associated with an attribute and use the default value.
     fn clear_attrib<S: Into<String>>(&mut self, name: S) -> Self {
         let cname = CString::new(name.into()).unwrap();
@@ -367,7 +343,7 @@ pub trait Element : Sized + Copy + Clone {
     /// Associates a handle name with an interface element.
     ///
     /// Can be called several times with the same element and different names.
-    /// There is no restriction for the number of names a pointer can have, but `Element::name`
+    /// There is no restriction for the number of names a pointer can have, but `Element::handle_name`
     /// will return the first name found.
     ///
     /// Returns the handle of the interface element previously associated to the parameter name.
@@ -395,6 +371,50 @@ pub trait Element : Sized + Copy + Clone {
             ptr if ptr.is_null() => None,
             ptr => Some(Handle::from_raw(ptr)),
         }
+    }
+
+
+
+    #[doc(hidden)]
+    fn set_attrib_rgb<S1>(&mut self, name: S1, rgb: (u8, u8, u8)) -> Self
+                                                              where S1: Into<String> {
+        let cname = CString::new(name.into()).unwrap();
+        unsafe { iup_sys::IupSetRGB(self.raw(), cname.as_ptr(), rgb.0, rgb.1, rgb.2) };
+        self.clone()
+    }
+
+    #[doc(hidden)]
+    fn attrib_rgb<S1>(&self, name: S1) -> Option<(u8, u8, u8)>
+                                       where S1: Into<String> {
+        unsafe {
+            let cname = CString::new(name.into()).unwrap();
+            if self.does_attrib_exist(&cname) {
+                let mut rgb: (u8, u8, u8) = mem::uninitialized();
+                iup_sys::IupGetRGB(self.raw(), cname.as_ptr(), &mut rgb.0, &mut rgb.1, &mut rgb.2);
+                Some(rgb)
+            } else {
+                None
+            }
+        }
+    }
+
+    #[doc(hidden)]
+    fn attrib_bool<S1>(&self, name: S1) -> Option<bool>
+                                       where S1: Into<String> {
+        unsafe {
+            let cname = CString::new(name.into()).unwrap();
+            if self.does_attrib_exist(&cname) {
+                Some(iup_sys::IupGetInt(self.raw(), cname.as_ptr()) != 0)
+            } else {
+                None
+            }
+        }
+    }
+
+    #[doc(hidden)]
+    fn attrib_parse<T, S1>(&self, name: S1) -> Option<T>
+                            where T: FromStr, S1: Into<String> {
+        self.attrib(name).and_then(|s| s.parse::<T>().ok())
     }
 
 }

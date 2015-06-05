@@ -25,7 +25,7 @@ impl Timer {
 
     /// Gets the set time interval in milliseconds or `None` if not set.
     pub fn time(&self) -> Option<u32> {
-        self.attrib("TIME").map(|s| s.parse().unwrap())
+        self.attrib_parse("TIME")
     }
 
     /// Sets the time interval in milliseconds.
@@ -51,10 +51,7 @@ impl Timer {
 
     /// Returns the current timer state.
     pub fn is_running(&self) -> bool {
-        match self.attrib("RUN").unwrap().as_ref() {
-            "YES" => true,
-            _ => false,
-        }
+        self.attrib_bool("RUN").unwrap()
     }
 }
 
@@ -65,4 +62,4 @@ impl_element!(Timer, "timer");
 /// To stop the callback from being called simply stop de timer with RUN=NO or `Timer::stop`.
 ///
 /// `CallbackReturn::Close` will be processed.
-impl ::callback::Action for Timer {}
+impl ::callback::ActionCb for Timer {}

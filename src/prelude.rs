@@ -22,7 +22,7 @@ pub use image::ImageElement;
 pub use dialog::DialogElement;
 
 // Callbacks
-pub use callback::{CallbackReturn, Action, DestroyCb};
+pub use callback::{CallbackReturn, Action, ActionCb, DestroyCb};
 pub use callback::{MapCb, UnmapCb, GetFocusCb, KillFocusCb, EnterWindowCb, LeaveWindowCb, HelpCb};
 pub use callback::{CaretCb, SpinCb, ValueChangedCb, DropFilesCb};
 pub use callback::{CloseCb, MoveCb, ResizeCb};

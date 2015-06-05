@@ -125,6 +125,7 @@ pub mod control;
 pub mod led;
 pub mod image;
 pub mod timer;
+pub mod clipboard;
 
 pub mod prelude;
 
