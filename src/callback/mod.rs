@@ -122,6 +122,12 @@ impl IntoRust<i32> for c_int {
     }
 }
 
+impl IntoRust<u32> for c_int {
+    fn into_rust(self) -> u32 {
+        self as u32
+    }
+}
+
 impl IntoRust<usize> for c_int {
     fn into_rust(self) -> usize {
         self as usize

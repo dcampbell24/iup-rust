@@ -7,6 +7,7 @@ pub mod button;
 pub mod progress;
 pub mod toggle;
 pub mod frame;
+pub mod list;
 
 pub use self::text::{Text, TextAction};
 pub use self::label::Label;
@@ -14,3 +15,4 @@ pub use self::button::Button;
 pub use self::progress::ProgressBar;
 pub use self::toggle::{Toggle, ToggleAction};
 pub use self::frame::Frame;
+pub use self::list::{List, ListAction};

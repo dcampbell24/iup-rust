@@ -17,10 +17,12 @@ macro_rules! impl_dialog {
 pub mod dialog;
 pub mod alarm;
 pub mod message;
+pub mod file;
 
 pub use self::dialog::{Dialog, ShowState, CopyDataCb, MdiActivateCb, ShowCb, TrayClickCb};
 pub use self::alarm::{AlarmButton, alarm};
 pub use self::message::{MessageDlg, message};
+pub use self::file::{FileDlg};
 
 // An dialog is a top-level container.
 pub trait DialogElement : Element + Widget + Container {
