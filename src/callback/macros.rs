@@ -31,7 +31,7 @@ macro_rules! set_fbox_callback {
         } else {
             iup_sys::IupSetCallback(ih, cstr!($cb_name), transmute($clistener));
         }
-        
+
     }}
 }
 
@@ -50,7 +50,7 @@ macro_rules! clear_fbox_callback {
         let capsule_box = iup_sys::IupGetAttribute(ih, fbox_c_str!($cb_name))
                                                 as *mut Box<$crate::callback::Callback<$($rargs),*>>;
         if capsule_box.is_null() {
-            None 
+            None
         } else {
 
             // TODO when Box::from_raw gets stable use it instead of transmute here.
@@ -63,7 +63,7 @@ macro_rules! clear_fbox_callback {
             } else {
                 iup_sys::IupSetCallback(ih, cstr!($cb_name), transmute(ptr::null::<u8>()));
             }
-            
+
             Some(*inner_box)
             // inner_box itself gets freed now
         }
@@ -111,7 +111,7 @@ macro_rules! impl_callback {
             fn $set_method:ident<F: Callback(Self $(, $fn_arg_ty:ty)*)>(&mut self, cb: F) -> Self;
             fn $remove_method:ident(&mut self) -> Option<Box<_>>;
         }
-        
+
     ) => {
         impl_callback! {
             $(#[$trait_attr])*
@@ -144,11 +144,11 @@ macro_rules! impl_callback {
                             -> (Self, $($aa_ret_ty:ty),*)
             $resolve_args:expr
         }
-        
+
     ) => {
 
         $(#[$trait_attr])*
-        pub trait $trait_name where Self: $crate::Element {
+        pub trait $trait_name where Self: $crate::Element + 'static {
 
             fn $set_method<F>(&mut self, cb: F) -> Self
                     where F: $crate::callback::Callback<(Self, $($fn_arg_ty),*)> {
@@ -164,14 +164,14 @@ macro_rules! impl_callback {
                     $resolve_args
                 }
 
-                extern fn listener<Self0: $trait_name>(ih: *mut iup_sys::Ihandle, $($ls_arg: $ls_arg_ty),*) -> c_int {
+                extern fn listener<Self0: $trait_name + 'static>(ih: *mut iup_sys::Ihandle, $($ls_arg: $ls_arg_ty),*) -> c_int {
                     let fbox: &mut Box<_> = get_fbox_callback!(ih, $cb_name, Callback<(Self0, $($fn_arg_ty),*)>);
                     let element = unsafe { <Self0 as $crate::Element>::from_raw_unchecked(ih) };
                     fbox.on_callback(resolve_args::<Self0>(element, $($ls_arg),*))
                 }
 
                 unsafe {
-                    set_fbox_callback!(self.raw(), $cb_name, listener::<Self>, cb, 
+                    set_fbox_callback!(self.raw(), $cb_name, listener::<Self>, cb,
                                        Callback<(Self, $($fn_arg_ty),*)>);
                 }
 
@@ -216,7 +216,7 @@ macro_rules! impl_callback {
                 }
 
                 unsafe {
-                    set_fbox_callback!(ptr::null_mut(), $cb_name, listener, cb, 
+                    set_fbox_callback!(ptr::null_mut(), $cb_name, listener, cb,
                                        Callback<($($fn_arg_ty),*)>);
                 }
             }
@@ -242,7 +242,7 @@ macro_rules! impl_callback {
 ///
 /// For this very reason this may not work on future versions of Rust since the language provides
 /// no binary-compatibility guarantances between versions.
-/// 
+///
 /// It was implemented this way to avoid [too much] extra work for freeing each closure, but as
 /// soon as the library gets more mature it's recommended to find a replacement for this method.
 macro_rules! drop_callback {
