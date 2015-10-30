@@ -127,7 +127,7 @@ impl_callback! {
         let name = "KILLFOCUS_CB";
         extern fn listener(ih: *mut iup_sys::Ihandle) -> CallbackReturn;
         fn set_killfocus_cb<F: Callback(Self)>(&mut self, cb: F) -> Self;
-        fn remove_killfocus_cb(&mut self) -> Option<Box<_>>;                
+        fn remove_killfocus_cb(&mut self) -> Option<Box<_>>;
     }
 }
 
