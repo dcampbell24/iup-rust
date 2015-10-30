@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `with_iup` fn in crate `iup`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, with_iup">
+
+    <title>iup::with_iup - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='index.html'>iup</a></p><script>window.sidebarCurrent = {name: 'with_iup', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content fn">
+<h1 class='fqn'><span class='in-band'>Function <a href='index.html'>iup</a>::<wbr><a class='fn' href=''>with_iup</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-26057' class='srclink' href='../src/iup/lib.rs.html#192-223' title='goto source code'>[src]</a></span></h1>
+<pre class='rust fn'>pub fn with_iup&lt;F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnOnce.html' title='core::ops::FnOnce'>FnOnce</a>() -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(f: F) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../iup/enum.InitError.html' title='iup::InitError'>InitError</a>&gt;</pre><div class='docblock'><p>Initializes IUP toolkit, calls <code>f</code> for user initialization and runs the application.</p>
+
+<p>All IUP-Rust functions, objects and methods must be used within the bounds of the <code>f</code> closure.
+Such closure must  return a <code>Result</code> indicating whether the user initialization was successful.</p>
+
+<p>This function will return only after the GUI application is closed.</p>
+
+<p>Returns <code>Ok</code> if the IUP initialization and user initialization were successful. <code>Err</code> otherwise.</p>
+
+<h1 id="notes" class='section-header'><a
+                           href="#notes">Notes</a></h1>
+<h2 id="blocking" class='section-header'><a
+                           href="#blocking">Blocking</a></h2>
+<p>This functin will not return until until a callback returns <code>CallbackReturn::Close</code>,
+IupExitLoop (TODO) is called, or there are no visible dialogs. </p>
+
+<p>If the <code>f</code> closure returns successfully without any visible dialogs and no active timers,
+the application will hang and will not be possible to close the main loop. The process will
+have to be interrupted by the system.</p>
+
+<p>When the last visible dialog is hidden the IupExitLoop (TODO) function is automatically called,
+causing this function to return. To avoid that set LOCKLOOP=YES before hiding the last dialog.</p>
+
+<h2 id="enviroment-variables" class='section-header'><a
+                           href="#enviroment-variables">Enviroment Variables</a></h2>
+<p>The toolkit&#39;s initialization depends also on platform-dependent environment variables, see
+each driver documentation.</p>
+
+<ul>
+<li><strong>QUIET</strong>: When this variable is set to <code>NO</code>, IUP will generate a message in console
+indicating the driver’s version when initializing. Default: <code>YES</code>.</li>
+<li><strong>VERSION</strong>: When this variable is set to <code>YES</code>, IUP generates a message dialog indicating
+the driver&#39;s version when initializing.  Default: <code>NO</code>.</li>
+</ul>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "iup";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script async src="../search-index.js"></script>
+</body>
+</html>

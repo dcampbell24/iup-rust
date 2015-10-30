@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["MouseButton","Mouse buttons."],["MouseButtonState","Specifies what happened to the mouse button in the `ButtonCb`."]],"struct":[["KeyStates","The state of mouse buttons and some keyboard buttons."]],"trait":[["ButtonCb","Action generated when a mouse button is pressed or released."],["MotionCb","Action generated when the mouse moves."]]});

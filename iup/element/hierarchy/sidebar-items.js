@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["Container","Containers are elements that can store childs."],["Node","Nodes are elements that can be part of a hierarchical structure."]]});

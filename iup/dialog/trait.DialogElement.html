@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `DialogElement` trait in crate `iup`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, DialogElement">
+
+    <title>iup::dialog::DialogElement - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>iup</a>::<wbr><a href='index.html'>dialog</a></p><script>window.sidebarCurrent = {name: 'DialogElement', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>iup</a>::<wbr><a href='index.html'>dialog</a>::<wbr><a class='trait' href=''>DialogElement</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-18859' class='srclink' href='../../src/iup/dialog/mod.rs.html#28-76' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait DialogElement: <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> + <a class='trait' href='../../iup/element/widget/trait.Widget.html' title='iup::element::widget::Widget'>Widget</a> + <a class='trait' href='../../iup/element/hierarchy/trait.Container.html' title='iup::element::hierarchy::Container'>Container</a> {
+    fn <a href='#method.showxy' class='fnname'>showxy</a>(&amp;mut self, x: <a class='enum' href='../../iup/dialog/enum.DialogPos.html' title='iup::dialog::DialogPos'>DialogPos</a>, y: <a class='enum' href='../../iup/dialog/enum.DialogPos.html' title='iup::dialog::DialogPos'>DialogPos</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt; { ... }
+    fn <a href='#method.popup' class='fnname'>popup</a>(&amp;mut self, x: <a class='enum' href='../../iup/dialog/enum.DialogPos.html' title='iup::dialog::DialogPos'>DialogPos</a>, y: <a class='enum' href='../../iup/dialog/enum.DialogPos.html' title='iup::dialog::DialogPos'>DialogPos</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;Self, Self&gt; { ... }
+}</pre>
+            <h2 id='provided-methods'>Provided Methods</h2>
+            <div class='methods'>
+        <h3 id='method.showxy' class='method stab '><code>fn <a href='#method.showxy' class='fnname'>showxy</a>(&amp;mut self, x: <a class='enum' href='../../iup/dialog/enum.DialogPos.html' title='iup::dialog::DialogPos'>DialogPos</a>, y: <a class='enum' href='../../iup/dialog/enum.DialogPos.html' title='iup::dialog::DialogPos'>DialogPos</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code></h3><div class='docblock'><p>Displays a dialog in a given position on the screen.</p>
+
+<p>Will call <code>Widget::map</code> for the element.</p>
+
+<p>This function can be executed more than once for the same dialog. This will make the
+dialog be placed above all other dialogs in the application, changing its Z-order, and
+update its position and/or size on screen.</p>
+
+<p>The string wrapped in <code>Err</code> may be meaningless, it is this way so that the returned value
+of this call can be passed directly to the closure return of <code>with_iup</code>.</p>
+
+<h1 id="panics" class='section-header'><a
+                           href="#panics">Panics</a></h1>
+<p>Panics if <code>x</code> is either <code>Bottom</code> or <code>Top</code> or if <code>y</code> is either <code>Left</code> or <code>Right</code>.</p>
+</div><h3 id='method.popup' class='method stab '><code>fn <a href='#method.popup' class='fnname'>popup</a>(&amp;mut self, x: <a class='enum' href='../../iup/dialog/enum.DialogPos.html' title='iup::dialog::DialogPos'>DialogPos</a>, y: <a class='enum' href='../../iup/dialog/enum.DialogPos.html' title='iup::dialog::DialogPos'>DialogPos</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;Self, Self&gt;</code></h3><div class='docblock'><p>Shows a dialog or menu and restricts user interaction only to the specified element.</p>
+
+<p>It is equivalent of creating a <em>modal</em> dialog is some toolkits.</p>
+
+<p>If another dialog is shown after <code>popup</code> using <code>show</code>, then its interaction will not be
+inhibited. Every <code>popup</code> call creates a new popup level that inhibits all previous dialogs
+interactions, but does not disable new ones. IMPORTANT: The popup levels must be closed in
+the reverse order they were created or unpredictable results will occur.</p>
+
+<p>For a dialog this function will only return the control to the application after a callback
+returns <code>CallbackReturn::Close</code>, IupExitLoop (TODO) is called, or when the popup dialog is 
+hidden, for example using <code>Widget::hide</code>. For a menu it returns automatically after a menu
+item is selected. IMPORTANT: If a menu item callback returns <code>CallbackReturn::Close</code>,
+it will ends the current popup level dialog.</p>
+
+<h1 id="panics" class='section-header'><a
+                           href="#panics">Panics</a></h1>
+<p>Panics if <code>x</code> is either <code>Bottom</code> or <code>Top</code> or if <code>y</code> is either <code>Left</code> or <code>Right</code>.</p>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><code>impl <a class='trait' href='../../iup/dialog/trait.DialogElement.html' title='iup::dialog::DialogElement'>DialogElement</a> for <a class='struct' href='../../iup/dialog/dialog/struct.Dialog.html' title='iup::dialog::dialog::Dialog'>Dialog</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/dialog/trait.DialogElement.html' title='iup::dialog::DialogElement'>DialogElement</a> for <a class='struct' href='../../iup/dialog/message/struct.MessageDlg.html' title='iup::dialog::message::MessageDlg'>MessageDlg</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/dialog/trait.DialogElement.html' title='iup::dialog::DialogElement'>DialogElement</a> for <a class='struct' href='../../iup/dialog/file/struct.FileDlg.html' title='iup::dialog::file::FileDlg'>FileDlg</a></code></li>
+</ul><script type="text/javascript" async
+                              src="../../implementors/iup/dialog/trait.DialogElement.js">
+                      </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "iup";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

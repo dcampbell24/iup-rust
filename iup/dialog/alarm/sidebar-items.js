@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["AlarmButton",""]],"fn":[["alarm","Shows a modal dialog containing a message and up to three buttons."]]});

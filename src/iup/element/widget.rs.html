@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="Source to the Rust file `src/element/widget.rs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang">
+
+    <title>widget.rs.html -- source</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content source"><pre class="line-numbers"><span id="1"> 1</span>
+<span id="2"> 2</span>
+<span id="3"> 3</span>
+<span id="4"> 4</span>
+<span id="5"> 5</span>
+<span id="6"> 6</span>
+<span id="7"> 7</span>
+<span id="8"> 8</span>
+<span id="9"> 9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+</pre><pre class='rust '>
+<span class='doccomment'>//! Graphical user interface commons.</span>
+<span class='kw'>use</span> <span class='ident'>iup_sys</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>result</span>::<span class='prelude-ty'>Result</span>;
+
+<span class='kw'>use</span> <span class='ident'>element</span>::{<span class='ident'>Element</span>, <span class='ident'>Node</span>};
+
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>impl_widget</span> {
+    (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty_path</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>classname</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> {
+        <span class='macro'>impl_element</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty_path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>classname</span>);
+        <span class='kw'>impl</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>crate</span>::<span class='ident'>element</span>::<span class='ident'>Widget</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty_path</span> {}
+        <span class='kw'>impl</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>crate</span>::<span class='ident'>element</span>::<span class='ident'>Node</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty_path</span> {}
+    }
+}
+
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>impl_widget_container</span> {
+    (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty_path</span>:<span class='ident'>path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>classname</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> {
+        <span class='macro'>impl_widget</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty_path</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>classname</span>);
+        <span class='kw'>impl</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>crate</span>::<span class='ident'>element</span>::<span class='ident'>Container</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty_path</span> {}
+    }
+}
+
+
+<span class='comment'>// An widget is any element that maps to the graphical user interface.</span>
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Widget</span> : <span class='ident'>Element</span> <span class='op'>+</span> <span class='ident'>Node</span> {
+    <span class='doccomment'>/// Creates (maps) the native interface objects corresponding to the given IUP interface elements. </span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// It will also called recursively to create the native element of all the children in the</span>
+    <span class='doccomment'>/// element&#39;s tree.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// The element must be already attached to a mapped container, except the dialog.</span>
+    <span class='doccomment'>/// A child can only be mapped if its parent is already mapped.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// This function is automatically called before the dialog is shown in</span>
+    <span class='doccomment'>///  `Widget::show`, `DialogElement::showxy` and `DialogElement::popup`.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// The function returns success if the element is already mapped and if the native creation</span>
+    <span class='doccomment'>/// was successful.</span>
+    <span class='kw'>fn</span> <span class='ident'>map</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='kw'>Self</span>, <span class='kw'>Self</span><span class='op'>&gt;</span> {
+        <span class='kw'>match</span> <span class='kw'>unsafe</span> { <span class='ident'>iup_sys</span>::<span class='ident'>IupMap</span>(<span class='self'>self</span>.<span class='ident'>raw</span>()) } {
+            <span class='ident'>iup_sys</span>::<span class='ident'>IUP_NOERROR</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='op'>*</span><span class='self'>self</span>),
+            <span class='ident'>iup_sys</span>::<span class='ident'>IUP_ERROR</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='op'>*</span><span class='self'>self</span>),
+            _ <span class='op'>=&gt;</span> <span class='macro'>unreachable</span><span class='macro'>!</span>(),
+        }
+    }
+
+    <span class='doccomment'>/// Unmap the element from the native system. It will also unmap all its children.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// It will **not** detach the element from its parent, and it will **not** destroy the element.</span>
+    <span class='kw'>fn</span> <span class='ident'>unmap</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
+        <span class='kw'>unsafe</span> { <span class='ident'>iup_sys</span>::<span class='ident'>IupUnmap</span>(<span class='self'>self</span>.<span class='ident'>raw</span>()) }
+    }
+
+    <span class='doccomment'>/// Shows an interfance element.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Displays a dialog in the current position, or changes a control VISIBLE attribute. If the</span>
+    <span class='doccomment'>/// dialog needs to be mapped and the current position is not known then the dialog is centered.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// This function can be executed more than once for the same dialog. This will make the dialog</span>
+    <span class='doccomment'>/// be placed above all other dialogs in the application, changing its Z-order, and update</span>
+    <span class='doccomment'>/// its position and/or size on screen.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// The string wrapped in `Err` may be meaningless, it is this way so that the returned value</span>
+    <span class='doccomment'>/// of this call can be passed directly to the closure return of `with_iup`.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// See also `DialogElement::showxy` and `DialogElement::popup`.</span>
+    <span class='kw'>fn</span> <span class='ident'>show</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>String</span><span class='op'>&gt;</span> {
+        <span class='kw'>match</span> <span class='kw'>unsafe</span> { <span class='ident'>iup_sys</span>::<span class='ident'>IupShow</span>(<span class='self'>self</span>.<span class='ident'>raw</span>()) } {
+            <span class='ident'>iup_sys</span>::<span class='ident'>IUP_NOERROR</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(()),
+            <span class='ident'>iup_sys</span>::<span class='ident'>IUP_ERROR</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='string'>&quot;show:IUP_ERROR&quot;</span>.<span class='ident'>into</span>()),
+            _ <span class='op'>=&gt;</span> <span class='macro'>unreachable</span><span class='macro'>!</span>(),
+        }
+    }
+
+    <span class='doccomment'>/// Hides an interface element.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// This function has the same effect as attributing value &quot;NO&quot; to the interface element’s</span>
+    <span class='doccomment'>/// VISIBLE attribute.</span>
+    <span class='kw'>fn</span> <span class='ident'>hide</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+        <span class='kw'>unsafe</span> { <span class='ident'>iup_sys</span>::<span class='ident'>IupHide</span>(<span class='self'>self</span>.<span class='ident'>raw</span>()) };
+        <span class='self'>self</span>.<span class='ident'>clone</span>()
+    }
+}
+</pre>
+</section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../../";
+        window.currentCrate = "iup";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
+    
+    <script async src="../../../search-index.js"></script>
+</body>
+</html>

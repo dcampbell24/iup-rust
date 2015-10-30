@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Clipboard","An element that allows access to the clipboard."]]});

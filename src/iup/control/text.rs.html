@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="Source to the Rust file `src/control/text.rs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang">
+
+    <title>text.rs.html -- source</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content source"><pre class="line-numbers"><span id="1">  1</span>
+<span id="2">  2</span>
+<span id="3">  3</span>
+<span id="4">  4</span>
+<span id="5">  5</span>
+<span id="6">  6</span>
+<span id="7">  7</span>
+<span id="8">  8</span>
+<span id="9">  9</span>
+<span id="10"> 10</span>
+<span id="11"> 11</span>
+<span id="12"> 12</span>
+<span id="13"> 13</span>
+<span id="14"> 14</span>
+<span id="15"> 15</span>
+<span id="16"> 16</span>
+<span id="17"> 17</span>
+<span id="18"> 18</span>
+<span id="19"> 19</span>
+<span id="20"> 20</span>
+<span id="21"> 21</span>
+<span id="22"> 22</span>
+<span id="23"> 23</span>
+<span id="24"> 24</span>
+<span id="25"> 25</span>
+<span id="26"> 26</span>
+<span id="27"> 27</span>
+<span id="28"> 28</span>
+<span id="29"> 29</span>
+<span id="30"> 30</span>
+<span id="31"> 31</span>
+<span id="32"> 32</span>
+<span id="33"> 33</span>
+<span id="34"> 34</span>
+<span id="35"> 35</span>
+<span id="36"> 36</span>
+<span id="37"> 37</span>
+<span id="38"> 38</span>
+<span id="39"> 39</span>
+<span id="40"> 40</span>
+<span id="41"> 41</span>
+<span id="42"> 42</span>
+<span id="43"> 43</span>
+<span id="44"> 44</span>
+<span id="45"> 45</span>
+<span id="46"> 46</span>
+<span id="47"> 47</span>
+<span id="48"> 48</span>
+<span id="49"> 49</span>
+<span id="50"> 50</span>
+<span id="51"> 51</span>
+<span id="52"> 52</span>
+<span id="53"> 53</span>
+<span id="54"> 54</span>
+<span id="55"> 55</span>
+<span id="56"> 56</span>
+<span id="57"> 57</span>
+<span id="58"> 58</span>
+<span id="59"> 59</span>
+<span id="60"> 60</span>
+<span id="61"> 61</span>
+<span id="62"> 62</span>
+<span id="63"> 63</span>
+<span id="64"> 64</span>
+<span id="65"> 65</span>
+<span id="66"> 66</span>
+<span id="67"> 67</span>
+<span id="68"> 68</span>
+<span id="69"> 69</span>
+<span id="70"> 70</span>
+<span id="71"> 71</span>
+<span id="72"> 72</span>
+<span id="73"> 73</span>
+<span id="74"> 74</span>
+<span id="75"> 75</span>
+<span id="76"> 76</span>
+<span id="77"> 77</span>
+<span id="78"> 78</span>
+<span id="79"> 79</span>
+<span id="80"> 80</span>
+<span id="81"> 81</span>
+<span id="82"> 82</span>
+<span id="83"> 83</span>
+<span id="84"> 84</span>
+<span id="85"> 85</span>
+<span id="86"> 86</span>
+<span id="87"> 87</span>
+<span id="88"> 88</span>
+<span id="89"> 89</span>
+<span id="90"> 90</span>
+<span id="91"> 91</span>
+<span id="92"> 92</span>
+<span id="93"> 93</span>
+<span id="94"> 94</span>
+<span id="95"> 95</span>
+<span id="96"> 96</span>
+<span id="97"> 97</span>
+<span id="98"> 98</span>
+<span id="99"> 99</span>
+<span id="100">100</span>
+<span id="101">101</span>
+<span id="102">102</span>
+<span id="103">103</span>
+<span id="104">104</span>
+<span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
+<span id="123">123</span>
+</pre><pre class='rust '>
+<span class='kw'>use</span> <span class='ident'>iup_sys</span>;
+<span class='kw'>use</span> <span class='ident'>libc</span>::{<span class='ident'>c_char</span>, <span class='ident'>c_int</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::{<span class='ident'>mem</span>, <span class='ident'>ptr</span>};
+
+<span class='kw'>use</span> <span class='ident'>Element</span>;
+
+<span class='doccomment'>/// See the [IUP Text Documentation][1].</span>
+<span class='doccomment'>/// [1]: http://webserver2.tecgraf.puc-rio.br/iup/en/elem/iuptext.html</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Text</span>(<span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>iup_sys</span>::<span class='ident'>Ihandle</span>);
+
+<span class='kw'>impl</span> <span class='ident'>Text</span> {
+    <span class='doccomment'>/// Creates a editable text-field.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Text</span> {
+        <span class='kw'>unsafe</span> { <span class='ident'>Text</span>::<span class='ident'>from_raw</span>(<span class='ident'>iup_sys</span>::<span class='ident'>IupText</span>(<span class='ident'>ptr</span>::<span class='ident'>null_mut</span>())) }
+    }
+
+    <span class='doccomment'>/// Creates a spin control.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// The spin increments and decrements an integer number. </span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new_spin</span>() <span class='op'>-&gt;</span> <span class='ident'>Text</span> {
+        <span class='ident'>Text</span>::<span class='ident'>new</span>().<span class='ident'>set_attrib_data</span>(<span class='string'>&quot;SPIN&quot;</span>, <span class='macro'>cstr</span><span class='macro'>!</span>(<span class='string'>&quot;YES&quot;</span>) <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _)
+    }
+
+    <span class='doccomment'>/// Converts a (lin, col) character positioning into an absolute position.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// lin and col starts at 1, pos starts at 0. For single line controls pos is always *col-1*.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>convert_lincol_to_pos</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>lin</span>: <span class='ident'>i32</span>, <span class='ident'>col</span>: <span class='ident'>i32</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
+        <span class='kw'>unsafe</span> {
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>r</span>: <span class='ident'>c_int</span> <span class='op'>=</span> <span class='ident'>mem</span>::<span class='ident'>uninitialized</span>();
+            <span class='ident'>iup_sys</span>::<span class='ident'>IupTextConvertLinColToPos</span>(<span class='self'>self</span>.<span class='ident'>raw</span>(), <span class='ident'>lin</span>, <span class='ident'>col</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>r</span>);
+            <span class='ident'>r</span> <span class='kw'>as</span> <span class='ident'>usize</span>
+        }
+    }
+
+    <span class='doccomment'>/// Converts an absolute position into a (lin, col) character positioning.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// lin and col starts at 1, pos starts at 0.</span>
+    <span class='doccomment'>/// For single line controls lin is always 1, and col is always *pos+1*.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>convert_pos_to_lincol</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>pos</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> (<span class='ident'>i32</span>, <span class='ident'>i32</span>) {
+        <span class='kw'>unsafe</span> {
+            <span class='kw'>let</span> (<span class='kw-2'>mut</span> <span class='ident'>lin</span>, <span class='kw-2'>mut</span> <span class='ident'>col</span>): (<span class='ident'>c_int</span>, <span class='ident'>c_int</span>) <span class='op'>=</span> (<span class='ident'>mem</span>::<span class='ident'>uninitialized</span>(), <span class='ident'>mem</span>::<span class='ident'>uninitialized</span>());
+            <span class='ident'>iup_sys</span>::<span class='ident'>IupTextConvertPosToLinCol</span>(<span class='self'>self</span>.<span class='ident'>raw</span>(), <span class='ident'>pos</span> <span class='kw'>as</span> <span class='ident'>c_int</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>lin</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>col</span>);
+            (<span class='ident'>lin</span> <span class='kw'>as</span> <span class='ident'>i32</span>, <span class='ident'>col</span> <span class='kw'>as</span> <span class='ident'>i32</span>)
+        }
+    }
+}
+
+<span class='macro'>impl_widget</span><span class='macro'>!</span>(<span class='ident'>Text</span>, <span class='string'>&quot;text&quot;</span>);
+
+<span class='doccomment'>/// Returns a position in the string.</span>
+<span class='kw'>impl</span> ::<span class='ident'>element</span>::<span class='ident'>ConvertXYToPos</span> <span class='kw'>for</span> <span class='ident'>Text</span> {}
+
+<span class='kw'>impl</span> ::<span class='ident'>callback</span>::<span class='ident'>MapCb</span> <span class='kw'>for</span> <span class='ident'>Text</span> {}
+<span class='kw'>impl</span> ::<span class='ident'>callback</span>::<span class='ident'>UnmapCb</span> <span class='kw'>for</span> <span class='ident'>Text</span> {}
+<span class='kw'>impl</span> ::<span class='ident'>callback</span>::<span class='ident'>GetFocusCb</span> <span class='kw'>for</span> <span class='ident'>Text</span> {}
+<span class='kw'>impl</span> ::<span class='ident'>callback</span>::<span class='ident'>KillFocusCb</span> <span class='kw'>for</span> <span class='ident'>Text</span> {}
+<span class='kw'>impl</span> ::<span class='ident'>callback</span>::<span class='ident'>EnterWindowCb</span> <span class='kw'>for</span> <span class='ident'>Text</span> {}
+<span class='kw'>impl</span> ::<span class='ident'>callback</span>::<span class='ident'>LeaveWindowCb</span> <span class='kw'>for</span> <span class='ident'>Text</span> {}
+<span class='kw'>impl</span> ::<span class='ident'>callback</span>::<span class='ident'>HelpCb</span> <span class='kw'>for</span> <span class='ident'>Text</span> {}
+<span class='comment'>// TODO impl K_ callbacks when it&#39;s implemented.</span>
+
+<span class='comment'>// TODO impl future DragSource and DragTarget traits.</span>
+
+<span class='doccomment'>/// Action generated when any mouse button is pressed or released.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// Use `convert_xy_to_pos` to convert (x,y) coordinates in character positioning.</span>
+<span class='kw'>impl</span> ::<span class='ident'>callback</span>::<span class='ident'>button</span>::<span class='ident'>ButtonCb</span> <span class='kw'>for</span> <span class='ident'>Text</span> {}
+
+<span class='doccomment'>/// Action generated when the caret/cursor position is changed. </span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// For single line controls `lin` (2nd param) is always *1*, and `pos` (3rd param) is always *col-1*.</span>
+<span class='kw'>impl</span> ::<span class='ident'>callback</span>::<span class='ident'>CaretCb</span> <span class='kw'>for</span> <span class='ident'>Text</span> {}
+
+<span class='doccomment'>/// Action generated when one or more files are dropped in the element.</span>
+<span class='kw'>impl</span> ::<span class='ident'>callback</span>::<span class='ident'>DropFilesCb</span> <span class='kw'>for</span> <span class='ident'>Text</span> {}
+
+<span class='doccomment'>/// Action generated when the mouse is moved.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// Use `convert_xy_to_pos` to convert (x,y) coordinates in character positioning.</span>
+<span class='kw'>impl</span> ::<span class='ident'>callback</span>::<span class='ident'>button</span>::<span class='ident'>MotionCb</span> <span class='kw'>for</span> <span class='ident'>Text</span> {}
+
+<span class='doccomment'>/// Action generated when a spin button is pressed.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// Valid only when the element is a spin (`Text::new_spin` or SPIN=YES attribute).</span>
+<span class='doccomment'>/// When this callback is called the ACTION callback is not called.</span>
+<span class='doccomment'>/// The VALUE attribute can be changed during this callback only if SPINAUTO=NO.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// The `i32` parameter received by the callback is the value of the spin (after incremented).</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// May return `CallbackReturn::Ignore` but that is only allowed on Windows and Motif.</span>
+<span class='kw'>impl</span> ::<span class='ident'>callback</span>::<span class='ident'>SpinCb</span> <span class='kw'>for</span> <span class='ident'>Text</span> {}
+
+<span class='doccomment'>/// Called after the value was interactively changed by the user.</span>
+<span class='kw'>impl</span> ::<span class='ident'>callback</span>::<span class='ident'>ValueChangedCb</span> <span class='kw'>for</span> <span class='ident'>Text</span> {}
+
+<span class='doccomment'>/// See the `TextAction` documentation.</span>
+<span class='kw'>impl</span> <span class='self'>self</span>::<span class='ident'>TextAction</span> <span class='kw'>for</span> <span class='ident'>Text</span> {}
+<span class='macro'>impl_callback</span><span class='macro'>!</span> {
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;Action generated when the text is edited, but before its value is actually changed.&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;Can be generated when using the keyboard, undo system or from the clipboard.&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;The following values can be returned from the callback:&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot; + `CallbackReturn::Default` or `()` for the default reaction.&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot; + `CallbackReturn::Close` will be processed, but the change will be ignored.&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot; + `CallbackReturn::Ignore` ignores the new value.&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot; + An `CallbackReturn::Char`, if the received `c` is `None` or NUL is returned it&#39;ll act&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;   just like `CallbackReturn::Default` otherwise the returned character will be used&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;   instead of the one sent to the callback.&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;The VALUE attribute can be changed only if `CallbackReturn::Ignore` is returned.&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;**NOTE:** The **character** received and returned must be in the ASCII range of&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot; UTF-8 (0-127). No restriction on the `newvalue` string, when the value added to the VALUE&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;is a non-ASCII character the `c` parameter will be `None` but the value is still used for&quot;</span>]</span>
+    <span class='attribute'>#[<span class='ident'>doc</span><span class='op'>=</span><span class='string'>&quot;updating the VALUE attribute.&quot;</span>]</span>
+    <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>TextAction</span> <span class='kw'>where</span> <span class='kw'>Self</span>: <span class='ident'>Element</span> {
+        <span class='kw'>let</span> <span class='ident'>name</span> <span class='op'>=</span> <span class='string'>&quot;ACTION&quot;</span>;
+        <span class='kw'>extern</span> <span class='kw'>fn</span> <span class='ident'>listener</span>(<span class='ident'>ih</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>iup_sys</span>::<span class='ident'>Ihandle</span>, <span class='ident'>c</span>: <span class='ident'>c_int</span>, <span class='ident'>newvalue</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>) <span class='op'>-&gt;</span> <span class='ident'>CallbackReturn</span>;
+        <span class='kw'>fn</span> <span class='ident'>set_action</span><span class='op'>&lt;</span><span class='ident'>F</span>: <span class='ident'>Callback</span>(<span class='kw'>Self</span>, <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>char</span><span class='op'>&gt;</span>, <span class='ident'>String</span>)<span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>cb</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+        <span class='kw'>fn</span> <span class='ident'>remove_action</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Box</span><span class='op'>&lt;</span>_<span class='op'>&gt;&gt;</span>;
+    }
+}
+</pre>
+</section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../../";
+        window.currentCrate = "iup";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
+    
+    <script async src="../../../search-index.js"></script>
+</body>
+</html>

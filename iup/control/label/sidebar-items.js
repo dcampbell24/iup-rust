@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Label","See the [IUP Label Documentation][1]. [1]: http://webserver2.tecgraf.puc-rio.br/iup/en/elem/iuplabel.html"]]});

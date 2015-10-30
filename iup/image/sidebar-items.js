@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Image","A one-channel image which each pixel is a byte index to a pallet of RGB colors."],["ImageRgb","A three-channel image to be shown on a label, button, toggle, or as a cursor."],["ImageRgba","A four-channel image to be shown on a label, button, toggle, or as a cursor."],["InPixels",""]],"trait":[["ImageElement",""]]});

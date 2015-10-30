@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Text","See the [IUP Text Documentation][1]. [1]: http://webserver2.tecgraf.puc-rio.br/iup/en/elem/iuptext.html"]],"trait":[["TextAction","Action generated when the text is edited, but before its value is actually changed."]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["VBox","A void container for composing elements vertically. It is a box that arranges the elements it contains from top to bottom."]]});

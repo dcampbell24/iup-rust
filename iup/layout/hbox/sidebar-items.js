@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["HBox","A void container for composing elements horizontally. It is a box that arranges the elements it contains from left to right."]]});

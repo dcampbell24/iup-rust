@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Element` trait in crate `iup`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Element">
+
+    <title>iup::element::Element - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>iup</a>::<wbr><a href='index.html'>element</a></p><script>window.sidebarCurrent = {name: 'Element', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>iup</a>::<wbr><a href='index.html'>element</a>::<wbr><a class='trait' href=''>Element</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-995' class='srclink' href='../../src/iup/element/mod.rs.html#156-420' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait Element: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> {
+    unsafe fn <a href='#tymethod.from_raw_unchecked' class='fnname'>from_raw_unchecked</a>(ih: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../../iup_sys/enum.Ihandle.html' title='iup_sys::Ihandle'>Ihandle</a></a>) -&gt; Self;
+    fn <a href='#tymethod.raw' class='fnname'>raw</a>(&amp;self) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../../iup_sys/enum.Ihandle.html' title='iup_sys::Ihandle'>Ihandle</a></a>;
+    unsafe fn <a href='#tymethod.target_classname' class='fnname'>target_classname</a>() -&gt; &amp;'static <a href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>;
+
+    fn <a href='#method.from_handle' class='fnname'>from_handle</a>(handle: <a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;Self, <a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>&gt; { ... }
+    fn <a href='#method.from_name' class='fnname'>from_name</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(name: S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>&gt; { ... }
+    fn <a href='#method.from_raw' class='fnname'>from_raw</a>(ih: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../../iup_sys/enum.Ihandle.html' title='iup_sys::Ihandle'>Ihandle</a></a>) -&gt; Self { ... }
+    unsafe fn <a href='#method.classname' class='fnname'>classname</a>(&amp;self) -&gt; &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/ffi/c_str/struct.CStr.html' title='std::ffi::c_str::CStr'>CStr</a> { ... }
+    fn <a href='#method.destroy' class='fnname'>destroy</a>(self) { ... }
+    fn <a href='#method.does_attrib_exist' class='fnname'>does_attrib_exist</a>(&amp;self, cname: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/ffi/c_str/struct.CString.html' title='std::ffi::c_str::CString'>CString</a>) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a> { ... }
+    fn <a href='#method.attribs' class='fnname'>attribs</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt; { ... }
+    fn <a href='#method.set_attrib' class='fnname'>set_attrib</a>&lt;S1, S2&gt;(&amp;mut self, name: S1, value: S2) -&gt; Self <span class='where'>where S1: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;, S2: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</span> { ... }
+    fn <a href='#method.attrib' class='fnname'>attrib</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(&amp;self, name: S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt; { ... }
+    fn <a href='#method.set_attrib_data' class='fnname'>set_attrib_data</a>&lt;S1&gt;(&amp;mut self, name: S1, data: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='enum' href='../../libc/types/common/c95/enum.c_void.html' title='libc::types::common::c95::c_void'>c_void</a></a>) -&gt; Self <span class='where'>where S1: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</span> { ... }
+    fn <a href='#method.attrib_data' class='fnname'>attrib_data</a>&lt;S1&gt;(&amp;mut self, name: S1) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../../libc/types/common/c95/enum.c_void.html' title='libc::types::common::c95::c_void'>c_void</a></a> <span class='where'>where S1: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</span> { ... }
+    fn <a href='#method.set_attrib_handle' class='fnname'>set_attrib_handle</a>&lt;S1, E&gt;(&amp;mut self, name: S1, elem: E) -&gt; Self <span class='where'>where S1: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;, E: <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a></span> { ... }
+    fn <a href='#method.attrib_handle' class='fnname'>attrib_handle</a>&lt;S1&gt;(&amp;mut self, name: S1) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>&gt; <span class='where'>where S1: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</span> { ... }
+    fn <a href='#method.clear_attrib' class='fnname'>clear_attrib</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(&amp;mut self, name: S) -&gt; Self { ... }
+    fn <a href='#method.reset_attrib' class='fnname'>reset_attrib</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(&amp;mut self, name: S) -&gt; Self { ... }
+    fn <a href='#method.handle_name' class='fnname'>handle_name</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt; { ... }
+    fn <a href='#method.add_handle_name' class='fnname'>add_handle_name</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(&amp;self, name: S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>&gt; { ... }
+    fn <a href='#method.clear_handle_name' class='fnname'>clear_handle_name</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(name: S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>&gt; { ... }
+}</pre><div class='docblock'><p>Every IUP object is an <code>Element</code>.</p>
+</div>
+            <h2 id='required-methods'>Required Methods</h2>
+            <div class='methods'>
+        <h3 id='tymethod.from_raw_unchecked' class='method stab '><code>unsafe fn <a href='#tymethod.from_raw_unchecked' class='fnname'>from_raw_unchecked</a>(ih: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../../iup_sys/enum.Ihandle.html' title='iup_sys::Ihandle'>Ihandle</a></a>) -&gt; Self</code></h3><div class='docblock'><p>Constructs an Element from a raw IUP handle.</p>
+
+<h1 id="safety" class='section-header'><a
+                           href="#safety">Safety</a></h1>
+<p>The <code>from_raw_unchecked</code> method is faster than <code>from_raw</code> but must be used with care.</p>
+
+<p>The Rust binding performs important operations and checks when a raw IUP handle reaches
+the bounds of safe Rust binding, that only happens when <code>from_raw</code> is used. Be sure the
+raw handle has reached safe Rust bounds at least once before using this method.</p>
+
+<p>It&#39;s undefined behaviour if the raw handle is incompatible with <code>Self</code> bindings.
+Instead use the <code>Element::from_handle</code> to perform safe downcasting.</p>
+</div><h3 id='tymethod.raw' class='method stab '><code>fn <a href='#tymethod.raw' class='fnname'>raw</a>(&amp;self) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../../iup_sys/enum.Ihandle.html' title='iup_sys::Ihandle'>Ihandle</a></a></code></h3><div class='docblock'><p>Gets the raw IUP handle associated with this element.</p>
+</div><h3 id='tymethod.target_classname' class='method stab '><code>unsafe fn <a href='#tymethod.target_classname' class='fnname'>target_classname</a>() -&gt; &amp;'static <a href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h3><div class='docblock'><p>Gets the <a href="http://webserver2.tecgraf.puc-rio.br/iup/en/func/iupgetclassname.html">class name</a> the derived object should be targeting.</p>
+</div></div>
+            <h2 id='provided-methods'>Provided Methods</h2>
+            <div class='methods'>
+        <h3 id='method.from_handle' class='method stab '><code>fn <a href='#method.from_handle' class='fnname'>from_handle</a>(handle: <a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;Self, <a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>&gt;</code></h3><div class='docblock'><p>Constructs a specialized Element object from a general Handle if they are compatible.</p>
+</div><h3 id='method.from_name' class='method stab '><code>fn <a href='#method.from_name' class='fnname'>from_name</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(name: S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>&gt;</code></h3><div class='docblock'><p>Constructs from a name associated with a element handle (with <code>Element::add_handle_name</code> or LED).</p>
+</div><h3 id='method.from_raw' class='method stab '><code>fn <a href='#method.from_raw' class='fnname'>from_raw</a>(ih: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../../iup_sys/enum.Ihandle.html' title='iup_sys::Ihandle'>Ihandle</a></a>) -&gt; Self</code></h3><div class='docblock'><p>Constructs an Element from a raw IUP handle.</p>
+
+<p>It&#39;s undefined behaviour if the raw handle is incompatible with <code>Self</code> bindings.
+Instead use the <code>Element::from_handle</code> to perform safe downcasting.</p>
+
+<h1 id="panics" class='section-header'><a
+                           href="#panics">Panics</a></h1>
+<p>Panics if the raw handle is a null pointer.</p>
+</div><h3 id='method.classname' class='method stab '><code>unsafe fn <a href='#method.classname' class='fnname'>classname</a>(&amp;self) -&gt; &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/ffi/c_str/struct.CStr.html' title='std::ffi::c_str::CStr'>CStr</a></code></h3><div class='docblock'><p>Gets the <a href="http://webserver2.tecgraf.puc-rio.br/iup/en/func/iupgetclassname.html">class name</a> of this element.</p>
+</div><h3 id='method.destroy' class='method stab '><code>fn <a href='#method.destroy' class='fnname'>destroy</a>(self)</code></h3><div class='docblock'><p>Destroys an interface element and all its children.</p>
+
+<p>Only dialogs, timers, popup menus and images should be normally destroyed, but <strong>detached</strong>
+controls can also be destroyed.</p>
+
+<p>Menu bars associated with dialogs are automatically destroyed when the dialog is destroyed. </p>
+
+<p>Images associated with controls are <strong>NOT</strong> automatically destroyed. The application must
+destroy them when they are not used anymore.</p>
+</div><h3 id='method.does_attrib_exist' class='method stab '><code>fn <a href='#method.does_attrib_exist' class='fnname'>does_attrib_exist</a>(&amp;self, cname: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/ffi/c_str/struct.CString.html' title='std::ffi::c_str::CString'>CString</a>) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h3><div class='docblock'><p>Checks if a specific attribute exists in the element.</p>
+</div><h3 id='method.attribs' class='method stab '><code>fn <a href='#method.attribs' class='fnname'>attribs</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code></h3><div class='docblock'><p>Returns the names of all attributes of an element that are set in its internal
+hash table only.</p>
+</div><h3 id='method.set_attrib' class='method stab '><code>fn <a href='#method.set_attrib' class='fnname'>set_attrib</a>&lt;S1, S2&gt;(&amp;mut self, name: S1, value: S2) -&gt; Self <span class='where'>where S1: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;, S2: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</span></code></h3><div class='docblock'><p>Sets an interface element attribute.</p>
+
+<p>See also the <a href="http://webserver2.tecgraf.puc-rio.br/iup/en/attrib_guide.html">IUP Attributes Guide</a>.</p>
+</div><h3 id='method.attrib' class='method stab '><code>fn <a href='#method.attrib' class='fnname'>attrib</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(&amp;self, name: S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code></h3><div class='docblock'><p>Gets an interface element attribute.</p>
+
+<p>See also the <a href="http://webserver2.tecgraf.puc-rio.br/iup/en/attrib_guide.html">IUP Attributes Guide</a>.</p>
+</div><h3 id='method.set_attrib_data' class='method stab '><code>fn <a href='#method.set_attrib_data' class='fnname'>set_attrib_data</a>&lt;S1&gt;(&amp;mut self, name: S1, data: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='enum' href='../../libc/types/common/c95/enum.c_void.html' title='libc::types::common::c95::c_void'>c_void</a></a>) -&gt; Self <span class='where'>where S1: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</span></code></h3><div class='docblock'><p>Sets a raw interface element attribute.</p>
+
+<h1 id="safety" class='section-header'><a
+                           href="#safety">Safety</a></h1>
+<p>While this function is not unsafe, care must be taken while using it, prefer to use
+<code>Element::set_attrib</code> instead. The <code>data</code> pointer must live long enough (most of the time
+statically).</p>
+</div><h3 id='method.attrib_data' class='method stab '><code>fn <a href='#method.attrib_data' class='fnname'>attrib_data</a>&lt;S1&gt;(&amp;mut self, name: S1) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../../libc/types/common/c95/enum.c_void.html' title='libc::types::common::c95::c_void'>c_void</a></a> <span class='where'>where S1: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</span></code></h3><div class='docblock'><p>Gets a raw interface element attribute.</p>
+</div><h3 id='method.set_attrib_handle' class='method stab '><code>fn <a href='#method.set_attrib_handle' class='fnname'>set_attrib_handle</a>&lt;S1, E&gt;(&amp;mut self, name: S1, elem: E) -&gt; Self <span class='where'>where S1: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;, E: <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a></span></code></h3><div class='docblock'><p>Associates a element with an attribute.</p>
+
+<p>Instead of using <code>Element::add_handle_name</code> and <code>Element::set_attrib</code> with a new creative
+name, this function automatically creates a non conflict handle name and associates that
+with the attribute.</p>
+</div><h3 id='method.attrib_handle' class='method stab '><code>fn <a href='#method.attrib_handle' class='fnname'>attrib_handle</a>&lt;S1&gt;(&amp;mut self, name: S1) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>&gt; <span class='where'>where S1: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</span></code></h3><div class='docblock'><p>Gets the handle associated with an attribute.</p>
+</div><h3 id='method.clear_attrib' class='method stab '><code>fn <a href='#method.clear_attrib' class='fnname'>clear_attrib</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(&amp;mut self, name: S) -&gt; Self</code></h3><div class='docblock'><p>Clears the value associated with an attribute and use the default value.</p>
+</div><h3 id='method.reset_attrib' class='method stab '><code>fn <a href='#method.reset_attrib' class='fnname'>reset_attrib</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(&amp;mut self, name: S) -&gt; Self</code></h3><div class='docblock'><p>Removes an attribute from element and its children if the attrib is inheritable.</p>
+
+<p>It is useful to reset the state of inheritable attributes in a tree of elements.</p>
+</div><h3 id='method.handle_name' class='method stab '><code>fn <a href='#method.handle_name' class='fnname'>handle_name</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code></h3><div class='docblock'><p>Returns the identifier of an interface element that has an associated handle name using
+<code>Element::add_handle_name</code> or using LED.</p>
+
+<p>Handle names shouldn&#39;t be confused with the NAME attribute.</p>
+</div><h3 id='method.add_handle_name' class='method stab '><code>fn <a href='#method.add_handle_name' class='fnname'>add_handle_name</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(&amp;self, name: S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>&gt;</code></h3><div class='docblock'><p>Associates a handle name with an interface element.</p>
+
+<p>Can be called several times with the same element and different names.
+There is no restriction for the number of names a pointer can have, but <code>Element::handle_name</code>
+will return the first name found.</p>
+
+<p>Returns the handle of the interface element previously associated to the parameter name.</p>
+
+<p>Handle names shouldn&#39;t be confused with the NAME attribute.</p>
+</div><h3 id='method.clear_handle_name' class='method stab '><code>fn <a href='#method.clear_handle_name' class='fnname'>clear_handle_name</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(name: S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>&gt;</code></h3><div class='docblock'><p>Clears the handle name association on the specified name.</p>
+
+<p>Note this will not destroy associated elements, just remove a name from the
+association table.</p>
+
+<p>Returns the handle of the interface element previously associated to the parameter name.</p>
+
+<p>Handle names shouldn&#39;t be confused with the NAME attribute.</p>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/dialog/dialog/struct.Dialog.html' title='iup::dialog::dialog::Dialog'>Dialog</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/dialog/message/struct.MessageDlg.html' title='iup::dialog::message::MessageDlg'>MessageDlg</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/dialog/file/struct.FileDlg.html' title='iup::dialog::file::FileDlg'>FileDlg</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/layout/vbox/struct.VBox.html' title='iup::layout::vbox::VBox'>VBox</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/layout/hbox/struct.HBox.html' title='iup::layout::hbox::HBox'>HBox</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/layout/radio/struct.Radio.html' title='iup::layout::radio::Radio'>Radio</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/layout/fill/struct.Fill.html' title='iup::layout::fill::Fill'>Fill</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/control/label/struct.Label.html' title='iup::control::label::Label'>Label</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/control/text/struct.Text.html' title='iup::control::text::Text'>Text</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/control/button/struct.Button.html' title='iup::control::button::Button'>Button</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/control/progress/struct.ProgressBar.html' title='iup::control::progress::ProgressBar'>ProgressBar</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/control/toggle/struct.Toggle.html' title='iup::control::toggle::Toggle'>Toggle</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/control/frame/struct.Frame.html' title='iup::control::frame::Frame'>Frame</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/control/list/struct.List.html' title='iup::control::list::List'>List</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/image/struct.Image.html' title='iup::image::Image'>Image</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/image/struct.ImageRgb.html' title='iup::image::ImageRgb'>ImageRgb</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/image/struct.ImageRgba.html' title='iup::image::ImageRgba'>ImageRgba</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/timer/struct.Timer.html' title='iup::timer::Timer'>Timer</a></code></li>
+<li><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/clipboard/struct.Clipboard.html' title='iup::clipboard::Clipboard'>Clipboard</a></code></li>
+</ul><script type="text/javascript" async
+                              src="../../implementors/iup/element/trait.Element.js">
+                      </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "iup";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

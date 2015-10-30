@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `led` mod in crate `iup`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, led">
+
+    <title>iup::led - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>iup</a></p><script>window.sidebarCurrent = {name: 'led', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>iup</a>::<wbr><a class='mod' href=''>led</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-23725' class='srclink' href='../../src/iup/led.rs.html#1-68' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>LED <em>(Dialog-specification language)</em> functionalities.</p>
+
+<p>LED is a dialog-specification language whose purpose is not to be a complete programming language,
+but rather to make dialog specification simpler than in C. Additionally it allows users to easily
+edit your application layout from external files without touching any source code.</p>
+
+<p>In LED, attributes and expressions follow this form:</p>
+
+<p><code>elem = element[attribute1=value1,attribute2=value2,...](...expression...)</code></p>
+
+<p>The names of the elements must not contain the “iup” prefix.
+Attribute values are always interpreted as strings, but they need to be in quotes (“…”) only
+when they include spaces. The “IUP_” prefix must not be added to the names of the attributes
+and predefined values. Expressions contain parameters for creating the element.</p>
+
+<p>In LED there is no distinction between upper and lower case, except for attribute names.</p>
+
+<p>Also there is no optional parameters, in arrays at least one parameter must exist.</p>
+
+<p>To simply view a LED file objects use the LED Viewer application called <a href="http://webserver2.tecgraf.puc-rio.br/iup/en/led.html">IupView</a>, in the
+applications included in the distribution. Pre-compiled binaries are available at the
+<a href="http://webserver2.tecgraf.puc-rio.br/iup/en/download.html">Download</a>.</p>
+
+<p>You need to check out the <a href="http://webserver2.tecgraf.puc-rio.br/iup/">IUP documentation</a> for each control to see their
+respective function signatures in LED.</p>
+
+<p><strong>Note:</strong> Using LED may allow you to create controls not yet implemented in iup-rust and
+that&#39;s <em>fine</em>. Use a <code>Handle</code> to have access to controls created from LED.</p>
+</div><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.load.html'
+                               title='iup::led::load'>load</a></td>
+                        <td class='docblock short'>
+                             <p>Compiles a LED specification from a file.</p>
+
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='fn' href='fn.load_buffer.html'
+                               title='iup::led::load_buffer'>load_buffer</a></td>
+                        <td class='docblock short'>
+                             <p>Compiles a LED specification from a string.</p>
+
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "iup";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

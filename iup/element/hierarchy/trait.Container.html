@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Container` trait in crate `iup`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Container">
+
+    <title>iup::element::hierarchy::Container - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../../index.html'>iup</a>::<wbr><a href='../index.html'>element</a>::<wbr><a href='index.html'>hierarchy</a></p><script>window.sidebarCurrent = {name: 'Container', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content trait">
+<h1 class='fqn'><span class='in-band'>Trait <a href='../../index.html'>iup</a>::<wbr><a href='../index.html'>element</a>::<wbr><a href='index.html'>hierarchy</a>::<wbr><a class='trait' href=''>Container</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-171' class='srclink' href='../../../src/iup/element/hierarchy.rs.html#10-82' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait Container: <a class='trait' href='../../../iup/element/hierarchy/trait.Node.html' title='iup::element::hierarchy::Node'>Node</a> {
+    fn <a href='#method.append' class='fnname'>append</a>&lt;E: <a class='trait' href='../../../iup/element/hierarchy/trait.Node.html' title='iup::element::hierarchy::Node'>Node</a>&gt;(&amp;mut self, new_child: E) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>, E&gt; { ... }
+    fn <a href='#method.insert' class='fnname'>insert</a>&lt;E1, E2&gt;(&amp;mut self, ref_child: &amp;E1, new_child: E2) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>, E2&gt; <span class='where'>where E1: <a class='trait' href='../../../iup/element/hierarchy/trait.Node.html' title='iup::element::hierarchy::Node'>Node</a>, E2: <a class='trait' href='../../../iup/element/hierarchy/trait.Node.html' title='iup::element::hierarchy::Node'>Node</a></span> { ... }
+    fn <a href='#method.child' class='fnname'>child</a>(&amp;self, pos: <a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>&gt; { ... }
+    fn <a href='#method.child_pos' class='fnname'>child_pos</a>&lt;E: <a class='trait' href='../../../iup/element/hierarchy/trait.Node.html' title='iup::element::hierarchy::Node'>Node</a>&gt;(&amp;self, child: &amp;E) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>&gt; { ... }
+    fn <a href='#method.child_count' class='fnname'>child_count</a>(&amp;self) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a> { ... }
+}</pre><div class='docblock'><p>Containers are elements that can store childs.</p>
+</div>
+            <h2 id='provided-methods'>Provided Methods</h2>
+            <div class='methods'>
+        <h3 id='method.append' class='method stab '><code>fn <a href='#method.append' class='fnname'>append</a>&lt;E: <a class='trait' href='../../../iup/element/hierarchy/trait.Node.html' title='iup::element::hierarchy::Node'>Node</a>&gt;(&amp;mut self, new_child: E) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>, E&gt;</code></h3><div class='docblock'><p>Inserts an interface element at the end of the container, after the last element on it.</p>
+
+<p>This function can be used when elements that will compose a container are not known a <em>priori</em>
+and should be <em>dynamically</em> constructed.</p>
+
+<p>Valid for any element that contains other elements like dialog, frame, hbox, vbox,
+zbox or menu.</p>
+
+<p>The <code>new_child</code> can <strong>not</strong> be mapped. It will <strong>not</strong> map the <code>new_child</code> into the native
+system. If the parent is already mapped you must explicitly call <code>Widget::map</code> for the new child.</p>
+
+<p>The elements are <strong>not</strong> immediately repositioned. Call <code>Node::refresh</code> for the container
+(or any other element in the dialog) to update the dialog layout.</p>
+
+<p>If the actual parent is a layout box (<code>VBox</code>, <code>HBox</code> or <code>ZBox</code>) and you try to append a
+child that it is already at the parent child list, then the child is moved to the last
+child position.</p>
+
+<p>Returns the actual parent if the interface element was successfully inserted. Otherwise
+returns the desired <code>new_child</code>. Failed can happen for instance if this element is not
+a container for other elements or the <code>new_child</code> is already a child (except on layout boxes).
+Notice that the desired parent can contains a set of elements and containers where the
+child will be actually attached so the function returns the actual parent of the element.</p>
+</div><h3 id='method.insert' class='method stab '><code>fn <a href='#method.insert' class='fnname'>insert</a>&lt;E1, E2&gt;(&amp;mut self, ref_child: &amp;E1, new_child: E2) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>, E2&gt; <span class='where'>where E1: <a class='trait' href='../../../iup/element/hierarchy/trait.Node.html' title='iup::element::hierarchy::Node'>Node</a>, E2: <a class='trait' href='../../../iup/element/hierarchy/trait.Node.html' title='iup::element::hierarchy::Node'>Node</a></span></code></h3><div class='docblock'><p>Inserts an interface element before another child of the container.</p>
+
+<p>TODO ref_child NULL doc. See #23.</p>
+
+<p>See <code>Container::append</code> for more details on the semantics of this method.</p>
+</div><h3 id='method.child' class='method stab '><code>fn <a href='#method.child' class='fnname'>child</a>(&amp;self, pos: <a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>&gt;</code></h3><div class='docblock'><p>Returns the a child of the element given its position.</p>
+
+<p>The position <code>pos</code> starts from 0.</p>
+
+<p>This function will return the children of the element in the exact same order in
+which they were assigned.</p>
+</div><h3 id='method.child_pos' class='method stab '><code>fn <a href='#method.child_pos' class='fnname'>child_pos</a>&lt;E: <a class='trait' href='../../../iup/element/hierarchy/trait.Node.html' title='iup::element::hierarchy::Node'>Node</a>&gt;(&amp;self, child: &amp;E) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>&gt;</code></h3><div class='docblock'><p>Returns the position of a child of the given control.</p>
+
+<p>See <code>Container::child</code> for additional details on the semantics of child positions.</p>
+</div><h3 id='method.child_count' class='method stab '><code>fn <a href='#method.child_count' class='fnname'>child_count</a>(&amp;self) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h3><div class='docblock'><p>Returns the number of children of the given element.</p>
+</div></div>
+        <h2 id='implementors'>Implementors</h2>
+        <ul class='item-list' id='implementors-list'>
+    <li><code>impl <a class='trait' href='../../../iup/element/hierarchy/trait.Container.html' title='iup::element::hierarchy::Container'>Container</a> for <a class='struct' href='../../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a></code></li>
+<li><code>impl <a class='trait' href='../../../iup/element/hierarchy/trait.Container.html' title='iup::element::hierarchy::Container'>Container</a> for <a class='struct' href='../../../iup/dialog/dialog/struct.Dialog.html' title='iup::dialog::dialog::Dialog'>Dialog</a></code></li>
+<li><code>impl <a class='trait' href='../../../iup/element/hierarchy/trait.Container.html' title='iup::element::hierarchy::Container'>Container</a> for <a class='struct' href='../../../iup/dialog/message/struct.MessageDlg.html' title='iup::dialog::message::MessageDlg'>MessageDlg</a></code></li>
+<li><code>impl <a class='trait' href='../../../iup/element/hierarchy/trait.Container.html' title='iup::element::hierarchy::Container'>Container</a> for <a class='struct' href='../../../iup/dialog/file/struct.FileDlg.html' title='iup::dialog::file::FileDlg'>FileDlg</a></code></li>
+<li><code>impl <a class='trait' href='../../../iup/element/hierarchy/trait.Container.html' title='iup::element::hierarchy::Container'>Container</a> for <a class='struct' href='../../../iup/layout/vbox/struct.VBox.html' title='iup::layout::vbox::VBox'>VBox</a></code></li>
+<li><code>impl <a class='trait' href='../../../iup/element/hierarchy/trait.Container.html' title='iup::element::hierarchy::Container'>Container</a> for <a class='struct' href='../../../iup/layout/hbox/struct.HBox.html' title='iup::layout::hbox::HBox'>HBox</a></code></li>
+<li><code>impl <a class='trait' href='../../../iup/element/hierarchy/trait.Container.html' title='iup::element::hierarchy::Container'>Container</a> for <a class='struct' href='../../../iup/layout/radio/struct.Radio.html' title='iup::layout::radio::Radio'>Radio</a></code></li>
+<li><code>impl <a class='trait' href='../../../iup/element/hierarchy/trait.Container.html' title='iup::element::hierarchy::Container'>Container</a> for <a class='struct' href='../../../iup/control/frame/struct.Frame.html' title='iup::control::frame::Frame'>Frame</a></code></li>
+</ul><script type="text/javascript" async
+                              src="../../../implementors/iup/element/hierarchy/trait.Container.js">
+                      </script></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../../";
+        window.currentCrate = "iup";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../../jquery.js"></script>
+    <script src="../../../main.js"></script>
+    
+    <script async src="../../../search-index.js"></script>
+</body>
+</html>

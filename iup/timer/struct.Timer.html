@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Timer` struct in crate `iup`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Timer">
+
+    <title>iup::timer::Timer - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>iup</a>::<wbr><a href='index.html'>timer</a></p><script>window.sidebarCurrent = {name: 'Timer', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>iup</a>::<wbr><a href='index.html'>timer</a>::<wbr><a class='struct' href=''>Timer</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-25077' class='srclink' href='../../src/iup/timer.rs.html#16' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Timer(_);</pre><div class='docblock'><p>A timer which periodically invokes a callback when the time is up.</p>
+
+<h1 id="ownership" class='section-header'><a
+                           href="#ownership">Ownership</a></h1>
+<p>The timer must be manually destroyed, thus for the user safety it returns a guarded object
+on the <code>new</code> constructor.</p>
+
+<p>Please refer to the crate level documentation of IUP-Rust (the main doc page) for details on
+ownership of elements.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../iup/timer/struct.Timer.html' title='iup::timer::Timer'>Timer</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../iup/element/guard/struct.Guard.html' title='iup::element::guard::Guard'>Guard</a>&lt;<a class='struct' href='../../iup/timer/struct.Timer.html' title='iup::timer::Timer'>Timer</a>&gt;</code></h4>
+<div class='docblock'><p>Constructs a timer.</p>
+</div><h4 id='method.time' class='method'><code>fn <a href='#method.time' class='fnname'>time</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>&gt;</code></h4>
+<div class='docblock'><p>Gets the set time interval in milliseconds or <code>None</code> if not set.</p>
+</div><h4 id='method.set_time' class='method'><code>fn <a href='#method.set_time' class='fnname'>set_time</a>(&amp;mut self, time: <a href='https://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) -&gt; Self</code></h4>
+<div class='docblock'><p>Sets the time interval in milliseconds.</p>
+
+<p>In Windows the minimum value is 10ms.</p>
+</div><h4 id='method.run' class='method'><code>fn <a href='#method.run' class='fnname'>run</a>(&amp;mut self) -&gt; Self</code></h4>
+<div class='docblock'><p>Starts the timer.</p>
+
+<p>Does nothing if the TIME attribute is not set i.e. <code>set_time</code>.</p>
+
+<p>If you have multiple threads start the timer in the main thread.</p>
+</div><h4 id='method.stop' class='method'><code>fn <a href='#method.stop' class='fnname'>stop</a>(&amp;mut self) -&gt; Self</code></h4>
+<div class='docblock'><p>Stops the timer.</p>
+</div><h4 id='method.is_running' class='method'><code>fn <a href='#method.is_running' class='fnname'>is_running</a>(&amp;self) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Returns the current timer state.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a> for <a class='struct' href='../../iup/timer/struct.Timer.html' title='iup::timer::Timer'>Timer</a></code></h3><div class='impl-items'><h4 id='method.raw' class='method'><code>fn <a href='../../iup/element/trait.Element.html#method.raw' class='fnname'>raw</a>(&amp;self) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../../iup_sys/enum.Ihandle.html' title='iup_sys::Ihandle'>Ihandle</a></a></code></h4>
+<h4 id='method.from_raw_unchecked' class='method'><code>unsafe fn <a href='../../iup/element/trait.Element.html#method.from_raw_unchecked' class='fnname'>from_raw_unchecked</a>(ih: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../../iup_sys/enum.Ihandle.html' title='iup_sys::Ihandle'>Ihandle</a></a>) -&gt; Self</code></h4>
+<h4 id='method.target_classname' class='method'><code>unsafe fn <a href='../../iup/element/trait.Element.html#method.target_classname' class='fnname'>target_classname</a>() -&gt; &amp;'static <a href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
+<h4 id='method.from_handle' class='method'><code>fn <a href='../../iup/element/trait.Element.html#method.from_handle' class='fnname'>from_handle</a>(handle: <a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;Self, <a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>&gt;</code></h4>
+<h4 id='method.from_name' class='method'><code>fn <a href='../../iup/element/trait.Element.html#method.from_name' class='fnname'>from_name</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(name: S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>&gt;</code></h4>
+<h4 id='method.from_raw' class='method'><code>fn <a href='../../iup/element/trait.Element.html#method.from_raw' class='fnname'>from_raw</a>(ih: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../../iup_sys/enum.Ihandle.html' title='iup_sys::Ihandle'>Ihandle</a></a>) -&gt; Self</code></h4>
+<h4 id='method.classname' class='method'><code>unsafe fn <a href='../../iup/element/trait.Element.html#method.classname' class='fnname'>classname</a>(&amp;self) -&gt; &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/ffi/c_str/struct.CStr.html' title='std::ffi::c_str::CStr'>CStr</a></code></h4>
+<h4 id='method.destroy' class='method'><code>fn <a href='../../iup/element/trait.Element.html#method.destroy' class='fnname'>destroy</a>(self)</code></h4>
+<h4 id='method.does_attrib_exist' class='method'><code>fn <a href='../../iup/element/trait.Element.html#method.does_attrib_exist' class='fnname'>does_attrib_exist</a>(&amp;self, cname: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/ffi/c_str/struct.CString.html' title='std::ffi::c_str::CString'>CString</a>) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<h4 id='method.attribs' class='method'><code>fn <a href='../../iup/element/trait.Element.html#method.attribs' class='fnname'>attribs</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code></h4>
+<h4 id='method.set_attrib' class='method'><code>fn <a href='../../iup/element/trait.Element.html#method.set_attrib' class='fnname'>set_attrib</a>&lt;S1, S2&gt;(&amp;mut self, name: S1, value: S2) -&gt; Self <span class='where'>where S1: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;, S2: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</span></code></h4>
+<h4 id='method.attrib' class='method'><code>fn <a href='../../iup/element/trait.Element.html#method.attrib' class='fnname'>attrib</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(&amp;self, name: S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code></h4>
+<h4 id='method.set_attrib_data' class='method'><code>fn <a href='../../iup/element/trait.Element.html#method.set_attrib_data' class='fnname'>set_attrib_data</a>&lt;S1&gt;(&amp;mut self, name: S1, data: <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*const <a class='enum' href='../../libc/types/common/c95/enum.c_void.html' title='libc::types::common::c95::c_void'>c_void</a></a>) -&gt; Self <span class='where'>where S1: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</span></code></h4>
+<h4 id='method.attrib_data' class='method'><code>fn <a href='../../iup/element/trait.Element.html#method.attrib_data' class='fnname'>attrib_data</a>&lt;S1&gt;(&amp;mut self, name: S1) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.pointer.html'>*mut <a class='enum' href='../../libc/types/common/c95/enum.c_void.html' title='libc::types::common::c95::c_void'>c_void</a></a> <span class='where'>where S1: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</span></code></h4>
+<h4 id='method.set_attrib_handle' class='method'><code>fn <a href='../../iup/element/trait.Element.html#method.set_attrib_handle' class='fnname'>set_attrib_handle</a>&lt;S1, E&gt;(&amp;mut self, name: S1, elem: E) -&gt; Self <span class='where'>where S1: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;, E: <a class='trait' href='../../iup/element/trait.Element.html' title='iup::element::Element'>Element</a></span></code></h4>
+<h4 id='method.attrib_handle' class='method'><code>fn <a href='../../iup/element/trait.Element.html#method.attrib_handle' class='fnname'>attrib_handle</a>&lt;S1&gt;(&amp;mut self, name: S1) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>&gt; <span class='where'>where S1: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</span></code></h4>
+<h4 id='method.clear_attrib' class='method'><code>fn <a href='../../iup/element/trait.Element.html#method.clear_attrib' class='fnname'>clear_attrib</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(&amp;mut self, name: S) -&gt; Self</code></h4>
+<h4 id='method.reset_attrib' class='method'><code>fn <a href='../../iup/element/trait.Element.html#method.reset_attrib' class='fnname'>reset_attrib</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(&amp;mut self, name: S) -&gt; Self</code></h4>
+<h4 id='method.handle_name' class='method'><code>fn <a href='../../iup/element/trait.Element.html#method.handle_name' class='fnname'>handle_name</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;</code></h4>
+<h4 id='method.add_handle_name' class='method'><code>fn <a href='../../iup/element/trait.Element.html#method.add_handle_name' class='fnname'>add_handle_name</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(&amp;self, name: S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>&gt;</code></h4>
+<h4 id='method.clear_handle_name' class='method'><code>fn <a href='../../iup/element/trait.Element.html#method.clear_handle_name' class='fnname'>clear_handle_name</a>&lt;S: <a class='trait' href='https://doc.rust-lang.org/nightly/core/convert/trait.Into.html' title='core::convert::Into'>Into</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>&gt;&gt;(name: S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../iup/element/struct.Handle.html' title='iup::element::Handle'>Handle</a>&gt;</code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../iup/timer/struct.Timer.html' title='iup::timer::Timer'>Timer</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, fmt: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html' title='core::marker::Copy'>Copy</a> for <a class='struct' href='../../iup/timer/struct.Timer.html' title='iup::timer::Timer'>Timer</a></code></h3><div class='impl-items'></div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../iup/timer/struct.Timer.html' title='iup::timer::Timer'>Timer</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../iup/timer/struct.Timer.html' title='iup::timer::Timer'>Timer</a></code></h4>
+<h4 id='method.clone_from' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='../../iup/callback/callbacks/trait.DestroyCb.html' title='iup::callback::callbacks::DestroyCb'>DestroyCb</a> for <a class='struct' href='../../iup/timer/struct.Timer.html' title='iup::timer::Timer'>Timer</a></code></h3><div class='impl-items'><h4 id='method.set_destroy_cb' class='method'><code>fn <a href='../../iup/callback/callbacks/trait.DestroyCb.html#method.set_destroy_cb' class='fnname'>set_destroy_cb</a>&lt;F&gt;(&amp;mut self, cb: F) -&gt; Self <span class='where'>where F: <a class='trait' href='../../iup/callback/trait.Callback.html' title='iup::callback::Callback'>Callback</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(Self,)</a>&gt;</span></code></h4>
+<h4 id='method.remove_destroy_cb' class='method'><code>fn <a href='../../iup/callback/callbacks/trait.DestroyCb.html#method.remove_destroy_cb' class='fnname'>remove_destroy_cb</a>(&amp;mut self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;<a class='trait' href='../../iup/callback/trait.Callback.html' title='iup::callback::Callback'>Callback</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(Self,)</a>&gt;&gt;&gt;</code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='../../iup/callback/callbacks/trait.ActionCb.html' title='iup::callback::callbacks::ActionCb'>ActionCb</a> for <a class='struct' href='../../iup/timer/struct.Timer.html' title='iup::timer::Timer'>Timer</a></code></h3><div class='docblock'><p>Called every time the defined time interval is reached.</p>
+
+<p>To stop the callback from being called simply stop de timer with RUN=NO or <code>Timer::stop</code>.</p>
+
+<p><code>CallbackReturn::Close</code> will be processed.</p>
+</div><div class='impl-items'><h4 id='method.set_action_cb' class='method'><code>fn <a href='../../iup/callback/callbacks/trait.ActionCb.html#method.set_action_cb' class='fnname'>set_action_cb</a>&lt;F&gt;(&amp;mut self, cb: F) -&gt; Self <span class='where'>where F: <a class='trait' href='../../iup/callback/trait.Callback.html' title='iup::callback::Callback'>Callback</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(Self,)</a>&gt;</span></code></h4>
+<h4 id='method.remove_action_cb' class='method'><code>fn <a href='../../iup/callback/callbacks/trait.ActionCb.html#method.remove_action_cb' class='fnname'>remove_action_cb</a>(&amp;mut self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;<a class='trait' href='../../iup/callback/trait.Callback.html' title='iup::callback::Callback'>Callback</a>&lt;<a href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(Self,)</a>&gt;&gt;&gt;</code></h4>
+</div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "iup";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script async src="../../search-index.js"></script>
+</body>
+</html>

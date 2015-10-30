@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["ListItemState",""]],"struct":[["List","See the [IUP List Documentation][1]. [1]: http://webserver2.tecgraf.puc-rio.br/iup/en/elem/iuplist.html"]],"trait":[["ListAction","Action generated when the state of an item in the list is changed. Also provides information on the changed item."]]});

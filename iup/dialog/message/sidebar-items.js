@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["message","Shows a modal dialog containing a message. It simply creates and popup a `MessageDlg`."]],"struct":[["MessageDlg","An predefined dialog for displaying a message."]]});
