@@ -47,7 +47,7 @@ use std::ffi::CString;
 pub fn load<P: AsRef<Path>>(path: P) -> Result<(), String> {
     let path = path.as_ref();
 
-    let str = try!(path.to_str().ok_or_else(|| "Failed to convert Path to string".to_string()));
+    let str = path.to_str().ok_or_else(|| "Failed to convert Path to string".to_string())?;
     let cstr = CString::new(str).unwrap();
 
     match unsafe { iup_sys::IupLoad(cstr.as_ptr()) } {

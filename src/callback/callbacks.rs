@@ -5,7 +5,7 @@ use std::path::PathBuf;
 // The following regex can be used to convert from doc comments to attrib comments:
 //     ([\t ]*)\/\/\/[ ]?(.*)
 //     $1#[doc="$2"]
-///
+//
 // See also PR #26
 //
 
