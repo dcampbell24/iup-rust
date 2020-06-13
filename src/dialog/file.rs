@@ -27,7 +27,7 @@ impl FileDlg {
             let values =  value.split_terminator('|').collect::<Vec<&str>>();
             match values.len() {
                 0 => None,
-                1 => Some([PathBuf::from(values[0])].to_owned()),
+                1 => Some(vec![PathBuf::from(values[0])].to_owned()),
                 _ => {
                     // When multiple files are selected, the first value is the path the files are
                     // contained in and then the filenames, let's build paths based on this.
