@@ -25,5 +25,11 @@ impl MessageDlg {
     }
 }
 
+impl Default for MessageDlg {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl_dialog!(MessageDlg, "messagedlg");
 impl ::callback::HelpCb for MessageDlg {}

@@ -86,7 +86,7 @@ macro_rules! get_fbox_callback {
 ///
 /// After this macro is executed the trait `$trait_name` is implemented with the following
 /// default methods:
-////
+///
 ///   + `$set_method` to set associate a closure with the callback `$cb_name`.
 ///     The `F` (macro captured) constraint defines the type of high-level callback.
 ///   + `$remove_method` to remove a previosly associated callback `$cb_name`.

@@ -96,7 +96,7 @@ pub trait Node : Element {
     /// container (or any other element in the dialog) to update the dialog layout.
     fn detach(&mut self) -> Self {
         unsafe { iup_sys::IupDetach(self.raw()) };
-        self.clone()
+        *self
     }
 
     /// Moves an interface element from one position in the hierarchy tree to another.

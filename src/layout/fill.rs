@@ -18,4 +18,10 @@ impl Fill {
     }
 }
 
+impl Default for Fill {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl_widget!(Fill, "fill");

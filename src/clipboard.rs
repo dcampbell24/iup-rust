@@ -173,7 +173,7 @@ impl Clipboard {
         match self.attrib_data("FORMATDATA") as *const u8 {
             ptr if !ptr.is_null() => unsafe {
                 let len: usize = self.attrib_parse("FORMATDATASIZE").unwrap();
-                Some(slice::from_raw_parts(ptr, len).into_iter().cloned().collect())
+                Some(slice::from_raw_parts(ptr, len).iter().cloned().collect())
             },
             _ => None,
         }

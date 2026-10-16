@@ -46,5 +46,11 @@ impl FileDlg {
 
 }
 
+impl Default for FileDlg {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl_dialog!(FileDlg, "filedlg");
 impl ::callback::HelpCb for FileDlg {}

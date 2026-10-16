@@ -6,7 +6,6 @@ use libc::{c_void, c_char, c_int};
 use std::ptr;
 use std::ffi::{CStr, CString};
 use std::result::Result;
-use std::iter::repeat;
 use std::str::FromStr;
 
 pub mod guard;
@@ -237,7 +236,7 @@ pub trait Element : Sized + Copy + Clone {
     /// hash table only.
     fn attribs(&self) -> Vec<String> {
         let max = unsafe { iup_sys::IupGetAllAttributes(self.raw(), ptr::null_mut(), 0) };
-        let mut vec = repeat(ptr::null_mut()).take(max as usize).collect::<Vec<*mut c_char>>();
+        let mut vec = std::iter::repeat_n(ptr::null_mut(), max as usize).collect::<Vec<*mut c_char>>();
         let len = unsafe { iup_sys::IupGetAllAttributes(self.raw(), vec.as_mut_ptr(), max) };
         vec.into_iter().take(len as usize).map(|cstr| string_from_cstr!(cstr)).collect()
     }
@@ -252,7 +251,7 @@ pub trait Element : Sized + Copy + Clone {
         let cname = CString::new(name.into()).unwrap();
         let cvalue = CString::new(value.into()).unwrap();
         unsafe { iup_sys::IupSetStrAttribute(self.raw(), cname.as_ptr(), cvalue.as_ptr()) };
-        self.clone()
+        *self
     }
 
     /// Gets an interface element attribute.
@@ -280,7 +279,7 @@ pub trait Element : Sized + Copy + Clone {
                                                               where S1: Into<String> {
         let cname = CString::new(name.into()).unwrap();
         unsafe { iup_sys::IupSetAttribute(self.raw(), cname.as_ptr(), data as *const c_char) };
-        self.clone()
+        *self
     }
 
     /// Gets a raw interface element attribute.
@@ -299,7 +298,7 @@ pub trait Element : Sized + Copy + Clone {
                                                 where S1: Into<String>, E: Element {
         let cname = CString::new(name.into()).unwrap();
         unsafe { iup_sys::IupSetAttributeHandle(self.raw(), cname.as_ptr(), elem.raw()) };
-        self.clone()
+        *self
     }   
 
     /// Gets the handle associated with an attribute.
@@ -316,7 +315,7 @@ pub trait Element : Sized + Copy + Clone {
     fn clear_attrib<S: Into<String>>(&mut self, name: S) -> Self {
         let cname = CString::new(name.into()).unwrap();
         unsafe { iup_sys::IupSetAttribute(self.raw(), cname.as_ptr(), ptr::null()) };
-        self.clone()
+        *self
     }
 
     /// Removes an attribute from element and its children if the attrib is inheritable.
@@ -325,7 +324,7 @@ pub trait Element : Sized + Copy + Clone {
     fn reset_attrib<S: Into<String>>(&mut self, name: S) -> Self {
         let cname = CString::new(name.into()).unwrap();
         unsafe { iup_sys::IupResetAttribute(self.raw(), cname.as_ptr()) };
-        self.clone()
+        *self
     }
 
     /// Returns the identifier of an interface element that has an associated handle name using
@@ -379,7 +378,7 @@ pub trait Element : Sized + Copy + Clone {
                                                               where S1: Into<String> {
         let cname = CString::new(name.into()).unwrap();
         unsafe { iup_sys::IupSetRGB(self.raw(), cname.as_ptr(), rgb.0, rgb.1, rgb.2) };
-        self.clone()
+        *self
     }
 
     #[doc(hidden)]
@@ -479,7 +478,7 @@ pub fn global_data<S1>(name: S1) -> *mut c_void
 /// Called whenever a Element gets destroyed.
 ///
 /// Use this to perform frees related to the Rust binding that are per-element.
-extern fn on_element_destroy(ih: *mut iup_sys::Ihandle) -> c_int {
+extern "C" fn on_element_destroy(ih: *mut iup_sys::Ihandle) -> c_int {
     unsafe { ::callback::drop_callbacks(ih); }
     iup_sys::IUP_DEFAULT
 }

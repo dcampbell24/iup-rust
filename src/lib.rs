@@ -219,7 +219,7 @@ pub fn with_iup<F: FnOnce() -> Result<(), String>>(f: F) -> Result<(), InitError
     callback::remove_close_cb().map( |mut fbox| fbox.on_callback(()) );
     unsafe { iup_sys::IupClose(); }
 
-    user_result.map_err(|e| InitError::UserError(e))
+    user_result.map_err(InitError::UserError)
 }
 
 /// Returns a string with the IUP version number.

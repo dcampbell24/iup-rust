@@ -77,6 +77,6 @@ pub trait Widget : Element + Node {
     /// VISIBLE attribute.
     fn hide(&mut self) -> Self {
         unsafe { iup_sys::IupHide(self.raw()) };
-        self.clone()
+        *self
     }
 }

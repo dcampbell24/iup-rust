@@ -40,7 +40,7 @@ impl Text {
         unsafe {
             let (mut lin, mut col): (c_int, c_int) = (0, 0);
             iup_sys::IupTextConvertPosToLinCol(self.raw(), pos as c_int, &mut lin, &mut col);
-            (lin as i32, col as i32)
+            (lin, col)
         }
     }
 }

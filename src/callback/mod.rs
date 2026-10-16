@@ -118,7 +118,7 @@ pub trait IntoRust<T> {
 
 impl IntoRust<i32> for c_int {
     fn into_rust(self) -> i32 {
-        self as i32
+        self
     }
 }
 
